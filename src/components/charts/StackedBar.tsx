@@ -35,7 +35,7 @@ export function StackedBar({
 }: Props) {
   const tot = total ?? segments.reduce((s, x) => s + x.value, 0);
   const visible = segments.filter((s) => s.value > 0);
-  const h = height === 'lg' ? 'h-9' : 'h-6';
+  const h = height === 'lg' ? 'h-control' : 'h-6';
   return (
     <div role="group" aria-label={ariaLabel} className={`flex w-full gap-0.5 overflow-hidden rounded-control bg-surface ${h}`}>
       {visible.length === 0 && <div className="flex-1 bg-border-subtle" aria-hidden="true" />}

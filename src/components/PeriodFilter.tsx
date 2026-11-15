@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { CalendarIcon } from 'lucide-react';
 
 export type PeriodKey = 'today' | '7d' | '30d' | '3m' | 'custom';
@@ -42,7 +42,7 @@ export function PeriodFilter({
       className={`flex flex-col gap-2 min-w-0 ${isInline ? 'w-fit shrink-0' : 'w-full'}`}
     >
       <div
-        className={`inline-flex items-center bg-surface border border-border rounded-card shadow-card ${
+        className={`inline-flex items-center bg-surface border border-border rounded-card ${
           isInline ? 'p-1 gap-0.5 flex-nowrap' : 'flex flex-wrap gap-1 p-1.5 w-full min-w-0'
         }`}
       >
@@ -55,11 +55,11 @@ export function PeriodFilter({
             key={p.key}
             type="button"
             onClick={() => onChange(p.key)}
-            className={`font-medium rounded-control transition-colors whitespace-nowrap shrink-0 ${
+            className={`font-medium rounded-control transition-colors duration-fast ease-standard whitespace-nowrap shrink-0 ${
               isInline ? 'px-3 py-1.5 text-mention' : 'px-2.5 py-1.5 text-mention'
             } ${
               value === p.key
-                ? 'bg-primary text-text-inverse shadow-card'
+                ? 'bg-primary text-text-inverse'
                 : 'text-text hover:bg-surface-muted'
             }`}
           >
@@ -70,7 +70,7 @@ export function PeriodFilter({
 
       {value === 'custom' && (
         <div
-          className={`flex flex-wrap items-center gap-2 bg-surface border border-border rounded-card p-2 shadow-card min-w-0 ${
+          className={`flex flex-wrap items-center gap-2 bg-surface border border-border rounded-card p-2 min-w-0 ${
             isInline ? 'w-fit' : 'w-full'
           }`}
         >

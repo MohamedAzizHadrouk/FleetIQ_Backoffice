@@ -43,7 +43,7 @@ export function KpiDataTable({ table }: { table: KpiTable }) {
         </thead>
         <tbody className="divide-y divide-border-subtle">
           {table.rows.map((r, ri) => (
-            <tr key={ri} className="hover:bg-primary-50 transition-colors">
+            <tr key={ri} className="hover:bg-primary-50 transition-colors duration-fast ease-standard">
               {r.map((v, i) => (
                 <td key={i} className={`px-4 py-2.5 ${i ? 'text-right' : 'text-left font-medium'}`}>
                   {typeof v === 'number' ? v.toLocaleString('fr-FR') : v}
@@ -91,7 +91,7 @@ export function DetailModal({ detail, onClose, canOpen }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex items-center justify-center h-9 px-3 text-button-sm rounded-control bg-transparent text-text hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="inline-flex items-center justify-center h-control px-3 text-button-sm rounded-control bg-transparent text-text hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             >
               Fermer
             </button>
@@ -102,7 +102,7 @@ export function DetailModal({ detail, onClose, canOpen }: Props) {
                   onClose();
                   navigate(BACKOFFICE_ROUTE_PATHS[route] + (d.routeQuery ?? ''));
                 }}
-                className="inline-flex items-center justify-center gap-2 h-9 px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover active:bg-primary-active transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
+                className="inline-flex items-center justify-center gap-2 h-control px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover active:bg-primary-active transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
               >
                 {d.goLabel ?? `Ouvrir ${d.routeLabel ?? 'la page'}`}
                 <ArrowRight size={16} aria-hidden="true" />

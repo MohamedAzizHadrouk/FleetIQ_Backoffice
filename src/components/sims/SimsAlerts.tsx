@@ -44,7 +44,7 @@ export function SimsBell({ data, showPrices, open, onToggle, onOverClient, onOpe
   const a = data.alerts;
   const count = a.overClients.length + a.noEquipment.length + a.high.length + a.low.length;
   const item =
-    'flex w-full items-start gap-3 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset';
+    'flex w-full items-start gap-3 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset';
   const SimItem = ({ r, dot, title, sub }: { r: SimRow; dot: string; title: string; sub: string }) => (
     <li className="border-b border-border-subtle last:border-b-0">
       <button
@@ -73,7 +73,7 @@ export function SimsBell({ data, showPrices, open, onToggle, onOverClient, onOpe
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={`Alertes puces : ${count} à traiter`}
-        className="relative inline-flex h-9 w-9 items-center justify-center rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+        className="relative inline-flex h-control w-9 items-center justify-center rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
       >
         <Bell size={18} aria-hidden="true" />
         {count > 0 && (

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des puces v3 (Puces-v3 · Documentation-Puces-v3) – carte FleetIQ 09.
  * Ordre de la page (« Organisation de la page » de la documentation) :
  * 0. En-tête et barre d'outils : Réseau puis période (7 derniers jours · 30 jours · Mois · Année) ; cloche ;
@@ -559,7 +559,7 @@ export function SimsPage() {
   };
 
   const selCls =
-    'h-9 px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+    'h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   const overClient = data.alerts.overClients[0];
 
   return (
@@ -568,13 +568,13 @@ export function SimsPage() {
       <header className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-h3 text-text">Gestion des puces</h1>
+            <h1 className="text-title text-text">Gestion des puces</h1>
             <button
               type="button"
               aria-disabled="true"
               title="Documentation des KPI : bientôt (carte FleetIQ 11)"
               onClick={(e) => e.preventDefault()}
-              className="inline-flex items-center gap-1.5 h-9 px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 h-control px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
             >
               <BookOpen size={16} aria-hidden="true" />
               Documentation
@@ -588,7 +588,7 @@ export function SimsPage() {
                 <button
                   type="button"
                   onClick={() => setIsOffersListOpen(true)}
-                  className="inline-flex items-center gap-2 h-9 px-3 text-button-sm rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                  className="inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                 >
                   <Tag size={16} aria-hidden="true" />
                   Offres puce
@@ -596,14 +596,14 @@ export function SimsPage() {
                 <button
                   type="button"
                   onClick={openCreateSim}
-                  className="inline-flex items-center gap-2 h-9 px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
+                  className="inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
                 >
                   <Plus size={16} aria-hidden="true" />
                   Ajouter une puce
                 </button>
               </>
             )}
-            <span className="inline-flex items-center gap-2 h-9 px-3 rounded-control border border-border bg-surface text-small text-text">
+            <span className="inline-flex items-center gap-2 h-control px-3 rounded-control border border-border bg-surface text-small text-text">
               <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
               Aujourd’hui <b className="tabular-nums">{mockToday.toLocaleDateString('fr-FR')}</b>
             </span>
@@ -628,7 +628,7 @@ export function SimsPage() {
         </p>
 
         {/* Barre d'outils : Réseau en premier, puis période */}
-        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 shadow-card">
+        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3">
           <label className="inline-flex items-center gap-2 text-small text-text">
             <Network size={16} aria-hidden="true" className="text-text-muted" />
             <span className="font-medium">Réseau</span>
@@ -650,7 +650,7 @@ export function SimsPage() {
                 type="button"
                 aria-pressed={periodKind === p.key}
                 onClick={() => setPeriodKind(p.key)}
-                className={`h-8 px-3 text-button-sm rounded-control transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                className={`h-8 px-3 text-button-sm rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                   periodKind === p.key ? 'bg-primary text-text-inverse' : 'text-text hover:bg-surface-muted'
                 }`}
               >
@@ -706,7 +706,7 @@ export function SimsPage() {
       {/* 3. Liste des puces PU-T-21 (T-21) – une ligne ouvre la fiche PU-F-21 */}
       <section aria-labelledby="pu-t21" className="space-y-3 scroll-mt-4" ref={listRef} data-kpi="PU-T-21">
         <SectionTitle id="pu-t21" title="Liste des puces" hint="Cliquez sur une puce pour voir sa fiche" />
-        <div className="bg-surface rounded-card border border-border overflow-hidden shadow-card">
+        <div className="bg-surface rounded-card border border-border overflow-hidden">
           <div className="p-4 border-b border-border-subtle bg-surface-muted flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} aria-hidden="true" />
@@ -716,7 +716,7 @@ export function SimsPage() {
                 placeholder="Numéro, ICCID, ID, client, équipement, opérateur…"
                 value={filters.q}
                 onChange={(e) => setFilter('q', e.target.value)}
-                className="w-full h-9 pl-9 pr-4 bg-surface border border-border-strong rounded-control focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small"
+                className="w-full h-control pl-9 pr-4 bg-surface border border-border-strong rounded-control focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small"
               />
             </div>
             <select aria-label="Statut" value={filters.status} onChange={(e) => setFilter('status', e.target.value as StatusFilter)} className={selCls}>
@@ -769,7 +769,7 @@ export function SimsPage() {
               <button
                 type="button"
                 onClick={() => setFilters(EMPTY_FILTERS)}
-                className="inline-flex items-center gap-1 h-9 px-3 text-button-sm rounded-control text-primary hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                className="inline-flex items-center gap-1 h-control px-3 text-button-sm rounded-control text-primary hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
               >
                 <X size={14} aria-hidden="true" /> Effacer les filtres
               </button>
@@ -794,7 +794,7 @@ export function SimsPage() {
                 <button
                   type="button"
                   onClick={clearSelection}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-mention font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-mention font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
                 >
                   <X size={14} />
                   Tout désélectionner
@@ -802,7 +802,7 @@ export function SimsPage() {
                 <button
                   type="button"
                   onClick={openBulkAssignToClient}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-mention font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-mention font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
                 >
                   <ArrowLeftRight size={14} />
                   Affecter au client
@@ -853,7 +853,7 @@ export function SimsPage() {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && e.target === e.currentTarget) openFiche(r);
                       }}
-                      className={`cursor-pointer hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-focus ${isSelected ? 'bg-primary-50' : ''} ${contextMenu?.sim.id === sim.id ? 'ring-1 ring-inset ring-primary-200' : ''}`}
+                      className={`cursor-pointer hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-focus ${isSelected ? 'bg-primary-50' : ''} ${contextMenu?.sim.id === sim.id ? 'ring-1 ring-inset ring-primary-200' : ''}`}
                       onContextMenu={(e) => handleRowContextMenu(e, sim)}
                     >
                       {canManageSims && (
@@ -909,7 +909,7 @@ export function SimsPage() {
                             <button
                               type="button"
                               onClick={() => openEditSim(sim)}
-                              className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors"
+                              className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
                               title="Modifier la puce"
                               aria-label="Modifier la puce"
                             >
@@ -919,7 +919,7 @@ export function SimsPage() {
                               <button
                                 type="button"
                                 onClick={() => openAssignToClient(sim)}
-                                className="p-1.5 text-text-muted hover:text-success-700 hover:bg-success-50 rounded-control transition-colors"
+                                className="p-1.5 text-text-muted hover:text-success-700 hover:bg-success-50 rounded-control transition-colors duration-fast ease-standard"
                                 title="Affecter à un client"
                                 aria-label="Affecter à un client"
                               >
@@ -930,7 +930,7 @@ export function SimsPage() {
                               <button
                                 type="button"
                                 onClick={() => unassignSim(sim)}
-                                className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors"
+                                className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors duration-fast ease-standard"
                                 title="Retirer du client (retour au stock)"
                                 aria-label="Retirer du client (retour au stock)"
                               >
@@ -940,7 +940,7 @@ export function SimsPage() {
                             <button
                               type="button"
                               onClick={() => setSimToDelete(sim)}
-                              className="p-1.5 text-text-muted hover:text-danger-700 hover:bg-danger-50 rounded-control transition-colors disabled:opacity-40"
+                              className="p-1.5 text-text-muted hover:text-danger-700 hover:bg-danger-50 rounded-control transition-colors duration-fast ease-standard disabled:opacity-40"
                               title="Supprimer la puce"
                               aria-label="Supprimer la puce"
                               disabled={status === 'assigned_equipment'}
@@ -1135,14 +1135,14 @@ export function SimsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsSimModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors inline-flex items-center gap-2"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard inline-flex items-center gap-2"
             >
               <XCircle size={16} />
               Annuler
             </button>
             <button
               onClick={upsertSim}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card inline-flex items-center gap-2"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard inline-flex items-center gap-2"
             >
               <CheckCircle2 size={16} />
               {simEditingId === null ? 'Ajouter la puce' : 'Enregistrer'}
@@ -1165,7 +1165,7 @@ export function SimsPage() {
             </p>
             <button
               onClick={openCreateOffer}
-              className="bg-primary hover:bg-primary-hover text-text-inverse px-3 py-1.5 rounded-card text-small font-medium flex items-center gap-2 transition-colors shadow-card"
+              className="bg-primary hover:bg-primary-hover text-text-inverse px-3 py-1.5 rounded-card text-small font-medium flex items-center gap-2 transition-colors duration-fast ease-standard"
             >
               <Plus size={14} />
               Nouvelle offre
@@ -1199,14 +1199,14 @@ export function SimsPage() {
                   <div className="flex items-center gap-1 shrink-0">
                     <button
                       onClick={() => openEditOffer(offer)}
-                      className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors"
+                      className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
                       title="Modifier l'offre"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button
                       onClick={() => deleteOffer(offer.id)}
-                      className="p-1.5 text-text-muted hover:text-danger-700 hover:bg-danger-50 rounded-control transition-colors"
+                      className="p-1.5 text-text-muted hover:text-danger-700 hover:bg-danger-50 rounded-control transition-colors duration-fast ease-standard"
                       title="Supprimer l'offre"
                     >
                       <Trash2 size={16} />
@@ -1281,13 +1281,13 @@ export function SimsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsOfferModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={upsertOffer}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
             >
               Enregistrer
             </button>
@@ -1359,14 +1359,14 @@ export function SimsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={closeAssignModal}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={confirmAssignToClient}
               disabled={!assignClientName}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card disabled:bg-border disabled:cursor-not-allowed"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard disabled:bg-border disabled:cursor-not-allowed"
             >
               {assignSimIds.length > 1 ? `Affecter ${assignSimIds.length} puces` : 'Affecter'}
             </button>
@@ -1407,13 +1407,13 @@ export function SimsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setSimToDelete(null)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={confirmDeleteSim}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-danger rounded-card hover:bg-danger-hover transition-colors shadow-card inline-flex items-center gap-2"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-danger rounded-card hover:bg-danger-hover transition-colors duration-fast ease-standard inline-flex items-center gap-2"
             >
               <Trash2 size={16} />
               Supprimer

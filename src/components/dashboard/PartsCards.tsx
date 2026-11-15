@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Legend, StackedBar, TONE_BG, type ChartTone } from '../charts';
 import { fmt, pct, volume, type DashboardData, type ParkRow } from '../../utils/dashboardKpis';
 import { formatMonthFr } from '../../state/mock/dates';
@@ -30,7 +30,7 @@ function TreeLine({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center gap-3 py-2 pr-2 text-left rounded-control hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${indent}`}
+      className={`flex w-full items-center gap-3 py-2 pr-2 text-left rounded-control hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${indent}`}
     >
       {branch && (
         <span className="font-mono text-small text-text-muted" aria-hidden="true">
@@ -116,7 +116,7 @@ export function EquipmentPartsCard({
   };
 
   return (
-    <div className="bg-surface rounded-card border border-border shadow-card p-5 space-y-4">
+    <div className="bg-surface rounded-card border border-border p-5 space-y-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-h4 text-text">
           Équipements : {fmt(total)} {stock ? 'au total' : 'vendus'}
@@ -132,7 +132,7 @@ export function EquipmentPartsCard({
               type="button"
               aria-pressed={on}
               onClick={() => setSel(r.key)}
-              className={`rounded-pill border px-3 py-1 text-mention font-medium transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+              className={`rounded-pill border px-3 py-1 text-mention font-medium transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                 on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-primary-50'
               }`}
             >
@@ -214,7 +214,7 @@ export function SimPartsCard({ data, onOpenDetail }: { data: DashboardData; onOp
     });
   };
   return (
-    <div className="bg-surface rounded-card border border-border shadow-card p-5 space-y-4">
+    <div className="bg-surface rounded-card border border-border p-5 space-y-4">
       <h3 className="text-h4 text-text">Puces : {fmt(total)} au total</h3>
       <StackedBar
         ariaLabel="Puces découpées en parts"

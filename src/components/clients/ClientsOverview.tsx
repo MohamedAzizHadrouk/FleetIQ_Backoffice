@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion Clients v3 – cartes du haut, « À traiter » et « Répartition » (carte FleetIQ 06).
  * CLI-K-01 Total clients · CLI-K-02/K-03 Statut des clients · CLI-K-04/K-05 Équipements connectés
  * CLI-A-04a · CLI-A-01 · CLI-A-02 · CLI-A-04b (À traiter, un seul filtre « Délai ») · CLI-D-01 · CLI-D-02.
@@ -78,7 +78,7 @@ function TopCard({
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className="text-left w-full bg-surface rounded-card border border-border shadow-card p-5 hover:shadow-raised hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className="text-left w-full bg-surface rounded-card border border-border p-5 hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
     >
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-overline uppercase text-text-muted">{title}</h3>
@@ -272,7 +272,7 @@ export function ClientsOverview({
                 <select
                   value={delay}
                   onChange={(e) => onDelayChange(Number(e.target.value) as DelayDays)}
-                  className="h-9 px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                  className="h-control px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                 >
                   {DELAY_OPTIONS.map((d) => (
                     <option key={d} value={d}>
@@ -295,7 +295,7 @@ export function ClientsOverview({
                 aria-pressed={on}
                 data-kpi={`CLI-${meta.mockup.replace(' ', '').replace('(', '').replace(')', '')}`}
                 onClick={() => onAlertClick(a.key)}
-                className={`text-left rounded-card border p-4 shadow-card transition-shadow hover:shadow-raised focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                className={`text-left rounded-card border p-4 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                   on ? 'border-primary bg-primary-50' : 'border-border bg-surface'
                 }`}
               >
@@ -322,7 +322,7 @@ export function ClientsOverview({
         <SectionTitle id="cli-rep" title="Répartition" />
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {/* CLI-D-01 Clients et équipements par pack */}
-          <div className="bg-surface rounded-card border border-border shadow-card p-5">
+          <div className="bg-surface rounded-card border border-border p-5">
             <h3 className="text-small font-semibold text-text">Clients et équipements par pack</h3>
             <p className="text-mention text-text-muted mb-2">
               Un client à plusieurs packs compte dans chacun · longueur = équipements du pack · cliquez pour filtrer le tableau · D-01
@@ -343,7 +343,7 @@ export function ClientsOverview({
             />
           </div>
           {/* CLI-D-02 Connectés / non connectés */}
-          <div className="bg-surface rounded-card border border-border shadow-card p-5">
+          <div className="bg-surface rounded-card border border-border p-5">
             <h3 className="text-small font-semibold text-text">
               {isNetwork ? 'Équipements hors ligne par propriétaire' : 'Équipements hors ligne par client'}
             </h3>
@@ -356,7 +356,7 @@ export function ClientsOverview({
                   <button
                     type="button"
                     onClick={() => (isNetwork ? onOwnerClick(r.key) : onClientOpen(Number(r.key), 'equipements'))}
-                    className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-2 py-2.5 text-left rounded-control hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                    className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-2 py-2.5 text-left rounded-control hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                   >
                     {/* FleetIQ 13 (B5) : < 640 px, le libellé prend sa propre ligne (même règle que B4) */}
                     <span className="basis-full min-w-0 truncate text-small font-medium text-text sm:basis-auto sm:w-40 sm:shrink-0">{r.label}</span>

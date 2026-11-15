@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion Clients v3 – « Activité et renouvellement » (carte FleetIQ 06) – blocs commerciaux, masqués au Responsable SAV.
  * CLI-C-01 Connexion mensuelle des clients · CLI-C-03 Pic du nombre de clients connectés
  * CLI-D-03 Nouveaux clients vs bloqués par mois · CLI-D-04 Échéances des packs par mois.
@@ -24,7 +24,7 @@ const SERIES_TONES: ChartTone[] = ['series2', 'series3', 'series4'];
 
 function Card({ children, side }: { children: ReactNode; side: ReactNode }) {
   return (
-    <div className="bg-surface rounded-card border border-border shadow-card p-5 grid grid-cols-1 xl:grid-cols-3 gap-5">
+    <div className="bg-surface rounded-card border border-border p-5 grid grid-cols-1 xl:grid-cols-3 gap-5">
       <div className="xl:col-span-2 min-w-0">{children}</div>
       <div className="rounded-control border border-border-subtle bg-surface-muted p-4 min-w-0">{side}</div>
     </div>
@@ -137,7 +137,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
   };
 
   const chip = (on: boolean) =>
-    `rounded-pill border px-3 py-1 text-mention font-medium transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+    `rounded-pill border px-3 py-1 text-mention font-medium transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
       on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-primary-50'
     }`;
 
@@ -162,7 +162,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
                   type="button"
                   disabled={m.month > c01.asOfMonth}
                   onClick={() => setC01Month(i)}
-                  className={`rounded-control border px-1 py-1 text-center text-mention transition-colors disabled:opacity-50 ${
+                  className={`rounded-control border px-1 py-1 text-center text-mention transition-colors duration-fast ease-standard disabled:opacity-50 ${
                     i === c01Month ? 'bg-primary text-text-inverse border-primary' : 'bg-surface border-border-subtle text-text hover:bg-primary-50'
                   }`}
                 >
@@ -183,7 +183,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
                           type="button"
                           aria-pressed={on}
                           onClick={() => setC01Owners((cur) => (on ? cur.filter((x) => x !== o.key) : [...cur, o.key].slice(-3)))}
-                          className={`w-full rounded-control border px-2 py-1.5 text-left text-mention transition-colors ${
+                          className={`w-full rounded-control border px-2 py-1.5 text-left text-mention transition-colors duration-fast ease-standard ${
                             on ? 'border-primary bg-primary-50' : 'border-border-subtle bg-surface hover:bg-primary-50'
                           }`}
                         >
@@ -207,7 +207,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
                   onClick={() =>
                     listDetail(`Actifs sans connexion – ${formatMonthFr(selMonth)}`, 'CLI-C-01', notConnectedSel, lastLoginTxt, 'Dernière connexion')
                   }
-                  className="mt-2 flex items-center h-9 px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover"
+                  className="mt-2 flex items-center h-control px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover"
                 >
                   Voir la liste →
                 </button>
@@ -232,7 +232,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
               value={c01Query}
               onChange={(e) => setC01Query(e.target.value)}
               placeholder="Filtrer par client…"
-              className="h-9 w-52 pl-8 pr-2 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="h-control w-52 pl-8 pr-2 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             />
           </label>
         </div>
@@ -385,11 +385,11 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-small font-semibold text-text">Échéances des packs par mois</h3>
           <div className="inline-flex items-center gap-1">
-            <button type="button" aria-label="Année précédente" onClick={() => setD04Year((y) => y - 1)} className="h-9 w-9 inline-flex items-center justify-center rounded-control border border-border hover:bg-surface-muted">
+            <button type="button" aria-label="Année précédente" onClick={() => setD04Year((y) => y - 1)} className="h-control w-9 inline-flex items-center justify-center rounded-control border border-border hover:bg-surface-muted">
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
             <span className="px-2 text-small font-semibold tabular-nums">{d04Year}</span>
-            <button type="button" aria-label="Année suivante" onClick={() => setD04Year((y) => y + 1)} className="h-9 w-9 inline-flex items-center justify-center rounded-control border border-border hover:bg-surface-muted">
+            <button type="button" aria-label="Année suivante" onClick={() => setD04Year((y) => y + 1)} className="h-control w-9 inline-flex items-center justify-center rounded-control border border-border hover:bg-surface-muted">
               <ChevronRight size={16} aria-hidden="true" />
             </button>
           </div>

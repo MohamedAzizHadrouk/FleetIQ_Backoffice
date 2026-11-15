@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des Équipements v3 – « Répartition » (carte FleetIQ 07), chaque graphique avec son détail à droite :
  * - EQ-G-01 (G-01) Par revendeur et client (vue revendeur : par client)
  * - EQ-G-02 (G-02) Top 5 produits vendus (+ autres modèles, modèle le plus en stock)
@@ -49,7 +49,7 @@ const lastDay = (y: number, m: number) => new Date(y, m + 1, 0).getDate();
 
 function Card({ id, title, hint, chart, detail }: { id: string; title: string; hint: string; chart: ReactNode; detail: ReactNode }) {
   return (
-    <div data-kpi={id} className="bg-surface rounded-card border border-border shadow-card p-5">
+    <div data-kpi={id} className="bg-surface rounded-card border border-border p-5">
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-5">
         <div className="min-w-0 space-y-2">
           <div>
@@ -99,7 +99,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
             setG01Sel({ network: g.key });
           } else setG01Sel(isNetwork ? { network, owner: g.key } : { owner: g.key });
         }}
-        className={`flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 py-2 pr-2 text-left rounded-control transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+        className={`flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 py-2 pr-2 text-left rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
           level ? 'pl-8' : 'pl-2'
         } ${selected ? 'bg-primary-50' : 'hover:bg-primary-50'}`}
       >
@@ -151,7 +151,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
   const rates = useMemo(() => connectionRateByType(rows), [rows]);
 
   const tabBtn = (on: boolean) =>
-    `h-8 px-3 text-button-sm rounded-control border transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+    `h-8 px-3 text-button-sm rounded-control border transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
       on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-surface-muted'
     }`;
 
@@ -254,7 +254,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
                         <button
                           type="button"
                           onClick={() => onFilter({ type: typeSel.type, ...(isNetwork ? { network: g.key } : { owner: g.key }) })}
-                          className="flex w-full items-start justify-between gap-3 px-2 py-2 text-left rounded-control hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                          className="flex w-full items-start justify-between gap-3 px-2 py-2 text-left rounded-control hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                         >
                           <span className="min-w-0">
                             <span className="block truncate text-small font-medium text-text">{g.label}</span>
@@ -403,7 +403,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
                     <button
                       type="button"
                       onClick={() => onFilter({ etat: 'installe', ...(c01By === 'pack' ? { pack: g.key } : { owner: g.key }) })}
-                      className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-2 py-2 text-left rounded-control hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                      className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-2 py-2 text-left rounded-control hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                     >
                       {/* FleetIQ 13 (B5) : < 640 px, le libellé prend sa propre ligne */}
                       <span className="basis-full min-w-0 sm:basis-auto sm:w-44 sm:shrink-0">

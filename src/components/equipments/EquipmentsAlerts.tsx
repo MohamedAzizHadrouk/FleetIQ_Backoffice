@@ -44,7 +44,7 @@ export function EquipmentsBell({ alerts, alertDays, open, onToggle, onOpenRow, o
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={`Équipements déconnectés depuis plus de ${alertDays} j : ${alerts.length}`}
-        className="relative inline-flex h-9 w-9 items-center justify-center rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+        className="relative inline-flex h-control w-9 items-center justify-center rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
       >
         <Bell size={18} aria-hidden="true" />
         {alerts.length > 0 && (
@@ -77,7 +77,7 @@ export function EquipmentsBell({ alerts, alertDays, open, onToggle, onOpenRow, o
                       onToggle(false);
                       onOpenRow(r);
                     }}
-                    className="flex w-full items-start gap-3 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset"
+                    className="flex w-full items-start gap-3 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset"
                   >
                     <span className="mt-1.5 h-2 w-2 shrink-0 rounded-pill bg-danger" aria-hidden="true" />
                     <span className="flex-1 min-w-0">

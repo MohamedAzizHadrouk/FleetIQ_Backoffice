@@ -95,7 +95,7 @@ function SimIccidPreview({
         <button
           type="button"
           onClick={onClear}
-          className="absolute top-2 right-2 p-1 text-text-muted hover:text-text hover:bg-border rounded-control transition-colors"
+          className="absolute top-2 right-2 p-1 text-text-muted hover:text-text hover:bg-border rounded-control transition-colors duration-fast ease-standard"
           title="Retirer la puce"
         >
           <X size={14} />
@@ -310,7 +310,7 @@ export function SimIccidPicker({
             type="button"
             onClick={openCreateForm}
             title={`Ajouter la puce ${searchTrim}`}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-success-700 bg-success-50 border border-success-200 rounded-control hover:bg-success-50 transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-success-700 bg-success-50 border border-success-200 rounded-control hover:bg-success-50 transition-colors duration-fast ease-standard"
           >
             <Plus size={16} />
           </button>
@@ -345,7 +345,7 @@ export function SimIccidPicker({
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => handleSelect(sim)}
-                className={`w-full text-left px-3 py-2.5 text-small transition-colors flex items-center justify-between gap-2 ${
+                className={`w-full text-left px-3 py-2.5 text-small transition-colors duration-fast ease-standard flex items-center justify-between gap-2 ${
                   selectedSimId === sim.id
                     ? 'bg-primary-50 text-primary'
                     : 'text-text hover:bg-surface-muted'

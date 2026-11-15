@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des puces v3 – quatre cartes (PU-P-01 Total · PU-P-02 Installées · PU-P-03 Non installées ·
  * PU-P-07 Puces en surconsommation) et « Puces installées par offre » avec le prix fixe (PU-P-05). Carte FleetIQ 09.
  * Retirés à la demande (maquette) : cartes « Sans offre (stock) », « Coût des puces » (P-06), « Alertes consommation ».
@@ -34,11 +34,11 @@ function TopCard({
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className="text-left w-full bg-surface rounded-card border border-border shadow-card p-5 hover:shadow-raised hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className="text-left w-full bg-surface rounded-card border border-border p-5 hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
     >
       <div className="flex items-start justify-between mb-3 gap-2">
         <h3 className="text-overline uppercase text-text-muted">{title}</h3>
-        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-control ${TONE[tone]}`}>
+        <span className={`flex h-control w-9 shrink-0 items-center justify-center rounded-control ${TONE[tone]}`}>
           <Icon size={18} aria-hidden="true" />
         </span>
       </div>
@@ -122,7 +122,7 @@ export function SimsOffers({ data, showPrices, onOffer, onOfferList }: Props) {
                   onOffer(o);
                 }
               }}
-              className="cursor-pointer bg-surface rounded-card border border-border border-l-4 border-l-primary shadow-card p-5 flex flex-col gap-3 hover:shadow-raised transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="cursor-pointer bg-surface rounded-card border border-border border-l-4 border-l-primary p-5 flex flex-col gap-3 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -136,11 +136,11 @@ export function SimsOffers({ data, showPrices, onOffer, onOfferList }: Props) {
                     <span className="text-mention text-text-muted">{o.quota != null ? `forfait ${volume(o.quota)}` : 'data illimitée'}</span>
                   </div>
                 </div>
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary-50 text-primary">
+                <span className="flex h-control w-9 shrink-0 items-center justify-center rounded-control bg-primary-50 text-primary">
                   <Package size={18} aria-hidden="true" />
                 </span>
               </div>
-              <p className="text-h3 text-text tabular-nums">
+              <p className="text-title text-text tabular-nums">
                 {fmt(o.installed)}
                 <span className="font-normal text-text-muted"> / {fmt(o.sims)}</span>
                 <span className="ml-2 text-mention font-normal text-text-muted">installées / puces</span>

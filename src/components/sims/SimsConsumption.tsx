@@ -180,7 +180,7 @@ export function SimsConsumption({ data, period, onOpenSim, onOverNetwork }: Prop
       else n.add(k);
       return n;
     });
-  const sel = 'h-9 px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+  const sel = 'h-control px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   const overTotal = data.overNetworks.reduce((s, n) => s + n.overSims, 0);
 
   return (
@@ -205,7 +205,7 @@ export function SimsConsumption({ data, period, onOpenSim, onOverNetwork }: Prop
               onChange={(e) => setQ(e.target.value)}
               placeholder="Rechercher un client…"
               aria-label="Rechercher un client"
-              className="w-full h-9 pl-9 pr-3 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="w-full h-control pl-9 pr-3 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             />
           </div>
           <label className="inline-flex items-center gap-2 text-small text-text">

@@ -71,7 +71,7 @@ export function SimFiche({ row: r, ctx, cons, showPrices, canManage, onEdit, onA
   if (r.sim.expirationDate) events.push([frDate(r.sim.expirationDate), 'Expiration de l’abonnement (prévue)']);
 
   const btn =
-    'inline-flex items-center gap-1.5 h-9 px-3 text-button-sm rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+    'inline-flex items-center gap-1.5 h-control px-3 text-button-sm rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   return (
     <div className="space-y-4" data-kpi="PU-F-21">
       <div className="flex flex-wrap items-start justify-between gap-3">

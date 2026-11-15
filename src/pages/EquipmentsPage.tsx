@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des Équipements v3 – carte FleetIQ 07 (maquette Equipements-v3 · Documentation-Equipements-v3).
  * Ordre de la page : en-tête (titre, Documentation « bientôt », date des données, cloche EQ-A-23) → cartes du haut
  * (EQ-E-01 … EQ-E-05) → À traiter (EQ-A-23, EQ-A-21, EQ-A-22) → liste EQ-T-11 (fiche EQ-F-11) → Répartition
@@ -704,13 +704,13 @@ export function EquipmentsPage() {
       <header className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-h3 text-text">Gestion des Équipements</h1>
+            <h1 className="text-title text-text">Gestion des Équipements</h1>
             <button
               type="button"
               aria-disabled="true"
               title="Documentation des KPI : bientôt (carte FleetIQ 11)"
               onClick={(e) => e.preventDefault()}
-              className="inline-flex items-center gap-1.5 h-9 px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 h-control px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
             >
               <BookOpen size={16} aria-hidden="true" />
               Documentation
@@ -727,13 +727,13 @@ export function EquipmentsPage() {
             {permissions?.equipments.canAdd && (
               <button
                 onClick={openAddStock}
-                className="inline-flex items-center gap-2 h-9 px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
               >
                 <Plus size={16} aria-hidden="true" />
                 Ajouter un équipement
               </button>
             )}
-            <span className="inline-flex items-center gap-2 h-9 px-3 rounded-control border border-border bg-surface text-small text-text">
+            <span className="inline-flex items-center gap-2 h-control px-3 rounded-control border border-border bg-surface text-small text-text">
               <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
               Données au <b className="tabular-nums">{mockToday.toLocaleDateString('fr-FR')}</b>
             </span>
@@ -854,13 +854,13 @@ export function EquipmentsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsQuotasOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={saveQuotas}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
             >
               Enregistrer
             </button>
@@ -989,13 +989,13 @@ export function EquipmentsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsEditModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={saveEditEquipment}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
             >
               Enregistrer
             </button>
@@ -1064,13 +1064,13 @@ export function EquipmentsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsInstallModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={confirmInstall}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-success rounded-card hover:bg-success-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-success rounded-card hover:bg-success-hover transition-colors duration-fast ease-standard"
             >
               Installer
             </button>
@@ -1366,7 +1366,7 @@ export function EquipmentsPage() {
               {equipmentToView.isInstalled && (
               <button
                 onClick={() => setShowPositionMap(!showPositionMap)}
-                className={`px-4 py-2 text-small font-medium rounded-control transition-colors flex items-center gap-2 ${
+                className={`px-4 py-2 text-small font-medium rounded-control transition-colors duration-fast ease-standard flex items-center gap-2 ${
                   showPositionMap
                     ? 'bg-primary-50 text-primary border border-primary-200'
                     : 'bg-surface text-text border border-border hover:bg-surface-muted'
@@ -1381,7 +1381,7 @@ export function EquipmentsPage() {
                   setIsDetailsModalOpen(false);
                   setShowPositionMap(false);
                 }}
-                className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+                className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
               >
                 Fermer
               </button>
@@ -1420,13 +1420,13 @@ export function EquipmentsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsAssignOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={confirmAssign}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
               disabled={!assignTargetName}
             >
               Confirmer
@@ -1452,13 +1452,13 @@ export function EquipmentsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setEquipmentToDelete(null)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={confirmDeleteEquipment}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-danger rounded-card hover:bg-danger-hover transition-colors shadow-card inline-flex items-center gap-2"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-danger rounded-card hover:bg-danger-hover transition-colors duration-fast ease-standard inline-flex items-center gap-2"
             >
               <Trash2 size={16} />
               Supprimer
@@ -1563,13 +1563,13 @@ export function EquipmentsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsAddStockOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={confirmAddStock}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
             >
               Ajouter
             </button>

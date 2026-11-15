@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import {
   Eye,
   EyeOff,
@@ -69,7 +69,7 @@ const ROLES: RoleDefinition[] = [
 const FOCUS =
   'focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
 const FIELD =
-  'block w-full h-11 rounded-control bg-surface border border-border-strong text-body md:text-small text-text placeholder:text-text-muted hover:border-text transition-colors focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25';
+  'block w-full h-11 rounded-control bg-surface border border-border-strong text-body md:text-small text-text placeholder:text-text-muted hover:border-text transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25';
 
 export interface LoginContext {
   role: BackofficeRole;
@@ -167,9 +167,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         </div>
 
         <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
-          <div className="w-full max-w-lg p-8 bg-surface rounded-modal border border-border shadow-card">
+          <div className="w-full max-w-lg p-8 bg-surface rounded-modal border border-border">
             <div className="mb-6">
-              <h2 className="text-h3 text-text mb-1">Connexion au back-office</h2>
+              <h2 className="text-title text-text mb-1">Connexion au back-office</h2>
               <p className="text-small text-text-muted">Sélectionnez votre profil pour vous connecter</p>
             </div>
 
@@ -184,7 +184,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     <label
                       key={role.id}
                       data-role={role.id}
-                      className={`relative flex items-center gap-3 min-h-11 p-3 rounded-control border cursor-pointer transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-focus has-[:focus-visible]:ring-offset-2 ${
+                      className={`relative flex items-center gap-3 min-h-11 p-3 rounded-control border cursor-pointer transition-colors duration-fast ease-standard has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-focus has-[:focus-visible]:ring-offset-2 ${
                         isActive
                           ? 'border-primary bg-primary-100'
                           : 'border-border-strong bg-surface hover:bg-primary-50'
@@ -301,7 +301,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
-                    className={`absolute right-1 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-control text-text-muted hover:text-text hover:bg-surface-muted transition-colors ${FOCUS}`}>
+                    className={`absolute right-1 top-1/2 -translate-y-1/2 flex h-control w-9 items-center justify-center rounded-control text-text-muted hover:text-text hover:bg-surface-muted transition-colors duration-fast ease-standard ${FOCUS}`}>
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" aria-hidden="true" />
                     ) : (
@@ -323,7 +323,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 type="submit"
                 disabled={isLoading}
                 aria-busy={isLoading}
-                className={`w-full inline-flex items-center justify-center gap-2 h-12 px-5 rounded-control bg-primary text-text-inverse text-button hover:bg-primary-hover active:bg-primary-active transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${FOCUS}`}>
+                className={`w-full inline-flex items-center justify-center gap-2 h-12 px-5 rounded-control bg-primary text-text-inverse text-button hover:bg-primary-hover active:bg-primary-active transition-colors duration-fast ease-standard disabled:opacity-50 disabled:cursor-not-allowed ${FOCUS}`}>
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
                 ) : (

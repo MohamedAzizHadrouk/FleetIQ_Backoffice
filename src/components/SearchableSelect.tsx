@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
+import { FOCUS, TRANSITION } from './ui/focus';
+import { fieldControlClass } from './ui/Field';
+
 interface SearchableSelectProps {
   value: string;
   onChange: (value: string) => void;
@@ -8,6 +11,8 @@ interface SearchableSelectProps {
   icon?: React.ReactNode;
   label?: string;
 }
+
+/** Liste searchable Industrial Tech (DL § 9.11). */
 export function SearchableSelect({
   value,
   onChange,
@@ -21,6 +26,7 @@ export function SearchableSelect({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const filtered = options.filter((opt) => opt.toLowerCase().includes(query.toLowerCase()));
+
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -31,6 +37,7 @@ export function SearchableSelect({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
   const handleSelect = (opt: string) => {
     onChange(opt);
     setIsOpen(false);
@@ -46,43 +53,71 @@ export function SearchableSelect({
     setQuery('');
     setTimeout(() => inputRef.current?.focus(), 0);
   };
-  return <div ref={containerRef} className="relative">
-      {label && <label className="block text-mention font-medium text-text mb-1 flex items-center gap-1.5">
+
+  return (
+    <div ref={containerRef} className="relative">
+      {label && (
+        <label className="block text-label text-text mb-1 flex items-center gap-1.5">
           {icon}
           {label}
-        </label>}
+        </label>
+      )}
 
-      {/* Trigger button */}
-      <button type="button" onClick={openDropdown} className={`w-full flex items-center justify-between px-3 py-2 border rounded-card text-small transition-shadow text-left ${isOpen ? 'border-primary ring-2 ring-primary' : 'border-border hover:border-text'}`}>
-        <span className={value ? 'text-text' : 'text-text-muted'}>
-          {value || placeholder}
-        </span>
+      <button
+        type="button"
+        onClick={openDropdown}
+        className={`w-full flex items-center justify-between ${fieldControlClass} text-left ${
+          isOpen ? 'border-primary ring-3 ring-focus/25' : ''
+        }`}
+      >
+        <span className={value ? 'text-text' : 'text-text-muted'}>{value || placeholder}</span>
         <div className="flex items-center gap-1 shrink-0">
-          {value && <span role="button" onClick={handleClear} className="p-0.5 text-text-muted hover:text-text rounded-control transition-colors">
-              <X size={14} />
-            </span>}
-          <ChevronDown size={16} className={`text-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          {value && (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={handleClear}
+              onKeyDown={(e) => e.key === 'Enter' && handleClear(e as unknown as React.MouseEvent)}
+              aria-label="Effacer"
+              className={`p-0.5 rounded-control text-text-muted hover:text-text ${TRANSITION}`}
+            >
+              <X size={14} aria-hidden="true" />
+            </span>
+          )}
+          <ChevronDown size={16} className="text-text-muted" aria-hidden="true" />
         </div>
       </button>
 
-      {/* Dropdown */}
-      {isOpen && <div className="absolute z-50 mt-1 w-full bg-surface border border-border rounded-card shadow-raised overflow-hidden">
-          {/* Search input */}
-          <div className="p-2 border-b border-border-subtle">
+      {isOpen && (
+        <div className="absolute z-dropdown mt-1 w-full min-w-[12rem] py-1 bg-surface border border-border-strong rounded-card shadow-raised max-h-60 overflow-auto">
+          <div className="px-2 pb-1">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
-              <input ref={inputRef} type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher..." className="w-full pl-8 pr-3 py-1.5 bg-surface-muted border border-border-strong rounded-control text-small text-text focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:border-primary transition-shadow" />
+              <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" aria-hidden="true" />
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Filtrer…"
+                className={`${fieldControlClass} pl-8`}
+              />
             </div>
           </div>
-
-          {/* Options list */}
-          <div className="max-h-44 overflow-y-auto">
-            {filtered.length > 0 ? filtered.map((opt) => <button key={opt} type="button" onClick={() => handleSelect(opt)} className={`w-full text-left px-3 py-2 text-small transition-colors ${value === opt ? 'bg-primary-50 text-primary font-medium' : 'text-text hover:bg-surface-muted'}`}>
-                  {opt}
-                </button>) : <div className="px-3 py-4 text-center text-small text-text-muted">
-                Aucun résultat
-              </div>}
-          </div>
-        </div>}
-    </div>;
+          {filtered.length === 0 ? (
+            <p className="px-3 py-2 text-small text-text-muted">Aucun résultat</p>
+          ) : (
+            filtered.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => handleSelect(opt)}
+                className={`flex w-full items-center gap-2 h-control px-3 text-small text-text hover:bg-surface-muted text-left ${FOCUS} focus-visible:ring-inset`}
+              >
+                {opt}
+              </button>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
 }

@@ -66,7 +66,7 @@ export function HorizontalBarList({ rows, max, ranked = false, tone = 'series1',
                 type="button"
                 title={r.title}
                 onClick={() => onRowClick(r.key)}
-                className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-2 py-2.5 text-left rounded-control hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-2 py-2.5 text-left rounded-control hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
               >
                 {content}
               </button>

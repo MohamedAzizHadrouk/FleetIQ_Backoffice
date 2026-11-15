@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EQ-T-11 (T-11) – Liste des équipements « propriétaire et connexion » (carte FleetIQ 07, maquette Equipements-v3).
  * - Tout le parc du périmètre : Tunav (clients directs) en premier, puis MyCom, FleetPro Sfax, NavSud ; le stock à la fin.
  * - Colonnes : propriétaire (client / revendeur), type · IMEI, SIM · offre, pack, affectation, dernière communication,
@@ -56,7 +56,7 @@ type Props = {
 
 const PAGE = 25;
 const ctrl =
-  'h-9 px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+  'h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
 
 const ETAT_LABELS: Record<EtatKey, string> = {
   tous: 'Tous',
@@ -117,7 +117,7 @@ export function EquipmentsUnifiedTable({
     r.state === 'not_connected' ? 'bg-danger-50' : r.state === 'not_installed' ? 'bg-warning-50' : 'hover:bg-primary-50';
 
   return (
-    <div className="bg-surface rounded-card border border-border overflow-hidden shadow-card" data-kpi="EQ-T-11">
+    <div className="bg-surface rounded-card border border-border overflow-hidden" data-kpi="EQ-T-11">
       {/* filtres */}
       <div className="p-4 border-b border-border-subtle bg-surface-muted space-y-3">
         <div className="flex flex-wrap items-end gap-3">
@@ -130,7 +130,7 @@ export function EquipmentsUnifiedTable({
                 placeholder="IMEI, client, revendeur, SIM, ICCID…"
                 value={filters.q}
                 onChange={(e) => onFiltersChange({ q: e.target.value })}
-                className="w-full h-9 pl-9 pr-3 bg-surface border border-border-strong rounded-control focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small"
+                className="w-full h-control pl-9 pr-3 bg-surface border border-border-strong rounded-control focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small"
               />
             </span>
           </label>
@@ -224,7 +224,7 @@ export function EquipmentsUnifiedTable({
             <b>{fmt(rows.length)}</b> / {fmt(totalCount)} équipement(s) · {fmt(visible.length)} affichés
           </span>
           {alertLabel && (
-            <span className="inline-flex items-center gap-1 rounded-pill border border-primary-200 bg-primary-50 px-3 py-0.5 text-mention font-medium text-primary">
+            <span className="inline-flex items-center gap-1 rounded-tag border border-primary-200 bg-primary-50 px-3 py-0.5 text-mention font-medium text-primary">
               À traiter : {alertLabel}
               <button type="button" onClick={onClearAlert} aria-label="Retirer le filtre À traiter" className="rounded-pill hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus">
                 <X size={12} aria-hidden="true" />
@@ -260,7 +260,7 @@ export function EquipmentsUnifiedTable({
                 type="button"
                 aria-pressed={on}
                 onClick={() => onFiltersChange({ etat: on && k !== 'tous' ? 'tous' : k })}
-                className={`text-left rounded-control border px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                className={`text-left rounded-control border px-3 py-2 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                   on ? 'border-primary bg-primary-50' : 'border-border bg-surface hover:bg-surface-muted'
                 }`}
               >
@@ -300,7 +300,7 @@ export function EquipmentsUnifiedTable({
                   onKeyDown={(e) => rowKey(e, r)}
                   tabIndex={canOpen ? 0 : undefined}
                   aria-label={canOpen ? `Ouvrir la fiche de ${eq.serial}` : undefined}
-                  className={`${rowTint(r)} transition-colors ${canOpen ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset' : ''}`}
+                  className={`${rowTint(r)} transition-colors duration-fast ease-standard ${canOpen ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset' : ''}`}
                 >
                   <td className="px-4 py-3">
                     <span className="flex items-center gap-1.5 font-medium text-text">
@@ -368,7 +368,7 @@ export function EquipmentsUnifiedTable({
                           <button
                             type="button"
                             onClick={() => onEdit(eq)}
-                            className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                            className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                             title="Modifier"
                             aria-label={`Modifier ${eq.serial}`}
                           >
@@ -379,7 +379,7 @@ export function EquipmentsUnifiedTable({
                           <button
                             type="button"
                             onClick={() => onOpen(r)}
-                            className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                            className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                             title="Voir détail"
                             aria-label={`Voir le détail de ${eq.serial}`}
                           >
@@ -390,7 +390,7 @@ export function EquipmentsUnifiedTable({
                           <button
                             type="button"
                             onClick={() => onAssign(eq)}
-                            className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                            className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                             title="Affecter"
                             aria-label={`Affecter ${eq.serial}`}
                           >
@@ -401,7 +401,7 @@ export function EquipmentsUnifiedTable({
                           <button
                             type="button"
                             onClick={() => onReturnToStock(eq)}
-                            className="p-1.5 text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                            className="p-1.5 text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                             title="Retour au stock"
                             aria-label={`Retour au stock de ${eq.serial}`}
                           >

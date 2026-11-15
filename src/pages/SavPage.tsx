@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Interventions SAV v3 – carte FleetIQ 10 (maquette SAV-v3 · Documentation-SAV-v3 · analyse § 5.7, § 7-10).
  * - Admin TUNAV et Responsable SAV : vue équipe (SAV-S-01 … S-11, cloche S-10).
  * - Technicien SAV : une seule page utilisable sur téléphone (SAV-T-01 … T-07), sa zone et ses interventions seulement.
@@ -14,6 +14,9 @@ import { InterventionFiche } from '../components/sav/InterventionFiche';
 import { SavBell } from '../components/sav/SavBell';
 import { SavTeamView } from '../components/sav/SavTeamView';
 import { SavTechnicianView } from '../components/sav/SavTechnicianView';
+import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { Button } from '../components/ui/Button';
+import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { useBackofficePermissions, useBackofficeRole } from '../hooks/useBackofficePermissions';
 import { useFleetStore, type FleetEquipment, type Intervention } from '../state/FleetStore';
 import { addDays, parseDate, startOfDay, toIsoDate } from '../state/mock/dates';
@@ -161,74 +164,79 @@ export function SavPage() {
   const exportName = team ? `interventions-sav-${asOfIso}` : `mes-interventions-${asOfIso}`;
 
   const roleLabel = role ? BACKOFFICE_ROLE_LABELS[role] : '';
+  const pageTitle = team ? 'Interventions SAV' : 'Mes interventions';
   const subtitle = team
     ? `${roleLabel} · toute l’équipe SAV (${technicians.length} techniciens) : planifier, suivre et mesurer les interventions. Aucun prix.`
     : `${me?.name ?? 'Technicien'} · zone ${myZone?.name ?? ''} (${myZone?.cities.join(', ') ?? ''}) : vos interventions, sans les autres zones ni les données commerciales.`;
-  const ctrlBtn =
-    'inline-flex items-center gap-2 h-11 md:h-9 px-3 text-button-sm rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+  const dateFr = realToday.toLocaleDateString('fr-FR');
+  const docsBtn = (
+    <Button type="button" variant="neutral" size="compact" disabled title="Documentation des KPI : bientôt (carte FleetIQ 11)">
+      <BookOpen size={16} aria-hidden="true" />
+      Documentation
+      <StatusTagFromLabel label="bientôt" />
+    </Button>
+  );
+  const bell = <SavBell kpi={team ? 'SAV-S-10' : 'SAV-T-07'} items={bellItems} open={bellOpen} onToggle={setBellOpen} onSelect={onBell} />;
 
   return (
-    <div className="space-y-6 pb-8">
-      {/* En-tête : Documentation (bientôt), Excel (CSV), PDF, date du jour, cloche (S-10 / T-07) ; barre « État au » */}
-      <header className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-h3 text-text">{team ? 'Interventions SAV' : 'Mes interventions'}</h1>
-            <button
-              type="button"
-              aria-disabled="true"
-              title="Documentation des KPI : bientôt (carte FleetIQ 11)"
-              onClick={(e) => e.preventDefault()}
-              className="hidden sm:inline-flex items-center gap-1.5 h-9 px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
-            >
-              <BookOpen size={16} aria-hidden="true" />
-              Documentation
-              <span className="rounded-pill bg-border-subtle px-2 py-0.5 text-mention text-text">bientôt</span>
-            </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 md:gap-3">
-            <TableExportButtons
-              size="compact"
-              onExportExcel={() => {
-                const { headers, rows } = exp();
-                exportTableToCsv(headers, rows, exportName);
-              }}
-              onExportPdf={() => {
-                const { headers, rows } = exp();
-                exportTableToPdf(`${team ? 'Interventions SAV' : `Mes interventions – ${me?.name ?? ''}`} – état au ${asOf.toLocaleDateString('fr-FR')}`, headers, rows, exportName);
-              }}
-            />
-            <span className="inline-flex items-center gap-2 h-11 md:h-9 px-3 rounded-control border border-border bg-surface text-small text-text">
-              <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
-              <span className="hidden sm:inline">Aujourd’hui</span> <b className="tabular-nums">{realToday.toLocaleDateString('fr-FR')}</b>
-            </span>
-            <SavBell kpi={team ? 'SAV-S-10' : 'SAV-T-07'} items={bellItems} open={bellOpen} onToggle={setBellOpen} onSelect={onBell} />
-          </div>
-        </div>
-        <p className="text-small text-text-muted">{subtitle}</p>
-
-        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 shadow-card">
-          <label className="inline-flex items-center gap-2 text-small text-text">
+    <PageShell
+      topBar={<TopBar title={pageTitle} titleExtra={docsBtn} date={dateFr} bell={bell} />}
+      pageHeader={
+        <PageHeader
+          mobileTitle={pageTitle}
+          context={subtitle}
+          actions={
+            <>
+              <span className="hidden sm:inline-flex">{docsBtn}</span>
+              <TableExportButtons
+                size="compact"
+                onExportExcel={() => {
+                  const { headers, rows } = exp();
+                  exportTableToCsv(headers, rows, exportName);
+                }}
+                onExportPdf={() => {
+                  const { headers, rows } = exp();
+                  exportTableToPdf(
+                    `${team ? 'Interventions SAV' : `Mes interventions – ${me?.name ?? ''}`} – état au ${asOf.toLocaleDateString('fr-FR')}`,
+                    headers,
+                    rows,
+                    exportName
+                  );
+                }}
+              />
+              <div className="md:hidden">{bell}</div>
+            </>
+          }
+        />
+      }
+      toolbar={
+        <PageToolbar
+          note={
+            <>
+              État au <b className="text-text">{asOf.toLocaleDateString('fr-FR')}</b>
+              {isToday ? ' (aujourd’hui)' : ''} · tournée du jour, retards et notifications calculés à cette date
+            </>
+          }
+        >
+          <label className="inline-flex items-center gap-2 text-label text-text">
             <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
-            <span className="font-medium">État au</span>
+            État au
             <input
               type="date"
+              lang="fr"
               value={asOfIso}
               min={toIsoDate(addDays(realToday, -60))}
               max={toIsoDate(addDays(realToday, 30))}
               onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
-              className="h-11 md:h-9 px-2 border border-border-strong rounded-control text-body md:text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="h-control max-md:h-control-touch px-2 border border-border-strong rounded-control text-small max-md:text-body bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
             />
           </label>
-          <button type="button" onClick={() => setAsOfIso(toIsoDate(realToday))} className={ctrlBtn}>
+          <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
             Aujourd’hui
-          </button>
-        </div>
-        <p className="text-mention text-text-muted">
-          État au <b className="text-text">{asOf.toLocaleDateString('fr-FR')}</b>
-          {isToday ? ' (aujourd’hui)' : ''} · tournée du jour, retards et notifications calculés à cette date
-        </p>
-      </header>
+          </Button>
+        </PageToolbar>
+      }
+    >
 
       {notice && (
         <div role="status" className="flex items-start justify-between gap-3 rounded-card border border-success-200 bg-success-50 px-4 py-3 text-small text-success-700">
@@ -301,6 +309,6 @@ export function SavPage() {
           />
         )}
       </Modal>
-    </div>
+    </PageShell>
   );
 }

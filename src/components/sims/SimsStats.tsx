@@ -201,7 +201,7 @@ export function SimsStats({ data, period, ctx, cons, networks, onStatus, onOffer
                   setReseller(e.target.value);
                   setSelMonth(null);
                 }}
-                className="h-9 px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                className="h-control px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
               >
                 <option value="">Tous les revendeurs</option>
                 {lineNetworks.map((n) => (

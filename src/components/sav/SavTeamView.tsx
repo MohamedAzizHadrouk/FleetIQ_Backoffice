@@ -154,7 +154,7 @@ export function SavTeamView(p: Props) {
                 type="button"
                 onClick={() => goList({ tech: l.tech.id })}
                 aria-pressed={filters.tech === l.tech.id}
-                className={`w-full grid gap-2 md:grid-cols-[14rem_1fr_auto] md:items-center rounded-control border px-3 py-2.5 text-left transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${filters.tech === l.tech.id ? 'border-primary bg-primary-50' : 'border-border'}`}
+                className={`w-full grid gap-2 md:grid-cols-[14rem_1fr_auto] md:items-center rounded-control border px-3 py-2.5 text-left transition-colors duration-fast ease-standard hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${filters.tech === l.tech.id ? 'border-primary bg-primary-50' : 'border-border'}`}
               >
                 <span>
                   <span className="block text-small font-medium text-text">{l.tech.name}</span>
@@ -216,7 +216,7 @@ export function SavTeamView(p: Props) {
                 const d = draftOf(iv);
                 const eq = p.eqBySerial.get(iv.serial);
                 return (
-                  <tr key={iv.id} className="hover:bg-primary-50 transition-colors">
+                  <tr key={iv.id} className="hover:bg-primary-50 transition-colors duration-fast ease-standard">
                     <td className="px-4 py-3 align-top">
                       <button type="button" onClick={() => p.onOpen(iv)} className="font-mono text-primary hover:underline focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control">
                         {iv.id}
@@ -225,7 +225,7 @@ export function SavTeamView(p: Props) {
                         <TypeCell iv={iv} />
                       </span>
                       {isHighPriority(iv) && (
-                        <span className="mt-1 inline-flex items-center gap-1 rounded-pill border border-danger-200 bg-danger-50 px-2 py-0.5 text-mention font-medium text-danger-700">
+                        <span className="mt-1 inline-flex items-center gap-1 rounded-tag border border-danger-200 bg-danger-50 px-2 py-0.5 text-mention font-medium text-danger-700">
                           <TriangleAlert size={12} aria-hidden="true" /> priorité haute
                         </span>
                       )}
@@ -340,7 +340,7 @@ export function SavTeamView(p: Props) {
                     tabIndex={0}
                     onClick={() => p.onOpen(iv)}
                     onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), p.onOpen(iv))}
-                    className={`cursor-pointer hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset ${iv.status === 'Terminée' ? 'text-text-muted' : ''}`}
+                    className={`cursor-pointer hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset ${iv.status === 'Terminée' ? 'text-text-muted' : ''}`}
                   >
                     <td className="px-4 py-3 font-mono whitespace-nowrap">{iv.id}</td>
                     <td className="px-4 py-3">

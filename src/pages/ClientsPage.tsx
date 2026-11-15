@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Plus,
   Search,
@@ -293,7 +293,7 @@ function InstallPlateSelect({
               setIsOpen(false);
               setQuery('');
             }}
-            className={`w-full text-left px-3 py-2 text-small transition-colors flex items-center justify-between ${value === plate ? 'bg-primary-50 text-primary font-medium' : 'text-text hover:bg-surface-muted'}`}>
+            className={`w-full text-left px-3 py-2 text-small transition-colors duration-fast ease-standard flex items-center justify-between ${value === plate ? 'bg-primary-50 text-primary font-medium' : 'text-text hover:bg-surface-muted'}`}>
             
                 <span className="flex items-center gap-2">
                   <Car size={14} className="text-text-muted" />
@@ -312,7 +312,7 @@ function InstallPlateSelect({
               setIsOpen(false);
               setQuery('');
             }}
-            className="w-full text-left px-3 py-2 text-small text-success-700 hover:bg-success-50 transition-colors flex items-center gap-2 border-t border-border-subtle">
+            className="w-full text-left px-3 py-2 text-small text-success-700 hover:bg-success-50 transition-colors duration-fast ease-standard flex items-center gap-2 border-t border-border-subtle">
             
                 <Plus size={14} className="text-success" />
                 Ajouter "<strong>{query.trim()}</strong>"
@@ -1182,7 +1182,7 @@ export function ClientsPage() {
   const exportFilteredPdf = () => exportClientsToPdf(filteredClients, equipmentStats);
 
   const ctrlBtn =
-    'inline-flex items-center gap-2 h-9 px-3 text-button-sm rounded-control border transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+    'inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control border transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   const ficheInfo = fiche ? kpis.infos.get(fiche.id) ?? null : null;
   const thCls = 'p-4 font-medium';
 
@@ -1191,7 +1191,7 @@ export function ClientsPage() {
       {/* En-tête v3 : titre, exports, ajout, date du jour, cloche (à droite) ; État au · Comparer */}
       <header className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <h1 className="text-h3 font-semibold text-text">Gestion Clients</h1>
+          <h1 className="text-title font-semibold text-text">Gestion Clients</h1>
           <div className="flex items-center gap-3 flex-wrap">
             <TableExportButtons
               onExportExcel={exportFilteredExcel}
@@ -1201,13 +1201,13 @@ export function ClientsPage() {
             {permissions?.clients.canAddEdit && (
               <button
                 onClick={() => openAddEditModal()}
-                className="bg-primary hover:bg-primary-hover text-text-inverse px-4 py-2 rounded-card text-small font-medium flex items-center gap-2 transition-colors shadow-card"
+                className="bg-primary hover:bg-primary-hover text-text-inverse px-4 py-2 rounded-card text-small font-medium flex items-center gap-2 transition-colors duration-fast ease-standard"
               >
                 <Plus size={16} />
                 Ajouter un client
               </button>
             )}
-            <span className="inline-flex items-center gap-2 h-9 px-3 rounded-control border border-border bg-surface text-small text-text">
+            <span className="inline-flex items-center gap-2 h-control px-3 rounded-control border border-border bg-surface text-small text-text">
               <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
               Aujourd’hui <b className="tabular-nums">{realToday.toLocaleDateString('fr-FR')}</b>
             </span>
@@ -1251,7 +1251,7 @@ export function ClientsPage() {
             </button>
           </div>
         )}
-        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 shadow-card">
+        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3">
           <label className="inline-flex items-center gap-2 text-small text-text">
             <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
             <span className="font-medium">État au</span>
@@ -1260,7 +1260,7 @@ export function ClientsPage() {
               value={asOfIso}
               max={toIsoDate(realToday)}
               onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
-              className="h-9 px-2 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="h-control px-2 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             />
           </label>
           <button type="button" onClick={() => setAsOfIso(toIsoDate(realToday))} className={`${ctrlBtn} border-border bg-surface text-text hover:bg-surface-muted`}>
@@ -1282,7 +1282,7 @@ export function ClientsPage() {
                 value={compareMode}
                 onChange={(e) => setCompareMode(e.target.value as CompareMode)}
                 aria-label="Date de comparaison"
-                className="h-9 px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
               >
                 <option value="m30">Il y a 30 jours</option>
                 <option value="y1">Même date l’an dernier</option>
@@ -1295,7 +1295,7 @@ export function ClientsPage() {
                   value={compareCustom}
                   max={asOfIso}
                   onChange={(e) => setCompareCustom(e.target.value)}
-                  className="h-9 px-2 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                  className="h-control px-2 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                 />
               )}
             </>
@@ -1337,7 +1337,7 @@ export function ClientsPage() {
       />
 
       {/* CLI-T-01 – Filtres et tableau des clients */}
-      <div ref={tableRef} className="bg-surface rounded-card border border-border overflow-hidden shadow-card scroll-mt-4">
+      <div ref={tableRef} className="bg-surface rounded-card border border-border overflow-hidden scroll-mt-4">
         <ClientsFilterBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -1400,7 +1400,7 @@ export function ClientsPage() {
                 const dte = info?.daysToExpiry ?? null;
                 return (
                   <React.Fragment key={client.id}>
-                    <tr className="hover:bg-primary-50 transition-colors">
+                    <tr className="hover:bg-primary-50 transition-colors duration-fast ease-standard">
                       <td className="p-4 font-medium text-text">
                         {permissions?.clients.canViewDetails ? (
                           <button type="button" onClick={() => openFiche(client.id)} className="text-left font-medium text-text hover:text-primary hover:underline">
@@ -1424,7 +1424,7 @@ export function ClientsPage() {
                             {info.packs.map((p) => (
                               <span
                                 key={p.packId}
-                                className="inline-flex w-fit items-center gap-1 px-2 py-0.5 rounded-pill border border-primary-200 bg-primary-100 text-primary text-mention font-medium whitespace-nowrap"
+                                className="inline-flex w-fit items-center gap-1 px-2 py-0.5 rounded-tag border border-primary-200 bg-primary-100 text-primary text-mention font-medium whitespace-nowrap"
                               >
                                 {p.name}
                                 {client.type !== 'Revendeur' && <span className="text-text-muted font-normal">{p.equipments} éq.</span>}
@@ -1510,7 +1510,7 @@ export function ClientsPage() {
                           {permissions?.clients.canAddEdit && (
                             <button
                               onClick={() => openAddEditModal(enrichClientForModal(client, clientProfiles))}
-                              className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors"
+                              className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
                               title="Modifier"
                             >
                               <Edit2 size={16} />
@@ -1519,7 +1519,7 @@ export function ClientsPage() {
                           {permissions?.clients.canViewDetails && (
                             <button
                               onClick={() => openFiche(client.id)}
-                              className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors"
+                              className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
                               title="Voir détails"
                             >
                               <Eye size={16} />
@@ -1528,7 +1528,7 @@ export function ClientsPage() {
                           {permissions?.clients.canViewEquipments && (
                             <button
                               onClick={() => openClientEquipmentsModal(client)}
-                              className="p-1.5 text-text-muted hover:text-success-700 hover:bg-success-50 rounded-control transition-colors"
+                              className="p-1.5 text-text-muted hover:text-success-700 hover:bg-success-50 rounded-control transition-colors duration-fast ease-standard"
                               title="Équipements affectés"
                             >
                               <Cpu size={16} />
@@ -1537,7 +1537,7 @@ export function ClientsPage() {
                           {permissions?.clients.canManagePayment && (
                             <button
                               onClick={() => openPaymentModal(enrichClientForModal(client, clientProfiles))}
-                              className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors"
+                              className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors duration-fast ease-standard"
                               title="Valider le paiement"
                             >
                               <CreditCard size={16} />
@@ -1600,7 +1600,7 @@ export function ClientsPage() {
             <select
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
-              className="h-9 px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="h-control px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             >
               {PAGE_SIZES.map((n) => (
                 <option key={n} value={n}>
@@ -1620,7 +1620,7 @@ export function ClientsPage() {
               aria-label="Page précédente"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="h-9 w-9 inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50"
+              className="h-control w-9 inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50"
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
@@ -1632,7 +1632,7 @@ export function ClientsPage() {
               aria-label="Page suivante"
               disabled={page >= pageCount}
               onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
-              className="h-9 w-9 inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50"
+              className="h-control w-9 inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50"
             >
               <ChevronRight size={16} aria-hidden="true" />
             </button>
@@ -1690,7 +1690,7 @@ export function ClientsPage() {
                     className="flex flex-col items-center gap-2">
                     
                     <div
-                      className={`w-8 h-8 rounded-pill flex items-center justify-center text-small font-medium transition-colors ${isCompleted ? 'bg-primary text-text-inverse' : isCurrent ? 'bg-primary text-text-inverse ring-4 ring-primary-200' : 'bg-surface border-2 border-border text-text-muted'}`}>
+                      className={`w-8 h-8 rounded-pill flex items-center justify-center text-small font-medium transition-colors duration-fast ease-standard ${isCompleted ? 'bg-primary text-text-inverse' : isCurrent ? 'bg-primary text-text-inverse ring-4 ring-primary-200' : 'bg-surface border-2 border-border text-text-muted'}`}>
                       
                       {isCompleted ? <Check size={16} /> : step.id}
                     </div>
@@ -2047,7 +2047,7 @@ export function ClientsPage() {
           <div className="flex flex-wrap items-center justify-between gap-3 pt-6 mt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsAddEditModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text hover:text-text transition-colors">
+              className="px-4 py-2 text-small font-medium text-text hover:text-text transition-colors duration-fast ease-standard">
               
               Annuler
             </button>
@@ -2055,7 +2055,7 @@ export function ClientsPage() {
               {currentStep > 1 &&
               <button
                 onClick={prevStep}
-                className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors flex items-center gap-1">
+                className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard flex items-center gap-1">
                 
                   <ChevronLeft size={16} />
                   Précédent
@@ -2064,7 +2064,7 @@ export function ClientsPage() {
               {currentStepIdx < visibleSteps.length - 1 ?
               <button
                 onClick={nextStep}
-                className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card flex items-center gap-1">
+                className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard flex items-center gap-1">
                 
                   Suivant
                   <ChevronRight size={16} />
@@ -2072,7 +2072,7 @@ export function ClientsPage() {
 
               <button
                 onClick={saveClientForm}
-                className="px-4 py-2 text-small font-medium text-text-inverse bg-success rounded-card hover:bg-success-hover transition-colors shadow-card flex items-center gap-1">
+                className="px-4 py-2 text-small font-medium text-text-inverse bg-success rounded-card hover:bg-success-hover transition-colors duration-fast ease-standard flex items-center gap-1">
                 
                   <Check size={16} />
                   Enregistrer
@@ -2147,7 +2147,7 @@ export function ClientsPage() {
                               <button
                                 type="button"
                                 onClick={() => openClientAssignedEquipmentDetails(eq)}
-                                className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors"
+                                className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
                                 title="Voir détail"
                               >
                                 <Eye size={16} />
@@ -2157,7 +2157,7 @@ export function ClientsPage() {
                               <button
                                 type="button"
                                 onClick={() => openClientEquipmentEditSim(eq)}
-                                className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors"
+                                className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
                                 title="Modifier la puce"
                               >
                                 <Smartphone size={16} />
@@ -2168,7 +2168,7 @@ export function ClientsPage() {
                                 <button
                                   type="button"
                                   onClick={() => uninstallClientEquipment(eq)}
-                                  className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors"
+                                  className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors duration-fast ease-standard"
                                   title="Désinstaller"
                                 >
                                   <XCircle size={16} />
@@ -2179,7 +2179,7 @@ export function ClientsPage() {
                                 <button
                                   type="button"
                                   onClick={() => openClientEquipmentInstall(eq)}
-                                  className="p-1.5 text-text-muted hover:text-success-700 hover:bg-success-50 rounded-control transition-colors"
+                                  className="p-1.5 text-text-muted hover:text-success-700 hover:bg-success-50 rounded-control transition-colors duration-fast ease-standard"
                                   title="Installer"
                                 >
                                   <CheckCircle2 size={16} />
@@ -2269,14 +2269,14 @@ export function ClientsPage() {
                 setIsClientInstallOpen(false);
                 setClientEquipmentToInstall(null);
               }}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               type="button"
               onClick={confirmClientEquipmentInstall}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-success rounded-card hover:bg-success-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-success rounded-card hover:bg-success-hover transition-colors duration-fast ease-standard"
             >
               Installer
             </button>
@@ -2326,14 +2326,14 @@ export function ClientsPage() {
                 setClientEquipmentForSimEdit(null);
                 setClientEditSimId(null);
               }}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               type="button"
               onClick={confirmClientEquipmentEditSim}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
             >
               Enregistrer
             </button>
@@ -2415,7 +2415,7 @@ export function ClientsPage() {
           <div className="flex flex-wrap justify-between gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={handleBlockClient}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-danger rounded-card hover:bg-danger-hover transition-colors shadow-card flex items-center gap-2">
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-danger rounded-card hover:bg-danger-hover transition-colors duration-fast ease-standard flex items-center gap-2">
 
               <Ban size={14} />
               Bloquer
@@ -2423,7 +2423,7 @@ export function ClientsPage() {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setIsPaymentModalOpen(false)}
-                className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors">
+                className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard">
 
                 Annuler
               </button>
@@ -2431,7 +2431,7 @@ export function ClientsPage() {
                 onClick={handleValidatePayment}
                 disabled={Boolean(paymentError)}
                 title={paymentError ?? undefined}
-                className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card disabled:opacity-50 disabled:cursor-not-allowed">
+                className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard disabled:opacity-50 disabled:cursor-not-allowed">
 
                 Valider le paiement
               </button>
@@ -2466,14 +2466,14 @@ export function ClientsPage() {
             <button
               type="button"
               onClick={() => setIsAddVehicleModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors">
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard">
               
               Annuler
             </button>
             <button
               type="submit"
               disabled={!newVehiclePlate.trim()}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card disabled:opacity-50 disabled:cursor-not-allowed">
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard disabled:opacity-50 disabled:cursor-not-allowed">
               
               Ajouter
             </button>
@@ -2543,7 +2543,7 @@ export function ClientsPage() {
                 key={eq.serial}
                 type="button"
                 onClick={() => setSelectedEquipmentSerial(eq.serial)}
-                className={`w-full text-left px-3 py-2 text-small flex items-center justify-between hover:bg-surface-muted transition-colors border-b border-border-subtle last:border-b-0 ${selectedEquipmentSerial === eq.serial ? 'bg-primary-50 text-primary' : 'text-text'}`}>
+                className={`w-full text-left px-3 py-2 text-small flex items-center justify-between hover:bg-surface-muted transition-colors duration-fast ease-standard border-b border-border-subtle last:border-b-0 ${selectedEquipmentSerial === eq.serial ? 'bg-primary-50 text-primary' : 'text-text'}`}>
                 
                     <span>
                       <span className="font-medium">{eq.serial}</span>
@@ -2574,13 +2574,13 @@ export function ClientsPage() {
             <button
               type="button"
               onClick={() => setIsAssignEquipmentModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors">
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard">
               
               Annuler
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card">
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard">
               
               Confirmer
             </button>
@@ -2709,14 +2709,14 @@ export function ClientsPage() {
               <button
               type="button"
               onClick={() => setIsEditEquipmentModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors">
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard">
               
                 Annuler
               </button>
               <button
               type="button"
               onClick={() => setIsEditEquipmentModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card">
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard">
               
                 Enregistrer
               </button>
@@ -2760,14 +2760,14 @@ export function ClientsPage() {
             <button
               type="button"
               onClick={() => setIsInstallEquipmentModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors">
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard">
               
               Annuler
             </button>
             <button
               type="submit"
               disabled={!installPlate.trim()}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-success rounded-card hover:bg-success-hover transition-colors shadow-card disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-success rounded-card hover:bg-success-hover transition-colors duration-fast ease-standard disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
               
               <CheckCircle2 size={14} />
               Confirmer l'installation
@@ -3054,7 +3054,7 @@ export function ClientsPage() {
               {equipmentToView.isInstalled && (
               <button
               onClick={() => setShowPositionMap(!showPositionMap)}
-              className={`px-4 py-2 text-small font-medium rounded-control transition-colors flex items-center gap-2 ${showPositionMap ? 'bg-primary-50 text-primary border border-primary-200' : 'bg-surface text-text border border-border hover:bg-surface-muted'}`}>
+              className={`px-4 py-2 text-small font-medium rounded-control transition-colors duration-fast ease-standard flex items-center gap-2 ${showPositionMap ? 'bg-primary-50 text-primary border border-primary-200' : 'bg-surface text-text border border-border hover:bg-surface-muted'}`}>
               
                 <MapPin size={16} />
                 {showPositionMap ? 'Masquer la position' : 'Voir position'}
@@ -3062,7 +3062,7 @@ export function ClientsPage() {
               )}
               <button
               onClick={() => setIsViewEquipmentModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors">
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard">
               
                 Fermer
               </button>
@@ -3282,7 +3282,7 @@ export function ClientsPage() {
           </fieldset>
 
           <div className="pt-2">
-            <button className="px-4 py-2 text-small font-medium text-text bg-border-subtle border border-border-strong rounded-control hover:bg-border transition-colors">
+            <button className="px-4 py-2 text-small font-medium text-text bg-border-subtle border border-border-strong rounded-control hover:bg-border transition-colors duration-fast ease-standard">
               Supprimer la dernière information de cet équipement
             </button>
           </div>
@@ -3290,13 +3290,13 @@ export function ClientsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle mt-4">
             <button
               onClick={() => setIsConfigModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors">
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard">
               
               Annuler
             </button>
             <button
               onClick={() => setIsConfigModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card">
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard">
               
               Enregistrer
             </button>

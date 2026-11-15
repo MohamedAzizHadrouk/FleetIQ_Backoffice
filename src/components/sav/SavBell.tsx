@@ -40,11 +40,11 @@ export function SavBell({ kpi, items, open, onToggle, onSelect }: Props) {
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={`Notifications : ${items.length}, dont ${urgent} urgente(s)`}
-        className="relative inline-flex h-11 w-11 md:h-9 md:w-9 items-center justify-center rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+        className="relative inline-flex h-control w-control max-lg:h-control-touch max-lg:w-control-touch items-center justify-center rounded-control border border-border-strong bg-surface text-text hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
       >
         <Bell size={18} aria-hidden="true" />
         {items.length > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-pill bg-danger text-text-inverse text-mention font-semibold leading-5 text-center tabular-nums">
+          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-pill bg-danger text-text-inverse text-mention font-semibold leading-[18px] text-center">
             {items.length > 99 ? '99+' : items.length}
           </span>
         )}
@@ -53,10 +53,10 @@ export function SavBell({ kpi, items, open, onToggle, onSelect }: Props) {
         <div
           role="dialog"
           aria-label="Notifications"
-          className="absolute right-0 z-40 mt-2 w-[min(26rem,calc(100vw-2rem))] max-h-[70vh] overflow-y-auto rounded-card border border-border bg-surface shadow-raised"
+          className="absolute right-0 z-dropdown mt-1 w-[360px] max-w-[calc(100vw-2rem)] max-h-[70vh] overflow-y-auto rounded-card border border-border-strong bg-surface shadow-raised"
         >
-          <div className="border-b border-border-subtle px-4 py-3">
-            <span className="block text-small font-semibold text-text">Notifications</span>
+          <div className="border-b border-border px-3 py-2">
+            <span className="block text-section text-text">Notifications</span>
             <span className="block text-mention text-text-muted">
               {fmt(urgent)} urgente(s) · {fmt(items.length)} au total
             </span>
@@ -77,7 +77,7 @@ export function SavBell({ kpi, items, open, onToggle, onSelect }: Props) {
                           onToggle(false);
                           onSelect(it);
                         }}
-                        className="flex w-full items-start gap-3 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset"
+                        className="flex w-full items-start gap-3 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset"
                       >
                         <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-pill ${it.urgent ? 'bg-danger' : 'bg-primary'}`} aria-hidden="true" />
                         <span className="flex-1 min-w-0">

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des Packs v3 – graphiques (carte FleetIQ 08). Aucun prix.
  * - PK-P-03 Classement des packs (tri Clients / Équipements, part par propriétaire) ;
  * - PK-P-06 Packs vendus par mois (janv. → déc. de l'année de fin de période, empilé par pack) ;
@@ -32,9 +32,9 @@ import {
 const SERIES: ChartTone[] = ['series1', 'series2', 'series3', 'series4'];
 const packTone = (packs: Pack[], id: number): ChartTone => SERIES[Math.max(0, packs.findIndex((p) => p.id === id)) % 4];
 
-const panelCls = 'bg-surface rounded-card border border-border shadow-card p-5';
+const panelCls = 'bg-surface rounded-card border border-border p-5';
 const tabBtn = (on: boolean) =>
-  `h-8 px-3 text-button-sm rounded-control border transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+  `h-8 px-3 text-button-sm rounded-control border transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
     on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-surface-muted'
   }`;
 
@@ -310,7 +310,7 @@ export function FeaturesSection({ data, packs }: { data: PacksData; packs: Pack[
                             aria-pressed={on}
                             aria-label={`${p.name} · ${m.label} : ${n} sur ${tot}`}
                             onClick={() => setCell(on ? null : { moduleId: m.id, packId: p.id })}
-                            className={`w-full rounded-control px-2 py-1.5 text-right transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                            className={`w-full rounded-control px-2 py-1.5 text-right transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                               on ? 'bg-primary text-text-inverse' : n ? 'bg-primary-50 hover:bg-primary-100 text-text' : 'text-text-muted hover:bg-surface-muted'
                             }`}
                           >
@@ -372,7 +372,7 @@ export function FeaturesSection({ data, packs }: { data: PacksData; packs: Pack[
                       type="button"
                       onClick={() => setFeatId(f.id === featId ? null : f.id)}
                       aria-pressed={f.id === featId}
-                      className={`flex w-full items-center gap-3 px-2 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset ${
+                      className={`flex w-full items-center gap-3 px-2 py-2 text-left transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset ${
                         f.id === featId ? 'bg-primary-50' : 'hover:bg-surface-muted'
                       }`}
                     >
@@ -471,7 +471,7 @@ export function UsageSection({ data, today }: { data: PacksData; today: Date }) 
                     <span className="font-medium text-text">
                       {r.pack.name}
                       {p < MIN_CONN_PCT && (
-                        <span className="ml-2 rounded-pill border border-danger-200 bg-danger-50 px-2 py-0.5 text-mention font-semibold text-danger-700">BAS</span>
+                        <span className="ml-2 rounded-tag border border-danger-200 bg-danger-50 px-2 py-0.5 text-mention font-semibold text-danger-700">BAS</span>
                       )}
                     </span>
                     <span className="tabular-nums text-text">

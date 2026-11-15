@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Calendar, Filter, Search, SlidersHorizontal, X } from 'lucide-react';
 import { PeriodFilter, PeriodKey } from './PeriodFilter';
@@ -38,7 +38,7 @@ type Props = {
 };
 
 const selectCls =
-  'w-full bg-surface border border-border-strong rounded-card px-3 py-2 text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus shadow-card';
+  'w-full h-control max-md:h-control-touch px-2.5 rounded-control bg-surface border border-border-strong text-small text-text hover:border-text transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25';
 
 export function ClientsFilterBar({
   searchQuery,
@@ -87,7 +87,7 @@ export function ClientsFilterBar({
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center gap-1.5 text-mention font-medium text-text hover:text-danger bg-surface border border-border hover:border-danger-200 rounded-control px-2.5 py-1.5 transition-colors">
+            className="inline-flex items-center gap-1.5 text-mention font-medium text-text hover:text-danger bg-surface border border-border hover:border-danger-200 rounded-control px-2.5 py-1.5 transition-colors duration-fast ease-standard">
             <X size={14} />
             Réinitialiser
           </button>
@@ -109,7 +109,7 @@ export function ClientsFilterBar({
               placeholder="Nom, e-mail…"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-surface border border-border-strong rounded-card focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small shadow-card"
+              className="w-full pl-9 pr-4 py-2 bg-surface border border-border-strong rounded-card focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small"
             />
           </div>
         </div>
@@ -120,7 +120,7 @@ export function ClientsFilterBar({
           <select
             value={typeFilter}
             onChange={(e) => onTypeChange(e.target.value)}
-            className="w-full bg-surface border border-border-strong rounded-card px-3 py-2 text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus shadow-card">
+            className="w-full bg-surface border border-border-strong rounded-card px-3 py-2 text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus">
             <option value="">Tous les types</option>
             <option value="Simple">Simple</option>
             <option value="Revendeur">Revendeur</option>
@@ -133,7 +133,7 @@ export function ClientsFilterBar({
           <select
             value={statusFilter}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="w-full bg-surface border border-border-strong rounded-card px-3 py-2 text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus shadow-card">
+            className="w-full bg-surface border border-border-strong rounded-card px-3 py-2 text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus">
             <option value="">Tous les statuts</option>
             <option value="Active">Actif</option>
             <option value="Blocked">Bloqué</option>
@@ -206,7 +206,7 @@ export function ClientsFilterBar({
         </div>
       )}
 
-      <div className="rounded-card border border-border bg-surface p-3 shadow-card">
+      <div className="rounded-card border border-border bg-surface p-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <label className="flex items-center gap-3 cursor-pointer select-none">
             <button
@@ -214,11 +214,11 @@ export function ClientsFilterBar({
               role="switch"
               aria-checked={expiryFilterEnabled}
               onClick={() => onExpiryFilterEnabledChange(!expiryFilterEnabled)}
-              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-pill transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2 ${
+              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-pill transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2 ${
                 expiryFilterEnabled ? 'bg-primary' : 'bg-border'
               }`}>
               <span
-                className={`inline-block h-4 w-4 transform rounded-pill bg-surface shadow-card transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-pill bg-surface transition-transform ${
                   expiryFilterEnabled ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />

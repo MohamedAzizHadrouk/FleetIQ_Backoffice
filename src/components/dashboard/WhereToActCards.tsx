@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DonutRing, HorizontalBarList, Legend } from '../charts';
@@ -7,7 +7,7 @@ import { BACKOFFICE_ROUTE_PATHS, type BackofficeRouteKey } from '../../utils/bac
 import { fmt, pct, volume, type DashboardData, type ParkRow } from '../../utils/dashboardKpis';
 import type { DetailSpec } from './DetailModal';
 
-const cardCls = 'bg-surface rounded-card border border-border shadow-card p-5 space-y-4';
+const cardCls = 'bg-surface rounded-card border border-border p-5 space-y-4';
 const ratio = (r: ParkRow) => pct(r.connected, r.installed);
 
 function readShown(key: string): string[] | null {
@@ -132,7 +132,7 @@ export function ParkHealthRings({
             aria-expanded={pickerOpen}
             aria-controls={`${storageKey}-picker`}
             onClick={() => setPickerOpen((o) => !o)}
-            className="inline-flex items-center gap-1.5 h-9 px-3 text-button-sm rounded-control bg-surface text-primary border border-primary hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+            className="inline-flex items-center gap-1.5 h-control px-3 text-button-sm rounded-control bg-surface text-primary border border-primary hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
           >
             <Plus size={16} aria-hidden="true" />
             {isNetwork ? 'Revendeur' : 'Client'}
@@ -152,7 +152,7 @@ export function ParkHealthRings({
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={`Rechercher un ${what}`}
                   aria-label={`Rechercher un ${what}`}
-                  className="w-full h-9 px-3 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                  className="w-full h-control px-3 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                 />
               )}
               <div className="flex items-center justify-between text-mention text-text-muted">
@@ -204,7 +204,7 @@ export function ParkHealthRings({
               type="button"
               onClick={() => openRow(r)}
               aria-label={`${r.label} : ${ratio(r)} % des installés connectés, ${fmt(r.sold)} vendus`}
-              className={`flex flex-col items-center gap-1 rounded-card border p-3 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+              className={`flex flex-col items-center gap-1 rounded-card border p-3 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                 low ? 'bg-danger-50 border-danger-200 hover:border-danger' : 'bg-surface border-border-subtle hover:border-primary-200 hover:bg-primary-50'
               }`}
             >

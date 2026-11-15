@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des Packs v3 (Packs-v3 · Documentation-Packs-v3) – carte FleetIQ 08.
  * Ordre de la page (doc) : en-tête (cloche à droite, 7 j · 30 j · 3 mois · Personnalisé, « Au » = aujourd'hui,
  * « Comparer » optionnel) + bandeau ≤ 10 j → cartes PK-P-01, P-02, P-03, P-05 → À traiter PK-A-10…A-13 →
@@ -501,9 +501,9 @@ export function SubscriptionsPage() {
   const exportPackClientsPdf = () => exportPackClientsToPdf(filteredClients, packById as unknown as Map<number, StorePack>);
 
   const ctrlBtn =
-    'inline-flex items-center gap-2 h-9 px-3 text-button-sm rounded-control border transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+    'inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control border transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   const dateInput =
-    'h-9 px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+    'h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   const shownClients = listClients.slice(0, visibleCount);
   const filterActive = !!alertFilter || !!packFilter || !!clientSearch.trim();
   const packFilterLabel = packFilter === 'none' ? 'Sans pack' : packById.get(Number(packFilter))?.name;
@@ -514,13 +514,13 @@ export function SubscriptionsPage() {
       <header className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-h3 text-text">Gestion des Packs</h1>
+            <h1 className="text-title text-text">Gestion des Packs</h1>
             <button
               type="button"
               aria-disabled="true"
               title="Documentation des KPI : bientôt (carte FleetIQ 11)"
               onClick={(e) => e.preventDefault()}
-              className="inline-flex items-center gap-1.5 h-9 px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 h-control px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
             >
               <BookOpen size={16} aria-hidden="true" />
               Documentation
@@ -538,13 +538,13 @@ export function SubscriptionsPage() {
               <button
                 type="button"
                 onClick={openCreatePackModal}
-                className="inline-flex items-center gap-2 h-9 px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
               >
                 <Plus size={16} aria-hidden="true" />
                 Nouveau pack
               </button>
             )}
-            <span className="inline-flex items-center gap-2 h-9 px-3 rounded-control border border-border bg-surface text-small text-text">
+            <span className="inline-flex items-center gap-2 h-control px-3 rounded-control border border-border bg-surface text-small text-text">
               <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
               Aujourd’hui <b className="tabular-nums">{today.toLocaleDateString('fr-FR')}</b>
             </span>
@@ -563,7 +563,7 @@ export function SubscriptionsPage() {
         </p>
 
         {/* Barre d'outils : période (≤ 1 an), « Au » = aujourd'hui, comparaison optionnelle */}
-        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 shadow-card">
+        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3">
           <div className="inline-flex flex-wrap items-center gap-0.5 rounded-control border border-border p-0.5" role="group" aria-label="Période">
             <CalendarDays size={16} aria-hidden="true" className="mx-1.5 text-text-muted" />
             {PERIOD_OPTIONS.map((p) => (
@@ -575,7 +575,7 @@ export function SubscriptionsPage() {
                   setPeriodKind(p.key);
                   if (p.key === 'custom' && !customFrom) setCustomFrom(toIsoDate(period.from));
                 }}
-                className={`h-8 px-3 text-button-sm rounded-control transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                className={`h-8 px-3 text-button-sm rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                   periodKind === p.key ? 'bg-primary text-text-inverse' : 'text-text hover:bg-surface-muted'
                 }`}
               >
@@ -671,7 +671,7 @@ export function SubscriptionsPage() {
         <SectionTitle id="pk-catalog" title="Catalogue et affectations" hint="Cliquez sur un pack pour filtrer la liste des clients" />
         <div className="space-y-4">
           {/* Packs */}
-          <div className="bg-surface rounded-card border border-border overflow-hidden shadow-card">
+          <div className="bg-surface rounded-card border border-border overflow-hidden">
             <div className="p-4 border-b border-border-subtle bg-surface-muted flex items-center justify-between gap-3 flex-wrap">
               <div className="relative flex-1 min-w-[180px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
@@ -691,7 +691,7 @@ export function SubscriptionsPage() {
                 const on = packFilter === String(pack.id);
                 const allTypes = pack.supportedEquipments.length >= equipmentTypes.length;
                 return (
-                  <div key={pack.id} className={`p-4 transition-colors xl:border-r last:border-r-0 border-border-subtle ${on ? 'bg-primary-50' : 'hover:bg-surface-muted'}`}>
+                  <div key={pack.id} className={`p-4 transition-colors duration-fast ease-standard xl:border-r last:border-r-0 border-border-subtle ${on ? 'bg-primary-50' : 'hover:bg-surface-muted'}`}>
                     <div className="flex items-start justify-between gap-3">
                       <button
                         type="button"
@@ -721,7 +721,7 @@ export function SubscriptionsPage() {
                         {canCreateEditPacks && (
                           <button
                             onClick={() => openEditPackModal(pack)}
-                            className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors"
+                            className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
                             title="Modifier le pack"
                             aria-label={`Modifier le pack ${pack.name}`}
                           >
@@ -739,7 +739,7 @@ export function SubscriptionsPage() {
           </div>
 
           {/* Clients */}
-          <div className="bg-surface rounded-card border border-border overflow-hidden shadow-card min-w-0">
+          <div className="bg-surface rounded-card border border-border overflow-hidden min-w-0">
             <div className="p-4 border-b border-border-subtle bg-surface-muted flex items-center gap-3 flex-wrap">
               <div className="relative flex-1 min-w-[180px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
@@ -777,7 +777,7 @@ export function SubscriptionsPage() {
                 <b className="tabular-nums">{fmt(listClients.length)}</b> client(s)
               </span>
               {alertFilter && (
-                <span className="inline-flex items-center gap-1 rounded-pill border border-primary-200 bg-primary-50 px-3 py-1 text-mention text-text">
+                <span className="inline-flex items-center gap-1 rounded-tag border border-primary-200 bg-primary-50 px-3 py-1 text-mention text-text">
                   À traiter : {ALERT_META[alertFilter].title(data)} ({ALERT_META[alertFilter].mockup})
                   <button type="button" aria-label="Retirer le filtre À traiter" onClick={() => setAlertFilter(null)} className="rounded-pill p-0.5 hover:bg-primary-100">
                     <X size={12} aria-hidden="true" />
@@ -785,7 +785,7 @@ export function SubscriptionsPage() {
                 </span>
               )}
               {packFilterLabel && (
-                <span className="inline-flex items-center gap-1 rounded-pill border border-primary-200 bg-primary-50 px-3 py-1 text-mention text-text">
+                <span className="inline-flex items-center gap-1 rounded-tag border border-primary-200 bg-primary-50 px-3 py-1 text-mention text-text">
                   Pack : {packFilterLabel}
                   <button type="button" aria-label="Retirer le filtre pack" onClick={() => setPackFilter('')} className="rounded-pill p-0.5 hover:bg-primary-100">
                     <X size={12} aria-hidden="true" />
@@ -826,7 +826,7 @@ export function SubscriptionsPage() {
                     const d = pc.daysToExpiry;
                     return (
                       <React.Fragment key={client.id}>
-                        <tr className="hover:bg-surface-muted transition-colors align-top">
+                        <tr className="hover:bg-surface-muted transition-colors duration-fast ease-standard align-top">
                           <td className="p-3">
                             <div className="font-medium text-text">
                               {client.name}{' '}
@@ -874,10 +874,10 @@ export function SubscriptionsPage() {
                           <td className="p-3 whitespace-nowrap text-text">
                             {frDate(pc.expiry)}
                             {pc.level === 'critique' && d != null && (
-                              <span className="ml-1.5 rounded-pill border border-danger-200 bg-danger-50 px-2 py-0.5 text-mention font-semibold text-danger-700">J-{d}</span>
+                              <span className="ml-1.5 rounded-tag border border-danger-200 bg-danger-50 px-2 py-0.5 text-mention font-semibold text-danger-700">J-{d}</span>
                             )}
                             {pc.level === 'anticiper' && d != null && (
-                              <span className="ml-1.5 rounded-pill border border-warning-200 bg-warning-50 px-2 py-0.5 text-mention font-semibold text-warning-700">J-{d}</span>
+                              <span className="ml-1.5 rounded-tag border border-warning-200 bg-warning-50 px-2 py-0.5 text-mention font-semibold text-warning-700">J-{d}</span>
                             )}
                             {pc.active && d != null && d < 0 && (
                               <span className="ml-1.5 rounded-pill border border-border bg-border-subtle px-2 py-0.5 text-mention font-semibold text-text">expiré</span>
@@ -894,7 +894,7 @@ export function SubscriptionsPage() {
                               {canAssignPacks && (
                                 <button
                                   onClick={() => openAssignModal(client)}
-                                  className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors"
+                                  className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
                                   title="Modifier les packs du client"
                                   aria-label={`Modifier les packs de ${client.name}`}
                                 >
@@ -904,7 +904,7 @@ export function SubscriptionsPage() {
                               {canManagePayment && (
                                 <button
                                   onClick={() => openPaymentModal(client)}
-                                  className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors"
+                                  className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors duration-fast ease-standard"
                                   title="Paiement : valider / bloquer"
                                   aria-label={`Paiement de ${client.name}`}
                                 >
@@ -1033,7 +1033,7 @@ export function SubscriptionsPage() {
                 <button
                   type="button"
                   onClick={() => setPackEquipments(equipmentTypes)}
-                  className="px-3 py-1.5 text-mention font-medium text-text bg-surface-muted border border-border rounded-control hover:bg-surface-muted transition-colors"
+                  className="px-3 py-1.5 text-mention font-medium text-text bg-surface-muted border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
                   title="Ajouter tous les types"
                 >
                   Tout ajouter
@@ -1080,14 +1080,14 @@ export function SubscriptionsPage() {
               <button
                 type="button"
                 onClick={() => setSelectedFeatures(new Set(allLeafFeatureIds))}
-                className="w-full px-3 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+                className="w-full px-3 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
               >
                 Tout sélectionner
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedFeatures(new Set())}
-                className="w-full px-3 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+                className="w-full px-3 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
               >
                 Tout retirer
               </button>
@@ -1109,7 +1109,7 @@ export function SubscriptionsPage() {
               <button
                 type="button"
                 onClick={() => setExpandedNodes(new Set(FEATURE_CATALOG.map((m) => m.id)))}
-                className="px-3 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+                className="px-3 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
                 title="Déplier les modules"
               >
                 Déplier
@@ -1117,7 +1117,7 @@ export function SubscriptionsPage() {
               <button
                 type="button"
                 onClick={() => setExpandedNodes(new Set())}
-                className="px-3 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+                className="px-3 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
                 title="Réduire les modules"
               >
                 Réduire
@@ -1133,14 +1133,14 @@ export function SubscriptionsPage() {
           <div className="flex justify-end gap-3 pt-5 mt-6 border-t border-border-subtle">
           <button
             onClick={() => setIsPackModalOpen(false)}
-            className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors inline-flex items-center gap-2"
+            className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard inline-flex items-center gap-2"
           >
             <XCircle size={16} />
             Annuler
           </button>
           <button
             onClick={upsertPack}
-            className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+            className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
           >
             Enregistrer
           </button>
@@ -1228,7 +1228,7 @@ export function SubscriptionsPage() {
           <div className="flex justify-between pt-4 border-t border-border-subtle">
             <button
               onClick={handleBlockClient}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-danger rounded-card hover:bg-danger-hover transition-colors shadow-card flex items-center gap-2"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-danger rounded-card hover:bg-danger-hover transition-colors duration-fast ease-standard flex items-center gap-2"
             >
               <Ban size={14} />
               Bloquer
@@ -1236,7 +1236,7 @@ export function SubscriptionsPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setIsPaymentModalOpen(false)}
-                className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+                className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
               >
                 Annuler
               </button>
@@ -1244,7 +1244,7 @@ export function SubscriptionsPage() {
                 onClick={handleValidatePayment}
                 disabled={Boolean(paymentError)}
                 title={paymentError ?? undefined}
-                className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Valider le paiement
               </button>
@@ -1276,7 +1276,7 @@ export function SubscriptionsPage() {
                 return (
                   <label
                     key={pack.id}
-                    className={`flex items-start gap-3 p-3 border rounded-control cursor-pointer transition-colors ${
+                    className={`flex items-start gap-3 p-3 border rounded-control cursor-pointer transition-colors duration-fast ease-standard ${
                       isSelected
                         ? `border-primary bg-primary-50 ring-1 ring-primary`
                         : 'border-border hover:bg-surface-muted'
@@ -1314,7 +1314,7 @@ export function SubscriptionsPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedPackIds(new Set())}
-                  className="px-3 py-1.5 text-mention font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+                  className="px-3 py-1.5 text-mention font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
                 >
                   Retirer
                 </button>
@@ -1325,13 +1325,13 @@ export function SubscriptionsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsAssignModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
             <button
               onClick={handleAssignPack}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
             >
               Confirmer
             </button>
@@ -1401,7 +1401,7 @@ export function SubscriptionsPage() {
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <button
               onClick={() => setIsQuotasModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors"
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
             >
               Annuler
             </button>
@@ -1434,7 +1434,7 @@ export function SubscriptionsPage() {
                 );
                 setIsQuotasModalOpen(false);
               }}
-              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors shadow-card"
+              className="px-4 py-2 text-small font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
             >
               Enregistrer
             </button>

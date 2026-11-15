@@ -16,6 +16,9 @@ import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModa
 import { GoalKpiCard, type CompareInfo } from '../components/dashboard/GoalKpiCard';
 import { EquipmentPartsCard, SimPartsCard } from '../components/dashboard/PartsCards';
 import { ParkHealthRings, SimOverCard, TopPacksCard } from '../components/dashboard/WhereToActCards';
+import { PageHeader, PageShell, PageToolbar, SectionRule, TopBar } from '../components/shell/PageShell';
+import { Button } from '../components/ui/Button';
+import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { useFleetStore } from '../state/FleetStore';
 import { addDays, parseDate, startOfDay, toIsoDate } from '../state/mock/dates';
 import { useBackofficePermissions, useBackofficeRole } from '../hooks/useBackofficePermissions';
@@ -42,13 +45,8 @@ const COMPARE_LABELS: Record<CompareMode, string> = { m30: 'il y a 30 j', y1: 'l
 
 function Section({ id, title, hint, children }: { id: string; title: string; hint: string; children: ReactNode }) {
   return (
-    <section aria-labelledby={id} className="space-y-4">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h2 id={id} className="text-h4 text-text">
-          {title}
-        </h2>
-        <span className="text-small text-text-muted">{hint}</span>
-      </div>
+    <section aria-labelledby={id} className="space-y-4 col-span-12">
+      <SectionRule id={id} title={title} hint={hint} />
       {children}
     </section>
   );
@@ -223,85 +221,105 @@ export function DashboardPage() {
   const showD08 = !isReseller && show('D-08');
   const whereIds = isReseller ? ['R-07', 'R-08'] : ['D-09', 'D-10', 'D-11'];
   const anyWhere = whereIds.some(show);
-  const ctrlBtn =
-    'inline-flex items-center gap-2 h-9 px-3 text-button-sm rounded-control border transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+  const dateFr = realToday.toLocaleDateString('fr-FR');
+
+  const docsBtn = (
+    <Button
+      type="button"
+      variant="neutral"
+      size="compact"
+      disabled
+      aria-disabled="true"
+      title="Documentation des KPI : bientôt (carte FleetIQ 11)"
+      onClick={(e) => e.preventDefault()}
+    >
+      <BookOpen size={16} aria-hidden="true" />
+      Documentation
+      <StatusTagFromLabel label="bientôt" />
+    </Button>
+  );
 
   return (
-    <div className="space-y-8 pb-8">
-      {/* TDB-D-12 – En-tête : Documentation, Excel, PDF, date du jour, cloche, État au, Comparer */}
-      <header className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-h3 text-text">Tableau de bord</h1>
-            <button
-              type="button"
-              aria-disabled="true"
-              title="Documentation des KPI : bientôt (carte FleetIQ 11)"
-              onClick={(e) => e.preventDefault()}
-              className="inline-flex items-center gap-1.5 h-9 px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
-            >
-              <BookOpen size={16} aria-hidden="true" />
-              Documentation
-              <span className="rounded-pill bg-border-subtle px-2 py-0.5 text-mention text-text">bientôt</span>
-            </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <TableExportButtons
-              size="compact"
-              onExportExcel={() => exportTableToExcel(exportHeaders, exportRows(), 'Tableau de bord', exportName)}
-              onExportPdf={() =>
-                exportTableToPdf(`Tableau de bord – état au ${asOf.toLocaleDateString('fr-FR')}`, exportHeaders, exportRows(), exportName)
-              }
-            />
-            <span className="inline-flex items-center gap-2 h-9 px-3 rounded-control border border-border bg-surface text-small text-text">
-              <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
-              Aujourd’hui <b className="tabular-nums">{realToday.toLocaleDateString('fr-FR')}</b>
-            </span>
-            {canEditThreshold && (
-              <button
-                type="button"
-                onClick={openThreshold}
-                className={`${ctrlBtn} border-border bg-surface text-text hover:bg-surface-muted`}
-                title="Seuil global « connecté »"
-              >
+    <PageShell
+      topBar={
+        <TopBar
+          title="Tableau de bord"
+          titleExtra={docsBtn}
+          date={dateFr}
+          actions={
+            canEditThreshold ? (
+              <Button type="button" variant="neutral" onClick={openThreshold} title="Seuil global « connecté »">
                 <Settings size={16} aria-hidden="true" className="text-text-muted" />
                 Connecté ≤ {fmt(data.connDays)} j
-              </button>
-            )}
-            <BellMenu items={data.todo} open={bellOpen} onToggle={setBellOpen} onOpenItem={openTodo} canOpen={canOpen} />
-          </div>
-        </div>
-        <p className="text-small text-text-muted">{subtitle}</p>
-
-        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 shadow-card">
-          <label className="inline-flex items-center gap-2 text-small text-text">
+              </Button>
+            ) : undefined
+          }
+          bell={<BellMenu items={data.todo} open={bellOpen} onToggle={setBellOpen} onOpenItem={openTodo} canOpen={canOpen} />}
+        />
+      }
+      pageHeader={
+        <PageHeader
+          mobileTitle="Tableau de bord"
+          context={subtitle}
+          actions={
+            <>
+              {docsBtn}
+              <TableExportButtons
+                size="compact"
+                onExportExcel={() => exportTableToExcel(exportHeaders, exportRows(), 'Tableau de bord', exportName)}
+                onExportPdf={() =>
+                  exportTableToPdf(`Tableau de bord – état au ${asOf.toLocaleDateString('fr-FR')}`, exportHeaders, exportRows(), exportName)
+                }
+              />
+              <div className="md:hidden">
+                <BellMenu items={data.todo} open={bellOpen} onToggle={setBellOpen} onOpenItem={openTodo} canOpen={canOpen} />
+              </div>
+            </>
+          }
+        />
+      }
+      toolbar={
+        <PageToolbar
+          note={
+            <>
+              État au <b className="text-text">{asOf.toLocaleDateString('fr-FR')}</b>
+              {isToday ? ' (aujourd’hui)' : ''} · échéances, alertes et objectifs calculés à cette date
+              {compareOn && (
+                <>
+                  {' '}
+                  · comparé au <b className="text-text">{compareDate.toLocaleDateString('fr-FR')}</b> (instantanés fictifs)
+                </>
+              )}
+              {!isToday && ' · états des équipements et des puces : situation du jour (pas encore d’historique quotidien)'}
+              {` · connecté = données reçues dans les ${fmt(data.connDays)} j`}
+            </>
+          }
+        >
+          <label className="inline-flex items-center gap-2 text-label text-text">
             <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
-            <span className="font-medium">État au</span>
+            État au
             <input
               type="date"
+              lang="fr"
               value={asOfIso}
               max={toIsoDate(realToday)}
               onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
-              className="h-9 px-2 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
             />
           </label>
-          <button
-            type="button"
-            onClick={() => setAsOfIso(toIsoDate(realToday))}
-            className={`${ctrlBtn} border-border bg-surface text-text hover:bg-surface-muted`}
-          >
+          <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
             Aujourd’hui
-          </button>
+          </Button>
           <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-          <button
+          <Button
             type="button"
+            variant={compareOn ? 'primary' : 'secondary'}
             aria-pressed={compareOn}
             onClick={() => setCompareOn((v) => !v)}
-            className={`${ctrlBtn} ${compareOn ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-primary border-primary hover:bg-primary-50'}`}
           >
             <GitCompareArrows size={16} aria-hidden="true" />
             Comparer
-          </button>
+          </Button>
           {compareOn && (
             <label className="inline-flex items-center gap-2 text-small text-text">
               à
@@ -309,7 +327,7 @@ export function DashboardPage() {
                 value={compareMode}
                 onChange={(e) => setCompareMode(e.target.value as CompareMode)}
                 aria-label="Date de comparaison"
-                className="h-9 px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
               >
                 <option value="m30">Il y a 30 jours</option>
                 <option value="y1">Même date l’an dernier</option>
@@ -319,17 +337,16 @@ export function DashboardPage() {
           {!isReseller && (
             <>
               <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-              <div className="inline-flex flex-wrap items-center gap-2" role="radiogroup" aria-label="Vue équipe">
-                <span className="text-small font-medium text-text">Vue équipe</span>
-                {TEAM_VIEWS.map((t) => (
+              <div className="inline-flex rounded-control border border-border-strong overflow-hidden" role="radiogroup" aria-label="Vue équipe">
+                {TEAM_VIEWS.map((t, i) => (
                   <button
                     key={t}
                     type="button"
                     role="radio"
                     aria-checked={team === t}
                     onClick={() => setTeam(t)}
-                    className={`rounded-pill border px-3 py-1 text-mention font-medium transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                      team === t ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-primary-50'
+                    className={`h-[34px] px-3 text-button-sm ${i > 0 ? 'border-l border-border' : ''} ${
+                      team === t ? 'bg-primary text-text-inverse' : 'bg-surface text-text hover:bg-surface-muted'
                     }`}
                   >
                     {t}
@@ -338,20 +355,9 @@ export function DashboardPage() {
               </div>
             </>
           )}
-        </div>
-        <p className="text-mention text-text-muted">
-          État au <b className="text-text">{asOf.toLocaleDateString('fr-FR')}</b>
-          {isToday ? ' (aujourd’hui)' : ''} · échéances, alertes et objectifs calculés à cette date
-          {compareOn && (
-            <>
-              {' '}
-              · comparé au <b className="text-text">{compareDate.toLocaleDateString('fr-FR')}</b> (instantanés fictifs)
-            </>
-          )}
-          {!isToday && ' · états des équipements et des puces : situation du jour (pas encore d’historique quotidien)'}
-          {` · connecté = données reçues dans les ${fmt(data.connDays)} j`}
-        </p>
-      </header>
+        </PageToolbar>
+      }
+    >
 
       {visibleKpis.length > 0 && (
         <Section id="tdb-essentiel" title="L’essentiel" hint="Un chiffre par sujet, comparé à son objectif · cliquez pour le détail">
@@ -418,28 +424,20 @@ export function DashboardPage() {
               step={1}
               value={thresholdDraft}
               onChange={(e) => setThresholdDraft(e.target.value)}
-              className="w-full h-11 px-3 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="w-full h-control px-2.5 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
             />
             <p className="mt-1 text-mention text-text-muted">Entre 1 et 30 jours · 7 jours par défaut.</p>
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
-            <button
-              type="button"
-              onClick={() => setThresholdOpen(false)}
-              className="inline-flex items-center h-11 px-5 text-button rounded-control bg-surface text-primary border border-primary hover:bg-primary-50 transition-colors"
-            >
+            <Button type="button" variant="secondary" onClick={() => setThresholdOpen(false)}>
               Annuler
-            </button>
-            <button
-              type="button"
-              onClick={saveThreshold}
-              className="inline-flex items-center h-11 px-5 text-button rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors"
-            >
+            </Button>
+            <Button type="button" variant="primary" onClick={saveThreshold}>
               Enregistrer
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>
-    </div>
+    </PageShell>
   );
 }

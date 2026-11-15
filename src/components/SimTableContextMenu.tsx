@@ -102,7 +102,7 @@ export function SimTableContextMenu({
           type="button"
           role="menuitem"
           onClick={() => run(onEdit)}
-          className="w-full flex items-center gap-2 px-3 py-2 text-left text-text hover:bg-surface-muted transition-colors"
+          className="w-full flex items-center gap-2 px-3 py-2 text-left text-text hover:bg-surface-muted transition-colors duration-fast ease-standard"
         >
           <Edit2 size={15} className="text-text-muted" />
           Modifier la puce
@@ -112,7 +112,7 @@ export function SimTableContextMenu({
             type="button"
             role="menuitem"
             onClick={() => run(onAssign)}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left text-text hover:bg-success-50 hover:text-success-700 transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2 text-left text-text hover:bg-success-50 hover:text-success-700 transition-colors duration-fast ease-standard"
           >
             <ArrowLeftRight size={15} className="text-success" />
             Affecter à un client
@@ -123,7 +123,7 @@ export function SimTableContextMenu({
             type="button"
             role="menuitem"
             onClick={() => run(onUnassign)}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left text-text hover:bg-warning-50 hover:text-warning-700 transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2 text-left text-text hover:bg-warning-50 hover:text-warning-700 transition-colors duration-fast ease-standard"
           >
             <Unlink size={15} className="text-warning" />
             Retirer du client
@@ -140,7 +140,7 @@ export function SimTableContextMenu({
               type="button"
               role="menuitem"
               onClick={() => run(onToggleSelection)}
-              className="w-full flex items-center gap-2 px-3 py-2 text-left text-text hover:bg-primary-50 transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 text-left text-text hover:bg-primary-50 transition-colors duration-fast ease-standard"
             >
               {isRowSelected ? (
                 <Square size={15} className="text-primary" />
@@ -157,7 +157,7 @@ export function SimTableContextMenu({
                 type="button"
                 role="menuitem"
                 onClick={() => run(onBulkAssign)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left text-primary hover:bg-primary-50 font-medium transition-colors"
+                className="w-full flex items-center gap-2 px-3 py-2 text-left text-primary hover:bg-primary-50 font-medium transition-colors duration-fast ease-standard"
               >
                 <Users size={15} className="text-primary" />
                 Affecter en groupe ({bulkAssignCount} puce{bulkAssignCount > 1 ? 's' : ''})
@@ -173,7 +173,7 @@ export function SimTableContextMenu({
               type="button"
               role="menuitem"
               onClick={() => run(onDelete)}
-              className="w-full flex items-center gap-2 px-3 py-2 text-left text-danger-700 hover:bg-danger-50 transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 text-left text-danger-700 hover:bg-danger-50 transition-colors duration-fast ease-standard"
             >
               <Trash2 size={15} />
               Supprimer la puce

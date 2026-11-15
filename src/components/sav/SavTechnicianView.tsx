@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Interventions SAV – vue Technicien SAV, une seule page utilisable sur téléphone (carte FleetIQ 10).
  * Ordre de la doc : SAV-T-01…T-04 → en retard → ma tournée du jour (T-05) → prochains jours → à vérifier dans ma zone.
  * Le technicien ne voit que sa zone et ses interventions : ni les autres techniciens, ni les revendeurs, ni les contrats.
@@ -29,8 +29,8 @@ function Visit({ iv, asOfIso, eq, onOpen, dayLabel }: { iv: Intervention; asOfIs
       <button
         type="button"
         onClick={() => onOpen(iv)}
-        className={`w-full flex gap-3 rounded-card border px-3 py-3 text-left transition-colors hover:bg-primary-50 ${FOCUS} ${
-          st === 'En retard' ? 'border-danger-200 border-l-4 border-l-danger bg-surface' : done ? 'border-border bg-surface-muted' : 'border-border bg-surface'
+        className={`w-full flex gap-3 rounded-card border px-3 py-3 text-left transition-colors duration-fast ease-standard hover:bg-primary-50 ${FOCUS} ${
+          st === 'En retard' ? 'border-danger-200 shadow-rail-danger bg-surface' : done ? 'border-border bg-surface-muted' : 'border-border bg-surface'
         }`}
       >
         <span className="w-[4.75rem] shrink-0">

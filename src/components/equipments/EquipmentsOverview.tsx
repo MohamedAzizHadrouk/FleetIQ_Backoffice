@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des Équipements v3 – cartes du haut et « À traiter » (carte FleetIQ 07).
  * EQ-E-01 Parc (E-01) puis les 4 états en % : EQ-E-05 Installés · EQ-E-04 Non installés · EQ-E-02 Connectés ·
  * EQ-E-03 Non connectés ; détail au clic (fenêtre partagée avec le Tableau de bord).
@@ -60,11 +60,11 @@ function TopCard({ kpiId, title, icon: Icon, children, onOpen }: { kpiId: string
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className="text-left w-full bg-surface rounded-card border border-border shadow-card p-5 hover:shadow-raised hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className="text-left w-full bg-surface rounded-card border border-border p-5 hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
     >
       <div className="flex items-start justify-between mb-3 gap-2">
         <h3 className="text-overline uppercase text-text-muted">{title}</h3>
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary-100 text-primary">
+        <span className="flex h-control w-9 shrink-0 items-center justify-center rounded-control bg-primary-100 text-primary">
           <Icon size={18} aria-hidden="true" />
         </span>
       </div>
@@ -331,7 +331,7 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
                 aria-pressed={on}
                 data-kpi={a.id}
                 onClick={() => onAlertClick(a.key)}
-                className={`text-left rounded-card border p-4 shadow-card transition-shadow hover:shadow-raised focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                className={`text-left rounded-card border p-4 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                   on ? 'border-primary bg-primary-50' : 'border-border bg-surface'
                 }`}
               >

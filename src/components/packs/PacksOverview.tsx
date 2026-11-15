@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des Packs v3 – bandeau critique, cartes du haut et « À traiter » (carte FleetIQ 08).
  * Cartes : PK-P-01 Clients avec pack · PK-P-02 Packs affectés sur la période · PK-P-03 Pack le plus choisi ·
  * PK-P-05 Équipements connectés. À traiter : PK-A-10 (≤ 10 j), PK-A-11 (11–60 j), PK-A-12 (équipement hors pack),
@@ -26,7 +26,7 @@ export function CriticalBanner({ data, onShow, onClose }: { data: PacksData; onS
       <button
         type="button"
         onClick={onShow}
-        className="inline-flex items-center gap-1 h-8 px-3 text-button-sm rounded-control border border-danger-200 bg-surface text-danger-700 hover:border-danger transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+        className="inline-flex items-center gap-1 h-8 px-3 text-button-sm rounded-control border border-danger-200 bg-surface text-danger-700 hover:border-danger transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
       >
         Voir les clients <ArrowRight size={14} aria-hidden="true" />
       </button>
@@ -48,11 +48,11 @@ function TopCard({ kpiId, title, icon: Icon, children, onOpen }: { kpiId: string
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className="text-left w-full bg-surface rounded-card border border-border shadow-card p-5 hover:shadow-raised hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className="text-left w-full bg-surface rounded-card border border-border p-5 hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
     >
       <div className="flex items-start justify-between mb-3 gap-2">
         <h3 className="text-overline uppercase text-text-muted">{title}</h3>
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary-100 text-primary">
+        <span className="flex h-control w-9 shrink-0 items-center justify-center rounded-control bg-primary-100 text-primary">
           <Icon size={18} aria-hidden="true" />
         </span>
       </div>
@@ -237,7 +237,7 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
         </TopCard>
         {/* PK-P-03 Pack le plus choisi */}
         <TopCard kpiId="PK-P-03" title="Pack le plus choisi" icon={Trophy} onOpen={openP03}>
-          <div className="text-h3 text-text">{lead?.pack.name ?? '—'}</div>
+          <div className="text-title text-text">{lead?.pack.name ?? '—'}</div>
           <p className="text-small text-text-muted mt-1">
             {lead ? `${fmt(lead.clients.length)} clients · ${fmt(lead.equipments.length)} équipements` : 'Aucun pack affecté'}
           </p>
@@ -290,7 +290,7 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
                 aria-pressed={on}
                 data-kpi={`PK-${meta.mockup}`}
                 onClick={() => onOpenDetail(alertDetail(k, data))}
-                className={`text-left rounded-card border p-4 shadow-card transition-shadow hover:shadow-raised focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                className={`text-left rounded-card border p-4 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                   on ? 'border-primary bg-primary-50' : 'border-border bg-surface'
                 }`}
               >

@@ -41,10 +41,11 @@ const TABS: Array<{ key: FicheTab; label: string }> = [
   { key: 'informations', label: 'Informations' }
 ];
 
+/* T-001 : « À surveiller » = Attention (warning), pas info/primary */
 const PRIORITY_CLS: Record<Priority, string> = {
   Critique: 'bg-danger-50 text-danger-700 border-danger-200',
   'À risque': 'bg-warning-50 text-warning-700 border-warning-200',
-  'À surveiller': 'bg-primary-50 text-primary border-primary-200',
+  'À surveiller': 'bg-warning-50 text-warning-700 border-warning-200',
   OK: 'bg-success-50 text-success-700 border-success-200'
 };
 
@@ -163,7 +164,7 @@ export function ClientFiche({
                   {c.type === 'Revendeur' ? 'Revendeur' : 'Client final'}
                 </span>
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-pill border font-medium ${
+                  className={`inline-flex items-center gap-1.5 h-6 px-2 rounded-tag border text-mention font-medium ${
                     info.active ? 'bg-success-50 text-success-700 border-success-200' : 'bg-danger-50 text-danger-700 border-danger-200'
                   }`}
                 >
@@ -178,7 +179,7 @@ export function ClientFiche({
           </div>
           <div className="text-right">
             <div className="text-overline uppercase text-text-muted">Priorité</div>
-            <span className={`inline-flex items-center mt-1 px-2.5 py-1 rounded-pill border text-mention font-semibold ${PRIORITY_CLS[info.priority]}`}>
+            <span className={`inline-flex items-center mt-1 h-6 px-2 rounded-tag border text-mention font-semibold ${PRIORITY_CLS[info.priority]}`}>
               {info.priority}
             </span>
           </div>
@@ -192,7 +193,7 @@ export function ClientFiche({
               role="tab"
               aria-selected={tab === t.key}
               onClick={() => setTab(t.key)}
-              className={`px-3 h-9 -mb-px border-b-2 text-small font-medium transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+              className={`px-3 h-control -mb-px border-b-2 text-small font-medium transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
                 tab === t.key ? 'border-primary text-primary' : 'border-transparent text-text-muted hover:text-text'
               }`}
             >
@@ -264,7 +265,7 @@ export function ClientFiche({
                   <ul className="space-y-2">
                     {info.reasons.map((r, i) => (
                       <li key={i} className="rounded-control border border-border-subtle p-2.5 text-small">
-                        <span className={`mr-2 inline-flex px-2 py-0.5 rounded-pill border text-mention font-medium ${PRIORITY_CLS[r.level]}`}>{r.level}</span>
+                        <span className={`mr-2 inline-flex h-6 px-2 rounded-tag border text-mention font-medium ${PRIORITY_CLS[r.level]}`}>{r.level}</span>
                         <span className="font-medium text-text">{r.reason}</span>
                         <div className="text-mention text-text-muted mt-1">→ {r.action}</div>
                       </li>
@@ -343,9 +344,9 @@ export function ClientFiche({
                         <td className="px-4 py-2.5 tabular-nums">{last ? `${frDate(last)} · ${Math.floor(days ?? 0)} j` : '—'}</td>
                         <td className="px-4 py-2.5">
                           <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-pill border text-mention font-medium whitespace-nowrap ${
+                            className={`inline-flex items-center gap-1.5 h-6 px-2 rounded-tag border text-mention font-medium whitespace-nowrap ${
                               !last
-                                ? 'bg-border-subtle text-text border-border'
+                                ? 'bg-neutral-50 text-neutral-700 border-neutral-200'
                                 : ok
                                   ? 'bg-success-50 text-success-700 border-success-200'
                                   : 'bg-danger-50 text-danger-700 border-danger-200'
@@ -508,7 +509,7 @@ export function ClientFiche({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center h-9 px-3 text-button-sm rounded-control bg-surface text-text border border-border hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+            className="inline-flex items-center h-control px-3 text-button-sm rounded-control bg-surface text-text border border-border hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
           >
             Fermer
           </button>
