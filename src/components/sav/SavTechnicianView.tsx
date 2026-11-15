@@ -49,7 +49,7 @@ function Visit({ iv, asOfIso, eq, onOpen, dayLabel }: { iv: Intervention; asOfIs
             <MapPin size={12} aria-hidden="true" /> {iv.address ?? iv.city}
           </span>
           <span className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="rounded-pill border border-border px-2 py-0.5 text-mention text-text">{iv.type}</span>
+            <span className="rounded-tag border border-border px-2 py-0.5 text-mention text-text">{iv.type}</span>
             <StatusBadge status={st} />
           </span>
         </span>
@@ -60,10 +60,18 @@ function Visit({ iv, asOfIso, eq, onOpen, dayLabel }: { iv: Intervention; asOfIs
 
 function Block({ id, title, sub, empty, children, kpi }: { id: string; title: string; sub: string; empty: string; children: ReactNode[]; kpi?: string }) {
   return (
-    <section id={id} data-kpi={kpi} className="scroll-mt-20">
-      <h2 className="text-h4 text-text">{title}</h2>
-      <p className="text-small text-text-muted mb-3">{sub}</p>
-      {children.length ? <ul className="space-y-2">{children}</ul> : <p className="rounded-card border border-border bg-surface px-4 py-6 text-center text-small text-text-muted">{empty}</p>}
+    <section id={id} data-kpi={kpi} className="col-span-12 scroll-mt-topbar bg-surface rounded-card border border-border min-w-0">
+      <div className="px-4 py-2.5 border-b border-border">
+        <h2 className="text-section text-text">{title}</h2>
+        <p className="text-mention text-text-muted mt-0.5">{sub}</p>
+      </div>
+      <div className="p-4">
+        {children.length ? (
+          <ul className="space-y-2">{children}</ul>
+        ) : (
+          <p className="py-8 text-center text-small text-text-muted">{empty}</p>
+        )}
+      </div>
     </section>
   );
 }
@@ -71,8 +79,8 @@ function Block({ id, title, sub, empty, children, kpi }: { id: string; title: st
 export function SavTechnicianView({ kpis, lists, zoneToPlan, asOfIso, isToday, eqBySerial, onOpen, scrollTo }: Props) {
   const dayWord = isToday ? 'aujourd’hui' : frDay(asOfIso);
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
+    <div className="grid grid-cols-12 gap-4 gap-y-6">
+      <div className="col-span-12 grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
         <KpiButton kpi="SAV-T-01" icon={CalendarClock} title={isToday ? 'Aujourd’hui' : 'Ce jour'} value={fmt(kpis.today)} unit="interv." sub={`${fmt(kpis.todayLeft)} restante(s) · ${fmt(kpis.todayDone)} terminée(s)`} onClick={() => scrollTo('sav-tournee')} />
         <KpiButton kpi="SAV-T-02" icon={Clock} tone={kpis.late ? 'danger' : 'default'} title="En retard" value={fmt(kpis.late)} unit="à faire" sub="date dépassée, à faire en priorité" onClick={() => scrollTo('sav-retard')} />
         <KpiButton kpi="SAV-T-03" icon={CircleCheck} title="Terminées · 7 j" value={fmt(kpis.closed7)} unit="interv." sub={`${fmt(kpis.first7Pct)} % résolues à la 1re visite`} onClick={() => scrollTo('sav-tournee')} />

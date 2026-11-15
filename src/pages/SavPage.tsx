@@ -239,7 +239,7 @@ export function SavPage() {
     >
 
       {notice && (
-        <div role="status" className="flex items-start justify-between gap-3 rounded-card border border-success-200 bg-success-50 px-4 py-3 text-small text-success-700">
+        <div role="status" className="flex items-start justify-between gap-3 rounded-control border border-success-200 bg-success-50 px-4 py-3 text-small text-success-700">
           <span>{notice}</span>
           <button type="button" onClick={() => setNotice(null)} className="font-medium underline focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control">
             OK

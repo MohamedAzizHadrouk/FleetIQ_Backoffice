@@ -91,9 +91,9 @@ export function SavTeamView(p: Props) {
   const maxLoad = Math.max(1, ...loads.map((l) => l.open));
 
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-12 gap-4 gap-y-6">
       {/* SAV-S-01 … S-05 */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4">
+      <div className="col-span-12 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4">
         <KpiButton kpi="SAV-S-01" icon={ClipboardList} title="Interventions ouvertes" value={fmt(kpis.open)} sub={`${fmt(kpis.toPlan)} à planifier · ${fmt(kpis.running)} en cours`} onClick={() => goList({ status: 'Ouvertes' })} />
         <KpiButton kpi="SAV-S-02" icon={CalendarPlus} title="À planifier" value={fmt(kpis.toPlan)} unit="sans technicien" sub="à affecter à un technicien" onClick={() => p.scrollTo('sav-a-planifier')} />
         <KpiButton kpi="SAV-S-03" icon={Clock} tone={kpis.late ? 'danger' : 'default'} title="En retard" value={fmt(kpis.late)} sub="date de rendez-vous dépassée" onClick={() => goList({ status: 'En retard' })} />
@@ -118,7 +118,7 @@ export function SavTeamView(p: Props) {
       </div>
 
       {/* SAV-S-06 : rappel des alertes Équipements (mêmes règles que EQ-E-03, EQ-A-23, EQ-A-22) */}
-      <div data-kpi="SAV-S-06" className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-card border border-warning-200 bg-warning-50 px-4 py-3 text-small text-text">
+      <div data-kpi="SAV-S-06" className="col-span-12 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-card border border-warning-200 bg-warning-50 px-4 py-3 text-small text-text shadow-rail-warning">
         <span className="inline-flex items-center gap-2 font-medium">
           <TriangleAlert size={16} aria-hidden="true" className="text-warning-700" />
           Alertes Équipements à traiter :
@@ -160,9 +160,9 @@ export function SavTeamView(p: Props) {
                   <span className="block text-small font-medium text-text">{l.tech.name}</span>
                   <span className="block text-mention text-text-muted">zone {l.zone?.name}</span>
                 </span>
-                <span className="flex h-5 w-full overflow-hidden rounded-pill bg-border-subtle" aria-hidden="true">
-                  <span className="h-full bg-primary" style={{ width: `${((l.open - l.late) / maxLoad) * 100}%` }} />
-                  <span className="h-full bg-danger" style={{ width: `${(l.late / maxLoad) * 100}%` }} />
+                <span className="flex h-2 w-full overflow-hidden rounded-[1px] bg-neutral-50" aria-hidden="true">
+                  <span className="h-full rounded-[1px] bg-primary" style={{ width: `${((l.open - l.late) / maxLoad) * 100}%` }} />
+                  <span className="h-full rounded-[1px] bg-danger" style={{ width: `${(l.late / maxLoad) * 100}%` }} />
                 </span>
                 <span className="text-mention text-text-muted md:text-right tabular-nums">
                   <b className="text-text">{fmt(l.open)}</b> ouvertes · <b className={l.late ? 'text-danger-700' : 'text-text'}>{fmt(l.late)}</b> en retard ·{' '}

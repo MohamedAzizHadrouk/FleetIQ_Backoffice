@@ -49,11 +49,11 @@ const lastDay = (y: number, m: number) => new Date(y, m + 1, 0).getDate();
 
 function Card({ id, title, hint, chart, detail }: { id: string; title: string; hint: string; chart: ReactNode; detail: ReactNode }) {
   return (
-    <div data-kpi={id} className="bg-surface rounded-card border border-border p-5">
-      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-5">
+    <div data-kpi={id} className="bg-surface rounded-card border border-border p-4">
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-4">
         <div className="min-w-0 space-y-2">
           <div>
-            <h3 className="text-small font-semibold text-text">{title}</h3>
+            <h3 className="text-section text-text">{title}</h3>
             <p className="text-mention text-text-muted">
               {hint} · {id.replace('EQ-', '')}
             </p>

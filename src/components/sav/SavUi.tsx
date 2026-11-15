@@ -109,7 +109,7 @@ export function Section({
   kpi?: string;
 }) {
   return (
-    <section id={id} data-kpi={kpi} className="bg-surface rounded-card border border-border min-w-0 scroll-mt-topbar">
+    <section id={id} data-kpi={kpi} className="col-span-12 bg-surface rounded-card border border-border min-w-0 scroll-mt-topbar">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 border-b border-border">
         <div className="min-w-0">
           <h2 className="text-section text-text">{title}</h2>
