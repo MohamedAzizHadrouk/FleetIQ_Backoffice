@@ -11,8 +11,9 @@ interface LayoutProps {
 }
 
 /**
- * Mise en page : barre latérale fixe à partir de 768 px (md) ; en dessous, barre du haut + tiroir
- * (tokens.md §5 « la barre latérale fixe doit devenir un tiroir sous md » – carte FleetIQ 10, page SAV sur téléphone).
+ * Coque Industrial Tech – zone A (sidebar / rail / tiroir) + colonne contenu (B–E via PageShell).
+ * < 768 px : barre anthracite (logo + menu) = topbar mobile (DL § 9.2).
+ * 768–1023 : rail 56 px · ≥ 1024 : sidebar 240 px.
  */
 export function Layout({ role, onLogout }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -27,7 +28,8 @@ export function Layout({ role, onLogout }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-surface-muted md:flex">
-      <div className="md:hidden sticky top-0 z-30 flex h-14 items-center justify-between gap-3 bg-surface-inverse px-4">
+      {/* Zone B mobile (< 768) */}
+      <div className="md:hidden sticky top-0 z-topbar flex h-topbar-mobile items-center justify-between gap-3 bg-surface-inverse px-4">
         <img src="/brand/tunav-logo-horizontal-sans-signature-blanc-ui.svg" alt="TUNAV" className="h-9 w-auto" />
         <button
           type="button"
@@ -35,20 +37,30 @@ export function Layout({ role, onLogout }: LayoutProps) {
           aria-label="Ouvrir le menu"
           aria-expanded={drawerOpen}
           aria-controls="menu-principal"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-control text-text-inverse hover:bg-surface-inverse-hover focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus-inverse"
+          className="inline-flex h-control-touch w-control-touch items-center justify-center rounded-control text-text-inverse hover:bg-surface-inverse-hover focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus-inverse"
         >
-          <Menu size={22} aria-hidden="true" />
+          <Menu size={20} aria-hidden="true" />
         </button>
       </div>
+
       {drawerOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-tunav-anthracite/60" aria-hidden="true" onClick={() => setDrawerOpen(false)} />
+        <div
+          className="md:hidden fixed inset-0 z-overlay bg-tunav-anthracite/60"
+          aria-hidden="true"
+          onClick={() => setDrawerOpen(false)}
+        />
       )}
+
       <Sidebar role={role} onLogout={onLogout} mobileOpen={drawerOpen} onCloseMobile={() => setDrawerOpen(false)} />
-      <main className="flex-1 min-w-0 md:ml-60 p-4 md:p-6">
+
+      {/* Padding de page : les pages migrées (PageShell) gèrent B–E en pleine largeur ;
+          les autres gardent la marge via .fiq-page (appliquée dans chaque page ou ici en secours). */}
+      <main className="flex-1 min-w-0 md:ml-rail lg:ml-sidebar [&:has(.fiq-shell)]:p-0 p-4 md:p-6">
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}>
+          transition={{ duration: 0.16, ease: [0.2, 0, 0, 1] }}
+        >
           <Outlet />
         </motion.div>
       </main>

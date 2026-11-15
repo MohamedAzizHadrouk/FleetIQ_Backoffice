@@ -1,13 +1,15 @@
-import { ArrowRight, CircleAlert, CircleCheck, Info, TriangleAlert } from 'lucide-react';
+import { ArrowRight, Info } from 'lucide-react';
 import { GoalMeter } from '../charts';
 import { fmt, goalStatus, pct, type GoalKpi } from '../../utils/dashboardKpis';
+import { StatusTagFromLabel } from '../ui/StatusTag';
+import { FOCUS, TRANSITION } from '../ui/focus';
 
 export type CompareInfo = { label: string; previous: number | null } | null;
 
-const STATUS = {
-  ok: { text: 'Objectif atteint', cls: 'bg-success-50 text-success-700 border-success-200', Icon: CircleCheck, tone: 'success' as const },
-  warn: { text: 'À surveiller', cls: 'bg-warning-50 text-warning-700 border-warning-200', Icon: TriangleAlert, tone: 'warning' as const },
-  bad: { text: 'Sous l’objectif', cls: 'bg-danger-50 text-danger-700 border-danger-200', Icon: CircleAlert, tone: 'danger' as const }
+const STATUS_META = {
+  ok: { text: 'Objectif atteint', tone: 'success' as const, rail: '' },
+  warn: { text: 'À surveiller', tone: 'warning' as const, rail: 'shadow-rail-warning' },
+  bad: { text: 'Sous l’objectif', tone: 'danger' as const, rail: 'shadow-rail-danger' }
 };
 
 type Props = {
@@ -16,10 +18,10 @@ type Props = {
   onOpen: () => void;
 };
 
-/** Carte « L'essentiel » : taux face à son objectif (proposition), contexte, écart « Comparer », page source. */
+/** Carte KPI « L'essentiel » – Industrial Tech (DL § 9.6). */
 export function GoalKpiCard({ kpi, compare, onOpen }: Props) {
   const rate = kpi.of != null ? pct(kpi.value, kpi.of) : null;
-  const st = rate != null && kpi.goal != null ? STATUS[goalStatus(rate, kpi.goal)] : null;
+  const st = rate != null && kpi.goal != null ? STATUS_META[goalStatus(rate, kpi.goal)] : null;
   const tooltip = `${kpi.definition}\nFormule : ${kpi.formula}`;
   let delta: { txt: string; cls: string; prevTxt: string } | null = null;
   if (compare && compare.previous != null) {
@@ -34,7 +36,7 @@ export function GoalKpiCard({ kpi, compare, onOpen }: Props) {
     <button
       type="button"
       onClick={onOpen}
-      className="group flex h-full w-full flex-col gap-2 bg-surface rounded-card border border-border shadow-card p-5 text-left transition-shadow hover:shadow-raised hover:border-primary-200 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className={`group flex h-full w-full flex-col gap-1.5 bg-surface rounded-card border border-border p-4 pt-3 text-left hover:border-border-strong ${TRANSITION} ${FOCUS} ${st?.rail ?? ''}`}
     >
       <span className="flex items-start justify-between gap-2">
         <span className="text-overline uppercase text-text-muted">{kpi.label}</span>
@@ -43,8 +45,8 @@ export function GoalKpiCard({ kpi, compare, onOpen }: Props) {
         </span>
       </span>
       <span className="flex items-baseline gap-2">
-        <span className="text-kpi text-text tabular-nums">{rate != null ? `${rate} %` : fmt(kpi.value)}</span>
-        <span className="text-small text-text-muted tabular-nums">
+        <span className="text-kpi text-text">{rate != null ? `${rate} %` : fmt(kpi.value)}</span>
+        <span className="text-small text-text-muted">
           {rate != null ? `${fmt(kpi.value)} / ${fmt(kpi.of ?? 0)}` : kpi.unit}
         </span>
       </span>
@@ -59,20 +61,15 @@ export function GoalKpiCard({ kpi, compare, onOpen }: Props) {
       <span className="flex flex-wrap items-center gap-2">
         {st ? (
           <>
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-pill border text-mention font-medium whitespace-nowrap ${st.cls}`}>
-              <st.Icon size={14} aria-hidden="true" />
-              {st.text}
-            </span>
+            <StatusTagFromLabel label={st.text} />
             <span className="text-mention text-text-muted">objectif {kpi.goal} % (proposition)</span>
           </>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-pill border text-mention font-medium whitespace-nowrap bg-info-50 text-info-700 border-info-200">
-            <Info size={14} aria-hidden="true" />
-            {kpi.info}
-          </span>
+          <StatusTagFromLabel label="Information" />
         )}
+        {!st && kpi.info && <span className="text-mention text-text-muted">{kpi.info}</span>}
       </span>
-      <span className="text-small text-text-muted">{kpi.context}</span>
+      <span className="text-small text-text">{kpi.context}</span>
       {compare && (
         <span className="text-mention text-text-muted">
           {delta ? (
@@ -84,7 +81,7 @@ export function GoalKpiCard({ kpi, compare, onOpen }: Props) {
           )}
         </span>
       )}
-      <span className="mt-auto inline-flex items-center gap-1 pt-1 text-mention font-medium text-primary">
+      <span className="mt-auto inline-flex items-center gap-1 pt-2 border-t border-border-subtle text-mention font-medium text-primary">
         {kpi.routeLabel}
         <ArrowRight size={14} aria-hidden="true" />
       </span>

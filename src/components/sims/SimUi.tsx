@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des puces v3 – petits éléments partagés (carte FleetIQ 09) : pastille de statut, pagination 5 / 10 / 25 / 50,
  * liste simple de puces cliquable (fenêtres de détail), titre de bloc.
  */
@@ -6,23 +6,16 @@ import type { ReactNode } from 'react';
 import { PAGE_SIZES, usePager } from './useSimPager';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DETAIL_LABEL, fmt, formatTnd, plusVolume, volume, type SimRow } from '../../utils/simsKpis';
+import { StatusTagFromLabel } from '../ui/StatusTag';
 
 
 export function SimStatusBadge({ row }: { row: SimRow }) {
   if (row.installed) {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-control border border-success-200 bg-success-50 px-2 py-0.5 text-mention font-medium text-success-700">
-        <span className="h-1.5 w-1.5 rounded-pill bg-success" aria-hidden="true" />
-        Installée
-      </span>
-    );
+    return <StatusTagFromLabel label="Installée" />;
   }
   return (
     <span className="inline-flex flex-col items-start">
-      <span className="inline-flex items-center gap-1.5 rounded-control border border-warning-200 bg-warning-50 px-2 py-0.5 text-mention font-medium text-warning-700">
-        <span className="h-1.5 w-1.5 rounded-pill bg-warning" aria-hidden="true" />
-        Non installée
-      </span>
+      <StatusTagFromLabel label="Non installée" />
       <span className="mt-0.5 text-mention text-text-muted">{DETAIL_LABEL[row.detail]}</span>
     </span>
   );
@@ -40,15 +33,15 @@ export function Pager({
   const from = page * size + 1;
   const to = Math.min(total, from + size - 1);
   const btn =
-    'inline-flex h-8 w-8 items-center justify-center rounded-control border border-border bg-surface text-text hover:bg-surface-muted disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
+    'inline-flex h-control-sm w-control-sm items-center justify-center rounded-control border border-border-strong bg-surface text-text hover:bg-surface-muted disabled:bg-surface disabled:text-text-muted disabled:border-border disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
   return (
-    <nav aria-label={label} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-border-subtle text-small text-text">
+    <nav aria-label={label} className="flex flex-wrap items-center justify-between gap-3 px-4 py-2 border-t border-border-subtle text-mention text-text-muted">
       <label className="inline-flex items-center gap-2">
         <select
           value={size}
           onChange={(e) => pager.setSize(Number(e.target.value))}
           aria-label="Lignes par page"
-          className="h-8 px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+          className="h-control-sm px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
         >
           {PAGE_SIZES.map((n) => (
             <option key={n} value={n}>
@@ -169,7 +162,7 @@ export function SimMiniList({
 
 export function Block({ id, kpiId, title, sub, right, children }: { id: string; kpiId: string; title: string; sub?: ReactNode; right?: ReactNode; children: ReactNode }) {
   return (
-    <div data-kpi={kpiId} className="space-y-4 rounded-card border border-border bg-surface p-5 shadow-card">
+    <div data-kpi={kpiId} className="space-y-4 rounded-card border border-border bg-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 id={id} className="text-h4 text-text">

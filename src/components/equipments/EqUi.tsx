@@ -1,41 +1,36 @@
 /**
- * Petits éléments partagés de la page Équipements v3 (carte FleetIQ 07) : pastille d'état, ligne d'équipement
- * cliquable (ouvre la fiche EQ-F-11) et panneau « détail à droite » des 4 états.
- * Couleurs : jetons d'état TUNAV ; la couleur ne porte jamais l'information seule (icône + texte).
+ * Éléments partagés Équipements – Industrial Tech (T-002).
+ * « Non installé » = Attention + Clock (T-001).
  */
 import type { ReactNode } from 'react';
 import { ArrowRight, Boxes, Clock, Wifi, WifiOff } from 'lucide-react';
 import { fmt, pct, rowFollowUp, STATE_LABELS, type EqRow, type EqState, type StateCounts } from '../../utils/equipmentsKpis';
+import { StatusTag, type StatusFamily } from '../ui/StatusTag';
+import { FOCUS, TRANSITION } from '../ui/focus';
 
-const BADGE: Record<EqState, { cls: string; Icon: typeof Wifi }> = {
-  connected: { cls: 'bg-success-50 text-success-700 border-success-200', Icon: Wifi },
-  not_connected: { cls: 'bg-danger-50 text-danger-700 border-danger-200', Icon: WifiOff },
-  not_installed: { cls: 'bg-warning-50 text-warning-700 border-warning-200', Icon: Clock },
-  stock: { cls: 'bg-border-subtle text-text border-border', Icon: Boxes }
+const BADGE: Record<EqState, { family: StatusFamily; Icon: typeof Wifi }> = {
+  connected: { family: 'success', Icon: Wifi },
+  not_connected: { family: 'danger', Icon: WifiOff },
+  not_installed: { family: 'warning', Icon: Clock },
+  stock: { family: 'neutral', Icon: Boxes }
 };
 
 export function StateBadge({ state, label }: { state: EqState; label?: string }) {
-  const { cls, Icon } = BADGE[state];
-  return (
-    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap px-2 py-0.5 rounded-control border text-mention font-medium ${cls}`}>
-      <Icon size={12} aria-hidden="true" />
-      {label ?? STATE_LABELS[state]}
-    </span>
-  );
+  const { family, Icon } = BADGE[state];
+  return <StatusTag label={label ?? STATE_LABELS[state]} family={family} icon={Icon} />;
 }
 
-/** Ligne d'équipement d'une liste de détail : clic = fiche */
 export function EqListItem({ row, onOpen, showNetwork }: { row: EqRow; onOpen: (r: EqRow) => void; showNetwork?: boolean }) {
   return (
     <li>
       <button
         type="button"
         onClick={() => onOpen(row)}
-        className="flex w-full items-start gap-3 px-2 py-2 text-left rounded-control hover:bg-primary-50 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+        className={`flex w-full items-start gap-3 px-2 py-2 text-left rounded-control hover:bg-surface-muted ${TRANSITION} ${FOCUS}`}
       >
         <span className="flex-1 min-w-0">
           <span className="block truncate text-small font-medium text-text">
-            <span className="font-mono">{row.eq.serial}</span> · {row.type}
+            <span className="text-mention tracking-[0.03em] text-text-muted">{row.eq.serial}</span> · {row.type}
           </span>
           <span className="block truncate text-mention text-text-muted">
             {row.owner}
@@ -51,7 +46,6 @@ export function EqListItem({ row, onOpen, showNetwork }: { row: EqRow; onOpen: (
   );
 }
 
-/** Liste d'équipements limitée (n premiers) + lien « voir dans le tableau » */
 export function EqShortList({
   title,
   rows,
@@ -77,7 +71,7 @@ export function EqShortList({
           <button
             type="button"
             onClick={onShowAll}
-            className="inline-flex items-center gap-1 text-mention font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control"
+            className={`inline-flex items-center gap-1 text-mention font-medium text-primary hover:underline rounded-control ${FOCUS}`}
           >
             Voir dans le tableau <ArrowRight size={12} aria-hidden="true" />
           </button>
@@ -97,7 +91,6 @@ export function EqShortList({
   );
 }
 
-/** Les 4 états en % (installés / non installés sur les vendus ; connectés / non connectés sur les installés) */
 export function StatesLines({ counts }: { counts: StateCounts }) {
   const lines: Array<{ state: EqState; label: string; n: number; of: number; base: string }> = [
     { state: 'connected', label: 'Installés', n: counts.installed, of: counts.sold, base: 'vendus' },
@@ -111,8 +104,8 @@ export function StatesLines({ counts }: { counts: StateCounts }) {
         <div key={l.label} className="rounded-control border border-border-subtle bg-surface-muted px-3 py-2">
           <dt className="text-mention text-text-muted">{l.label}</dt>
           <dd className="flex items-baseline gap-2">
-            <span className="text-h4 text-text tabular-nums">{pct(l.n, l.of)} %</span>
-            <span className="text-mention text-text-muted tabular-nums">
+            <span className="text-section text-text">{pct(l.n, l.of)} %</span>
+            <span className="text-mention text-text-muted">
               {fmt(l.n)} / {fmt(l.of)} {l.base}
             </span>
           </dd>
@@ -122,12 +115,11 @@ export function StatesLines({ counts }: { counts: StateCounts }) {
   );
 }
 
-/** Panneau de détail à droite d'un graphique de « Répartition » */
 export function DetailPanel({ title, sub, children }: { title: string; sub?: string; children: ReactNode }) {
   return (
-    <aside className="rounded-card border border-border-subtle bg-surface p-4 space-y-3 min-w-0" aria-live="polite">
+    <aside className="rounded-card border border-border bg-surface p-4 space-y-3 min-w-0" aria-live="polite">
       <div>
-        <h4 className="text-small font-semibold text-text">{title}</h4>
+        <h4 className="text-section text-text">{title}</h4>
         {sub && <p className="text-mention text-text-muted">{sub}</p>}
       </div>
       {children}
