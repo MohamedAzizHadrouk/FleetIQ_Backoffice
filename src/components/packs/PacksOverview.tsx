@@ -11,7 +11,16 @@ import { DonutRing, Legend, StackedBar } from '../charts';
 import type { DetailSpec } from '../dashboard/DetailModal';
 import { ALERT_META, alertDetail } from './packsAlerts';
 import { SectionTitle } from '../clients/ClientsOverview';
+import { FAMILY_CLS, RAIL_CLS, type StatusFamily } from '../ui/StatusTag';
 import { fmt, frDate, MIN_CONN_PCT, namesWithDays, pct, type PacksData, type PkAlertKey } from '../../utils/packsKpis';
+
+/** Famille d'état Industrial Tech de chaque alerte « À traiter » */
+const ALERT_FAMILY: Record<PkAlertKey, StatusFamily> = {
+  critique: 'danger',
+  anticiper: 'warning',
+  hors_pack: 'info',
+  bloques: 'danger'
+};
 
 /** PK-A-10 – bandeau en haut de la page (expirations ≤ 10 j), fermable */
 export function CriticalBanner({ data, onShow, onClose }: { data: PacksData; onShow: () => void; onClose: () => void }) {
@@ -48,17 +57,16 @@ function TopCard({ kpiId, title, icon: Icon, children, onOpen }: { kpiId: string
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className="text-left w-full bg-surface rounded-card border border-border p-5 hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className="group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 pt-3 hover:border-border-strong transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
     >
-      <div className="flex items-start justify-between mb-3 gap-2">
-        <h3 className="text-overline uppercase text-text-muted">{title}</h3>
-        <span className="flex h-control w-9 shrink-0 items-center justify-center rounded-control bg-primary-100 text-primary">
-          <Icon size={18} aria-hidden="true" />
-        </span>
-      </div>
+      <span className="flex items-start justify-between gap-2">
+        <span className="text-overline uppercase text-text-muted">{title}</span>
+        <Icon size={16} className="shrink-0 text-text-muted" aria-hidden="true" />
+      </span>
       {children}
-      <span className="mt-3 flex items-center justify-end gap-1 text-mention text-primary">
-        Voir le détail <ArrowRight size={12} aria-hidden="true" />
+      <span className="mt-auto inline-flex items-center gap-1 pt-2 border-t border-border-subtle text-mention font-medium text-primary">
+        Voir le détail
+        <ArrowRight size={14} aria-hidden="true" />
       </span>
     </button>
   );
@@ -209,12 +217,12 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
     });
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-12 gap-4 gap-y-8">
+      <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-stretch">
         {/* PK-P-01 Clients avec pack */}
         <TopCard kpiId="PK-P-01" title="Clients avec pack" icon={Users} onOpen={openP01}>
           <div className="flex items-baseline gap-2">
-            <span className="text-kpi text-text tabular-nums">{fmt(p01.withPack)}</span>
+            <span className="text-kpi text-text font-qty">{fmt(p01.withPack)}</span>
             <span className="text-small text-text-muted">sur {fmt(p01.total)}</span>
             <span className="text-small font-semibold text-primary">{pct(p01.withPack, p01.total)} %</span>
           </div>
@@ -224,7 +232,7 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
         </TopCard>
         {/* PK-P-02 Packs affectés sur la période (vs comparaison) */}
         <TopCard kpiId="PK-P-02" title={`Packs vendus (${periodLabel})`} icon={Package} onOpen={openP02}>
-          <div className="text-kpi text-text tabular-nums">{fmt(n02)}</div>
+          <div className="text-kpi text-text font-qty">{fmt(n02)}</div>
           <p className="mt-1">
             {c02 != null ? (
               <>
@@ -245,7 +253,7 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
         {/* PK-P-05 Équipements connectés */}
         <TopCard kpiId="PK-P-05" title="Équipements connectés · par pack" icon={Wifi} onOpen={openP05}>
           <div className="flex items-baseline gap-2">
-            <span className="text-kpi text-text tabular-nums">{p05Rate} %</span>
+            <span className="text-kpi text-text font-qty">{p05Rate} %</span>
             <span className="text-small text-text-muted">
               {fmt(p05.connected)} / {fmt(p05.total)}
             </span>
@@ -265,9 +273,9 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
       </div>
 
       {/* À traiter */}
-      <section aria-labelledby="pk-todo" className="space-y-3">
+      <section aria-labelledby="pk-todo" className="col-span-12 grid grid-cols-12 gap-4">
         <SectionTitle id="pk-todo" title="À traiter" hint="Cliquez sur une carte pour le détail et filtrer la liste des clients" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           {(['critique', 'anticiper', 'hors_pack', 'bloques'] as PkAlertKey[]).map((k) => {
             const meta = ALERT_META[k];
             const list = data.alerts[k];
@@ -290,16 +298,20 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
                 aria-pressed={on}
                 data-kpi={`PK-${meta.mockup}`}
                 onClick={() => onOpenDetail(alertDetail(k, data))}
-                className={`text-left rounded-card border p-4 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                  on ? 'border-primary bg-primary-50' : 'border-border bg-surface'
-                }`}
+                className={`text-left rounded-card border p-4 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                  count > 0 ? RAIL_CLS[ALERT_FAMILY[k]] : ''
+                } ${on ? 'border-primary bg-primary-50' : 'border-border bg-surface hover:border-border-strong'}`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <span className="text-small font-semibold text-text">{meta.title(data)}</span>
-                  <span className={`shrink-0 px-2 py-0.5 rounded-pill border text-mention font-semibold uppercase ${meta.tagCls}`}>{meta.tag}</span>
+                  <span
+                    className={`shrink-0 inline-flex items-center h-6 px-2 rounded-tag border text-mention font-semibold uppercase tracking-[0.06em] whitespace-nowrap ${FAMILY_CLS[ALERT_FAMILY[k]]}`}
+                  >
+                    {meta.tag}
+                  </span>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-kpi text-text tabular-nums">{fmt(count)}</span>
+                  <span className="text-kpi text-text font-qty">{fmt(count)}</span>
                   <span className="text-small text-text-muted">{meta.unit}</span>
                 </div>
                 <p className="text-mention text-text-muted truncate" title={detail}>

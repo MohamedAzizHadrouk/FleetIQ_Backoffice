@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Gestion des puces v3 – quatre cartes (PU-P-01 Total · PU-P-02 Installées · PU-P-03 Non installées ·
  * PU-P-07 Puces en surconsommation) et « Puces installées par offre » avec le prix fixe (PU-P-05). Carte FleetIQ 09.
  * Retirés à la demande (maquette) : cartes « Sans offre (stock) », « Coût des puces » (P-06), « Alertes consommation ».
@@ -24,27 +24,26 @@ function TopCard({
   onOpen: () => void;
 }) {
   const TONE = {
-    primary: 'bg-primary-100 text-primary',
-    success: 'bg-success-50 text-success-700',
-    warning: 'bg-warning-50 text-warning-700',
-    danger: 'bg-danger-50 text-danger-700'
+    primary: 'text-text-muted',
+    success: 'text-success-700',
+    warning: 'text-warning-700',
+    danger: 'text-danger-700'
   } as const;
   return (
     <button
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className="text-left w-full bg-surface rounded-card border border-border p-5 hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className="group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 pt-3 hover:border-border-strong transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
     >
-      <div className="flex items-start justify-between mb-3 gap-2">
-        <h3 className="text-overline uppercase text-text-muted">{title}</h3>
-        <span className={`flex h-control w-9 shrink-0 items-center justify-center rounded-control ${TONE[tone]}`}>
-          <Icon size={18} aria-hidden="true" />
-        </span>
-      </div>
+      <span className="flex items-start justify-between gap-2">
+        <span className="text-overline uppercase text-text-muted">{title}</span>
+        <Icon size={16} className={`shrink-0 ${TONE[tone]}`} aria-hidden="true" />
+      </span>
       {children}
-      <span className="mt-3 flex items-center justify-end gap-1 text-mention text-primary">
-        Voir le détail <ArrowRight size={12} aria-hidden="true" />
+      <span className="mt-auto inline-flex items-center gap-1 pt-2 border-t border-border-subtle text-mention font-medium text-primary">
+        Voir le détail
+        <ArrowRight size={14} aria-hidden="true" />
       </span>
     </button>
   );
@@ -64,24 +63,25 @@ type Props = {
 
 export function SimsTopCards({ data, period, onTotal, onInstalled, onNotInstalled, onOver }: Props) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-12 gap-4">
+      <div className="col-span-12 grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {/* PU-P-01 (P-01) */}
       <TopCard kpiId="PU-P-01" title="Total puces" icon={Smartphone} onOpen={onTotal}>
-        <p className="text-kpi text-text tabular-nums">{fmt(data.total)}</p>
+        <p className="text-kpi text-text font-qty">{fmt(data.total)}</p>
         <p className="text-small text-text-muted">
           Tunav {fmt(data.tunavSims)} · revendeurs {fmt(data.resellerSims)}
         </p>
       </TopCard>
       {/* PU-P-02 (P-02) */}
       <TopCard kpiId="PU-P-02" title="Installées" icon={Wifi} tone="success" onOpen={onInstalled}>
-        <p className="text-kpi text-text tabular-nums">
+        <p className="text-kpi text-text font-qty">
           {fmt(data.installed)} <span className="text-h4 text-success-700">{pct(data.installed, data.total)} %</span>
         </p>
         <p className="text-small text-text-muted">dans un équipement posé chez le client</p>
       </TopCard>
       {/* PU-P-03 (P-03) */}
       <TopCard kpiId="PU-P-03" title="Non installées" icon={Boxes} tone="warning" onOpen={onNotInstalled}>
-        <p className="text-kpi text-text tabular-nums">
+        <p className="text-kpi text-text font-qty">
           {fmt(data.notInstalled)} <span className="text-h4 text-warning-700">{pct(data.notInstalled, data.total)} %</span>
         </p>
         <p className="text-small text-text-muted">
@@ -90,7 +90,7 @@ export function SimsTopCards({ data, period, onTotal, onInstalled, onNotInstalle
       </TopCard>
       {/* PU-P-07 (P-07) – remplace la carte « Alertes consommation » (les alertes restent dans la cloche) */}
       <TopCard kpiId="PU-P-07" title="Puces en surconsommation" icon={Flame} tone="danger" onOpen={onOver}>
-        <p className="text-kpi text-text tabular-nums">
+        <p className="text-kpi text-text font-qty">
           {fmt(data.over.length)} <span className="text-h4 text-text-muted">puce(s)</span>
         </p>
         <p className="text-small text-text-muted">
@@ -98,6 +98,7 @@ export function SimsTopCards({ data, period, onTotal, onInstalled, onNotInstalle
           {period.estimated ? ' (estimé)' : ''}
         </p>
       </TopCard>
+      </div>
     </div>
   );
 }
@@ -122,7 +123,7 @@ export function SimsOffers({ data, showPrices, onOffer, onOfferList }: Props) {
                   onOffer(o);
                 }
               }}
-              className="cursor-pointer bg-surface rounded-card border border-border border-l-4 border-l-primary p-5 flex flex-col gap-3 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="cursor-pointer bg-surface rounded-card border border-border border-l-4 border-l-primary p-4 flex flex-col gap-3 hover:border-border-strong transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
