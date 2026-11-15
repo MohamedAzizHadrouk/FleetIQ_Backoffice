@@ -2,6 +2,7 @@
 import { Legend, StackedBar, TONE_BG, type ChartTone } from '../charts';
 import { fmt, pct, volume, type DashboardData, type ParkRow } from '../../utils/dashboardKpis';
 import { formatMonthFr } from '../../state/mock/dates';
+import { Panel } from '../shell/PageShell';
 import type { DetailSpec } from './DetailModal';
 
 type PartKey = 'total' | 'stock' | 'wait' | 'inst' | 'on' | 'off';
@@ -30,19 +31,19 @@ function TreeLine({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center gap-3 py-2 pr-2 text-left rounded-control hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${indent}`}
+      className={`flex w-full items-center gap-3 py-2 pr-2 text-left rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${indent}`}
     >
       {branch && (
-        <span className="font-mono text-small text-text-muted" aria-hidden="true">
+        <span className="text-small text-text-muted tracking-wide" aria-hidden="true">
           {branch}
         </span>
       )}
-      <span className={`h-2.5 w-2.5 shrink-0 rounded-pill ${tone ? TONE_BG[tone] : 'bg-transparent'}`} aria-hidden="true" />
+      <span className={`h-2.5 w-2.5 shrink-0 rounded-[1px] ${tone ? TONE_BG[tone] : 'bg-transparent'}`} aria-hidden="true" />
       <span className="flex-1 min-w-0">
         <span className={`block text-small text-text ${level === 0 ? 'font-semibold' : 'font-medium'}`}>{label}</span>
         {sub && <span className="block text-mention text-text-muted">{sub}</span>}
       </span>
-      <span className="w-16 text-right text-small font-semibold text-text tabular-nums">{fmt(value)}</span>
+      <span className="w-16 text-right text-small font-semibold text-text font-qty">{fmt(value)}</span>
       <span className="w-32 text-right text-mention text-text-muted">{share}</span>
     </button>
   );
@@ -116,15 +117,13 @@ export function EquipmentPartsCard({
   };
 
   return (
-    <div className="bg-surface rounded-card border border-border p-5 space-y-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-h4 text-text">
-          Équipements : {fmt(total)} {stock ? 'au total' : 'vendus'}
-        </h3>
-        <span className="text-mention text-text-muted">état au {data.asOf.toLocaleDateString('fr-FR')}</span>
-      </div>
-      <div role="group" aria-label={`Filtrer par ${by.toLowerCase()}`} className="flex flex-wrap gap-2">
-        {[data.parkAll, ...rows].map((r) => {
+    <Panel
+      title={`Équipements : ${fmt(total)} ${stock ? 'au total' : 'vendus'}`}
+      hint={`état au ${data.asOf.toLocaleDateString('fr-FR')}`}
+      bodyClassName="p-4 space-y-4"
+    >
+      <div role="group" aria-label={`Filtrer par ${by.toLowerCase()}`} className="inline-flex flex-wrap rounded-control border border-border-strong overflow-hidden">
+        {[data.parkAll, ...rows].map((r, i) => {
           const on = r.key === sel;
           return (
             <button
@@ -132,9 +131,9 @@ export function EquipmentPartsCard({
               type="button"
               aria-pressed={on}
               onClick={() => setSel(r.key)}
-              className={`rounded-pill border px-3 py-1 text-mention font-medium transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-primary-50'
-              }`}
+              className={`h-[34px] px-3 text-button-sm transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                i > 0 ? 'border-l border-border' : ''
+              } ${on ? 'bg-primary text-text-inverse' : 'bg-surface text-text hover:bg-surface-muted'}`}
             >
               {r.label}
             </button>
@@ -175,7 +174,7 @@ export function EquipmentPartsCard({
         <b className="text-danger-700">{fmt(x.notConnected)} n’envoient rien depuis plus de {conn}</b>. {fmt(x.notInstalled)} vendus attendent encore leur
         installation.
       </p>
-    </div>
+    </Panel>
   );
 }
 
@@ -214,8 +213,7 @@ export function SimPartsCard({ data, onOpenDetail }: { data: DashboardData; onOp
     });
   };
   return (
-    <div className="bg-surface rounded-card border border-border p-5 space-y-4">
-      <h3 className="text-h4 text-text">Puces : {fmt(total)} au total</h3>
+    <Panel title={`Puces : ${fmt(total)} au total`} bodyClassName="p-4 space-y-4">
       <StackedBar
         ariaLabel="Puces découpées en parts"
         total={total}
@@ -251,9 +249,9 @@ export function SimPartsCard({ data, onOpenDetail }: { data: DashboardData; onOp
         }
         className="inline-flex items-center gap-2 text-small font-medium text-danger-700 hover:underline underline-offset-2 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control"
       >
-        <span className="h-2 w-2 rounded-pill bg-danger" aria-hidden="true" />
+        <span className="h-2.5 w-2.5 rounded-[1px] bg-danger" aria-hidden="true" />
         {fmt(over)} en surconsommation ({formatMonthFr(data.overMonth)}) →
       </button>
-    </div>
+    </Panel>
   );
 }

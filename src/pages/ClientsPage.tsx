@@ -49,6 +49,9 @@ import { ClientsOverview, type CompareCounts } from '../components/clients/Clien
 import { ClientsActivity } from '../components/clients/ClientsActivity';
 import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModal';
 import { BellMenu } from '../components/dashboard/BellMenu';
+import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { Button } from '../components/ui/Button';
+import { StatusTag, StatusTagFromLabel } from '../components/ui/StatusTag';
 import type { TodoItem } from '../utils/dashboardKpis';
 import { addDays, daysBetween, parseDate, startOfDay, toIsoDate } from '../state/mock/dates';
 import {
@@ -1181,108 +1184,100 @@ export function ClientsPage() {
     exportClientsToExcel(filteredClients, equipmentStats);
   const exportFilteredPdf = () => exportClientsToPdf(filteredClients, equipmentStats);
 
-  const ctrlBtn =
-    'inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control border transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   const ficheInfo = fiche ? kpis.infos.get(fiche.id) ?? null : null;
-  const thCls = 'p-4 font-medium';
+  const thCls = 'h-row-head px-3 text-left text-overline uppercase text-text bg-surface-muted border-b border-border-strong whitespace-nowrap';
+  const dateFr = realToday.toLocaleDateString('fr-FR');
+  const pageSubtitle = isNetwork
+    ? 'État du portefeuille clients à la date choisie : abonnements, connexions et parc.'
+    : `Vue revendeur ${currentUserName} : uniquement vos clients.`;
+  const bell = (
+    <BellMenu
+      items={bellItems}
+      open={bellOpen}
+      onToggle={setBellOpen}
+      onOpenItem={(t) => {
+        setBellOpen(false);
+        toggleAlert(t.id as AlertKey);
+      }}
+      canOpen={() => false}
+    />
+  );
 
   return (
-    <div className="space-y-8 pb-8">
-      {/* En-tête v3 : titre, exports, ajout, date du jour, cloche (à droite) ; État au · Comparer */}
-      <header className="space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <h1 className="text-title font-semibold text-text">Gestion Clients</h1>
-          <div className="flex items-center gap-3 flex-wrap">
-            <TableExportButtons
-              onExportExcel={exportFilteredExcel}
-              onExportPdf={exportFilteredPdf}
-              disabled={filteredClients.length === 0}
-            />
-            {permissions?.clients.canAddEdit && (
-              <button
-                onClick={() => openAddEditModal()}
-                className="bg-primary hover:bg-primary-hover text-text-inverse px-4 py-2 rounded-card text-small font-medium flex items-center gap-2 transition-colors duration-fast ease-standard"
-              >
-                <Plus size={16} />
-                Ajouter un client
-              </button>
-            )}
-            <span className="inline-flex items-center gap-2 h-control px-3 rounded-control border border-border bg-surface text-small text-text">
-              <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
-              Aujourd’hui <b className="tabular-nums">{realToday.toLocaleDateString('fr-FR')}</b>
-            </span>
-            <BellMenu
-              items={bellItems}
-              open={bellOpen}
-              onToggle={setBellOpen}
-              onOpenItem={(t) => {
-                setBellOpen(false);
-                toggleAlert(t.id as AlertKey);
-              }}
-              canOpen={() => false}
-            />
-          </div>
-        </div>
-        <p className="text-small text-text-muted">
-          {isNetwork
-            ? 'État du portefeuille clients à la date choisie : abonnements, connexions et parc.'
-            : `Vue revendeur ${currentUserName} : uniquement vos clients.`}
-        </p>
-        {saveNotice && (
-          <div
-            role="status"
-            className="flex items-start justify-between gap-3 rounded-control border border-success-200 bg-success-50 px-4 py-3 text-small text-success-700"
-          >
-            <span className="flex items-start gap-2">
-              <CheckCircle2 size={16} className="shrink-0 mt-0.5" aria-hidden="true" />
-              {saveNotice}{' '}
-              {permissions?.routes.subscriptions
-                ? 'Les chiffres de Gestion Clients, Packs et du Tableau de bord sont mis à jour'
-                : 'Les chiffres de Gestion Clients et du Tableau de bord sont mis à jour'}{' '}
-              (maquette : jusqu’au rechargement).
-            </span>
-            <button
-              type="button"
-              onClick={() => setSaveNotice(null)}
-              aria-label="Fermer le message"
-              className="shrink-0 rounded-control px-1 text-success-700 hover:bg-surfacefocus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-            >
-              <XCircle size={16} aria-hidden="true" />
-            </button>
-          </div>
-        )}
-        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3">
-          <label className="inline-flex items-center gap-2 text-small text-text">
+    <PageShell
+      topBar={<TopBar title="Gestion Clients" date={dateFr} bell={bell} />}
+      pageHeader={
+        <PageHeader
+          mobileTitle="Gestion Clients"
+          context={pageSubtitle}
+          actions={
+            <>
+              <TableExportButtons
+                size="compact"
+                onExportExcel={exportFilteredExcel}
+                onExportPdf={exportFilteredPdf}
+                disabled={filteredClients.length === 0}
+              />
+              {permissions?.clients.canAddEdit && (
+                <Button type="button" variant="primary" onClick={() => openAddEditModal()}>
+                  <Plus size={16} aria-hidden="true" />
+                  Ajouter un client
+                </Button>
+              )}
+              <div className="md:hidden">{bell}</div>
+            </>
+          }
+        />
+      }
+      toolbar={
+        <PageToolbar
+          note={
+            <>
+              État au <b className="text-text">{asOf.toLocaleDateString('fr-FR')}</b>
+              {isToday ? ' (aujourd’hui)' : ''} · alertes, échéances et connexions calculées à cette date
+              {compare && (
+                <>
+                  {' '}
+                  · comparé au <b className="text-text">{compare.date.toLocaleDateString('fr-FR')}</b> (écarts sur Total clients et Statut)
+                </>
+              )}
+              {!isToday && ' · états des équipements : situation du jour (pas d’historique quotidien)'}
+              {` · connecté = données reçues dans les ${fmt(kpis.connDays)} j`}
+            </>
+          }
+        >
+          <label className="inline-flex items-center gap-2 text-label text-text">
             <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
-            <span className="font-medium">État au</span>
+            État au
             <input
               type="date"
+              lang="fr"
               value={asOfIso}
               max={toIsoDate(realToday)}
               onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
-              className="h-control px-2 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
             />
           </label>
-          <button type="button" onClick={() => setAsOfIso(toIsoDate(realToday))} className={`${ctrlBtn} border-border bg-surface text-text hover:bg-surface-muted`}>
+          <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
             Aujourd’hui
-          </button>
+          </Button>
           <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-          <button
+          <Button
             type="button"
+            variant={compareOn ? 'primary' : 'secondary'}
             aria-pressed={compareOn}
             onClick={() => setCompareOn((v) => !v)}
-            className={`${ctrlBtn} ${compareOn ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-primary border-primary hover:bg-primary-50'}`}
           >
             <GitCompareArrows size={16} aria-hidden="true" />
             Comparer
-          </button>
+          </Button>
           {compareOn && (
             <>
               <select
                 value={compareMode}
                 onChange={(e) => setCompareMode(e.target.value as CompareMode)}
                 aria-label="Date de comparaison"
-                className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
               >
                 <option value="m30">Il y a 30 jours</option>
                 <option value="y1">Même date l’an dernier</option>
@@ -1291,29 +1286,42 @@ export function ClientsPage() {
               {compareMode === 'custom' && (
                 <input
                   type="date"
+                  lang="fr"
                   aria-label="Date personnalisée"
                   value={compareCustom}
                   max={asOfIso}
                   onChange={(e) => setCompareCustom(e.target.value)}
-                  className="h-control px-2 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                  className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
                 />
               )}
             </>
           )}
+        </PageToolbar>
+      }
+    >
+      {saveNotice && (
+        <div
+          role="status"
+          className="flex items-start justify-between gap-3 rounded-control border border-success-200 bg-success-50 px-4 py-3 text-small text-success-700"
+        >
+          <span className="flex items-start gap-2">
+            <CheckCircle2 size={16} className="shrink-0 mt-0.5" aria-hidden="true" />
+            {saveNotice}{' '}
+            {permissions?.routes.subscriptions
+              ? 'Les chiffres de Gestion Clients, Packs et du Tableau de bord sont mis à jour'
+              : 'Les chiffres de Gestion Clients et du Tableau de bord sont mis à jour'}{' '}
+            (maquette : jusqu’au rechargement).
+          </span>
+          <button
+            type="button"
+            onClick={() => setSaveNotice(null)}
+            aria-label="Fermer le message"
+            className="shrink-0 rounded-control px-1 text-success-700 hover:bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+          >
+            <XCircle size={16} aria-hidden="true" />
+          </button>
         </div>
-        <p className="text-mention text-text-muted">
-          État au <b className="text-text">{asOf.toLocaleDateString('fr-FR')}</b>
-          {isToday ? ' (aujourd’hui)' : ''} · alertes, échéances et connexions calculées à cette date
-          {compare && (
-            <>
-              {' '}
-              · comparé au <b className="text-text">{compare.date.toLocaleDateString('fr-FR')}</b> (écarts sur Total clients et Statut)
-            </>
-          )}
-          {!isToday && ' · états des équipements : situation du jour (pas d’historique quotidien)'}
-          {` · connecté = données reçues dans les ${fmt(kpis.connDays)} j`}
-        </p>
-      </header>
+      )}
 
       <ClientsOverview
         data={kpis}
@@ -1336,7 +1344,7 @@ export function ClientsPage() {
         onClientOpen={(id, tab) => openFiche(id, tab ?? 'synthese')}
       />
 
-      {/* CLI-T-01 – Filtres et tableau des clients */}
+      {/* CLI-T-01 – Filtres et tableau des clients (panneau DL § 9.7 / 9.8) */}
       <div ref={tableRef} className="bg-surface rounded-card border border-border overflow-hidden scroll-mt-4">
         <ClientsFilterBar
           searchQuery={searchQuery}
@@ -1371,25 +1379,25 @@ export function ClientsPage() {
         />
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[1100px]">
+          <table className="fiq-table w-full border-collapse text-small text-text min-w-[1100px]">
             <thead>
-              <tr className="border-b border-border-subtle text-text-muted text-overline uppercase bg-surface-muted">
-                <th className={thCls}>Client</th>
-                <th className={thCls}>Revendeur</th>
-                <th className={thCls}>Type</th>
-                <th className={thCls}>Pack</th>
-                <th className={thCls}>Parc équipements</th>
-                <th className={thCls}>Équipements connectés</th>
-                <th className={thCls}>Dernière connexion</th>
-                <th className={thCls}>Échéance</th>
-                <th className={thCls}>Statut</th>
-                <th className={`${thCls} text-right`}>Actions</th>
+              <tr>
+                <th scope="col" className={thCls}>Client</th>
+                <th scope="col" className={thCls}>Revendeur</th>
+                <th scope="col" className={thCls}>Type</th>
+                <th scope="col" className={thCls}>Pack</th>
+                <th scope="col" className={`${thCls} text-right`}>Parc équipements</th>
+                <th scope="col" className={`${thCls} text-right`}>Équipements connectés</th>
+                <th scope="col" className={thCls}>Dernière connexion</th>
+                <th scope="col" className={thCls}>Échéance</th>
+                <th scope="col" className={thCls}>Statut</th>
+                <th scope="col" className={`${thCls} text-right`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="text-small divide-y divide-border-subtle">
+            <tbody>
               {pageClients.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="py-12 text-center text-text-muted">
+                  <td colSpan={10} className="h-row px-3 py-12 text-center text-text-muted">
                     Aucun client ne correspond aux filtres.
                   </td>
                 </tr>
@@ -1398,36 +1406,42 @@ export function ClientsPage() {
                 const info = kpis.infos.get(client.id);
                 const expanded = expandedId === client.id;
                 const dte = info?.daysToExpiry ?? null;
+                const rowRail =
+                  !info?.active
+                    ? 'shadow-rail-danger'
+                    : info.blockedInDays != null || (dte != null && dte >= 0 && dte <= delay)
+                      ? 'shadow-rail-warning'
+                      : '';
                 return (
                   <React.Fragment key={client.id}>
-                    <tr className="hover:bg-primary-50 transition-colors duration-fast ease-standard">
-                      <td className="p-4 font-medium text-text">
+                    <tr className="hover:bg-surface-muted transition-colors duration-fast ease-standard">
+                      <td className={`h-row px-3 py-1.5 border-b border-border-subtle align-middle font-medium text-text ${rowRail}`}>
                         {permissions?.clients.canViewDetails ? (
-                          <button type="button" onClick={() => openFiche(client.id)} className="text-left font-medium text-text hover:text-primary hover:underline">
+                          <button type="button" onClick={() => openFiche(client.id)} className="text-left font-medium text-text hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control">
                             {client.name}
                           </button>
                         ) : (
                           client.name
                         )}
                       </td>
-                      <td className="p-4 text-text">{client.reseller}</td>
-                      <td className="p-4">
+                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle text-text">{client.reseller}</td>
+                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle">
                         <span
-                          className={`px-2.5 py-1 rounded-control text-mention font-medium ${client.type === 'Revendeur' ? 'bg-primary-100 text-primary' : 'bg-border-subtle text-text'}`}
+                          className={`inline-flex h-6 px-2 items-center rounded-tag border text-mention font-medium ${client.type === 'Revendeur' ? 'bg-info-50 text-info-700 border-info-200' : 'bg-neutral-50 text-neutral-700 border-neutral-200'}`}
                         >
                           {client.type === 'Revendeur' ? 'Revendeur' : 'Simple'}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle">
                         {info?.packs.length ? (
                           <div className="flex flex-col gap-1">
                             {info.packs.map((p) => (
                               <span
                                 key={p.packId}
-                                className="inline-flex w-fit items-center gap-1 px-2 py-0.5 rounded-tag border border-primary-200 bg-primary-100 text-primary text-mention font-medium whitespace-nowrap"
+                                className="inline-flex w-fit items-center gap-1 h-6 px-2 rounded-tag border border-primary-200 bg-primary-50 text-primary text-mention font-medium whitespace-nowrap"
                               >
                                 {p.name}
-                                {client.type !== 'Revendeur' && <span className="text-text-muted font-normal">{p.equipments} éq.</span>}
+                                {client.type !== 'Revendeur' && <span className="text-text-muted font-normal font-qty">{p.equipments} éq.</span>}
                               </span>
                             ))}
                           </div>
@@ -1435,13 +1449,13 @@ export function ClientsPage() {
                           <span className="text-text-muted italic text-mention">Sans pack</span>
                         )}
                       </td>
-                      <td className="p-4">
+                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle text-right">
                         {client.type === 'Revendeur' ? (
                           (() => {
                             const total = equipmentStats.resellerTotals.get(client.name) ?? 0;
                             return (
                               <span
-                                className={`text-small font-medium tabular-nums ${total === 0 ? 'text-text-muted italic' : 'text-text'}`}
+                                className={`text-small font-medium font-qty ${total === 0 ? 'text-text-muted italic' : 'text-text'}`}
                                 title={`${total} équipement${total > 1 ? 's' : ''} affecté${total > 1 ? 's' : ''} au total`}
                               >
                                 {total === 0 ? 'Aucun' : total}
@@ -1456,10 +1470,10 @@ export function ClientsPage() {
                             }
                             return (
                               <span
-                                className="text-small font-medium tabular-nums text-text"
+                                className="text-small font-medium font-qty text-text"
                                 title={`${stats.installed} installé${stats.installed > 1 ? 's' : ''} sur ${stats.total} affecté${stats.total > 1 ? 's' : ''}`}
                               >
-                                <span className="text-success">{stats.installed}</span>
+                                <span className="text-success-700">{stats.installed}</span>
                                 <span className="text-text-muted mx-1">/</span>
                                 <span>{stats.total}</span>
                               </span>
@@ -1467,80 +1481,89 @@ export function ClientsPage() {
                           })()
                         )}
                       </td>
-                      <td className="p-4">
+                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle text-right">
                         {info && info.assigned > 0 ? (
                           <button
                             type="button"
                             aria-expanded={expanded}
                             onClick={() => setExpandedId(expanded ? null : client.id)}
-                            className="text-left w-36 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control"
+                            className="text-right w-36 ml-auto focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control"
                             title="Voir le détail par équipement"
                           >
-                            <span className="flex items-center gap-1 text-small font-medium tabular-nums">
+                            <span className="inline-flex items-center justify-end gap-1 text-small font-medium font-qty">
                               <span className={info.connected < info.assigned ? 'text-danger-700' : 'text-success-700'}>{fmt(info.connected)}</span>
                               <span className="text-text-muted">/ {fmt(info.assigned)}</span>
                               {expanded ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
                             </span>
-                            <span className="mt-1 block h-1.5 rounded-pill bg-danger-200 overflow-hidden" aria-hidden="true">
-                              <span className="block h-full bg-success" style={{ width: `${pct(info.connected, info.assigned)}%` }} />
+                            <span className="mt-1 block h-1.5 rounded-[1px] bg-danger-200 overflow-hidden" aria-hidden="true">
+                              <span className="block h-full bg-success rounded-[1px]" style={{ width: `${pct(info.connected, info.assigned)}%` }} />
                             </span>
-                            {client.type === 'Revendeur' && <span className="text-mention text-text-muted">tous ses clients</span>}
+                            {client.type === 'Revendeur' && <span className="block text-mention text-text-muted text-right">tous ses clients</span>}
                           </button>
                         ) : (
                           <span className="text-text-muted italic text-mention">—</span>
                         )}
                       </td>
-                      <td className="p-4">{formatClientLastConnection(equipmentStats.lastConnectionByClient.get(client.name))}</td>
-                      <td className="p-4 tabular-nums whitespace-nowrap">
+                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle">{formatClientLastConnection(equipmentStats.lastConnectionByClient.get(client.name))}</td>
+                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle whitespace-nowrap">
                         {frIso(client.expiry)}
                         {info?.blockedInDays != null ? (
-                          <span className="ml-2 px-1.5 py-0.5 rounded-control bg-danger-50 text-danger-700 text-mention font-medium">blocage J-{info.blockedInDays}</span>
+                          <span className="ml-2 inline-flex h-6 items-center px-2 rounded-tag border border-danger-200 bg-danger-50 text-danger-700 text-mention font-medium">blocage J-{info.blockedInDays}</span>
                         ) : info?.active && dte != null && dte >= 0 && dte <= delay ? (
-                          <span className="ml-2 px-1.5 py-0.5 rounded-control bg-warning-50 text-warning-700 text-mention font-medium">J-{dte}</span>
+                          <span className="ml-2 inline-flex h-6 items-center px-2 rounded-tag border border-warning-200 bg-warning-50 text-warning-700 text-mention font-medium">J-{dte}</span>
                         ) : null}
                       </td>
-                      <td className="p-4">
-                        <span className={`flex items-center gap-1.5 whitespace-nowrap text-mention font-medium ${info?.active ? 'text-success' : 'text-danger'}`}>
-                          <span className={`w-1.5 h-1.5 rounded-pill ${info?.active ? 'bg-success' : 'bg-danger'}`}></span>
-                          {info?.active ? (info.blockedInDays != null ? `Actif · bloqué dans ${info.blockedInDays} j` : 'Actif') : 'Bloqué'}
-                        </span>
+                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle">
+                        {info?.active ? (
+                          info.blockedInDays != null ? (
+                            <StatusTag label={`Actif · bloqué dans ${info.blockedInDays} j`} family="warning" icon={Eye} />
+                          ) : (
+                            <StatusTagFromLabel label="Actif" />
+                          )
+                        ) : (
+                          <StatusTagFromLabel label="Bloqué" />
+                        )}
                       </td>
-                      <td className="p-4 text-right">
+                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle text-right">
                         <div className="flex items-center justify-end gap-1">
                           {permissions?.clients.canAddEdit && (
                             <button
                               onClick={() => openAddEditModal(enrichClientForModal(client, clientProfiles))}
-                              className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
+                              className="inline-flex h-control-sm w-control-sm items-center justify-center text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                              aria-label="Modifier"
                               title="Modifier"
                             >
-                              <Edit2 size={16} />
+                              <Edit2 size={16} aria-hidden="true" />
                             </button>
                           )}
                           {permissions?.clients.canViewDetails && (
                             <button
                               onClick={() => openFiche(client.id)}
-                              className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
+                              className="inline-flex h-control-sm w-control-sm items-center justify-center text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                              aria-label="Voir détails"
                               title="Voir détails"
                             >
-                              <Eye size={16} />
+                              <Eye size={16} aria-hidden="true" />
                             </button>
                           )}
                           {permissions?.clients.canViewEquipments && (
                             <button
                               onClick={() => openClientEquipmentsModal(client)}
-                              className="p-1.5 text-text-muted hover:text-success-700 hover:bg-success-50 rounded-control transition-colors duration-fast ease-standard"
+                              className="inline-flex h-control-sm w-control-sm items-center justify-center text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                              aria-label="Équipements affectés"
                               title="Équipements affectés"
                             >
-                              <Cpu size={16} />
+                              <Cpu size={16} aria-hidden="true" />
                             </button>
                           )}
                           {permissions?.clients.canManagePayment && (
                             <button
                               onClick={() => openPaymentModal(enrichClientForModal(client, clientProfiles))}
-                              className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors duration-fast ease-standard"
+                              className="inline-flex h-control-sm w-control-sm items-center justify-center text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                              aria-label="Valider le paiement"
                               title="Valider le paiement"
                             >
-                              <CreditCard size={16} />
+                              <CreditCard size={16} aria-hidden="true" />
                             </button>
                           )}
                         </div>
@@ -1551,7 +1574,7 @@ export function ClientsPage() {
                         <td colSpan={10} className="px-4 py-3">
                           <table className="w-full text-small">
                             <thead>
-                              <tr className="text-overline uppercase text-text-muted">
+                              <tr className="text-overline uppercase text-text">
                                 <th className="py-1 text-left">N° de série</th>
                                 <th className="py-1 text-left">Pack</th>
                                 <th className="py-1 text-left">Affecté le</th>
@@ -1560,22 +1583,24 @@ export function ClientsPage() {
                                 <th className="py-1 text-left">Statut</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-border-subtle">
+                            <tbody>
                               {info.equipments.slice(0, 50).map((e) => {
                                 const last = e.lastCommunication ? new Date(e.lastCommunication) : null;
                                 const ok = !!last && daysBetween(last, nowRef) * 24 <= disconnectThresholdHours;
+                                const statusLabel = !last ? 'Non connecté' : ok ? 'Connecté' : 'Non connecté';
                                 return (
                                   <tr key={e.id}>
-                                    <td className="py-1.5 font-mono">{e.serial}</td>
+                                    <td className="py-1.5 text-mention tracking-[0.03em] text-text-muted">{e.serial}</td>
                                     <td className="py-1.5">{packs.find((p) => p.id === e.packId)?.name ?? '—'}</td>
-                                    <td className="py-1.5 tabular-nums">{frIso(e.assignedAt ?? e.contractDate)}</td>
-                                    <td className="py-1.5 tabular-nums">{e.firstSendDate ? frIso(e.firstSendDate) : 'Jamais'}</td>
-                                    <td className="py-1.5 tabular-nums">{last ? last.toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—'}</td>
+                                    <td className="py-1.5">{frIso(e.assignedAt ?? e.contractDate)}</td>
+                                    <td className="py-1.5">{e.firstSendDate ? frIso(e.firstSendDate) : 'Jamais'}</td>
+                                    <td className="py-1.5">{last ? last.toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—'}</td>
                                     <td className="py-1.5">
-                                      <span className={`inline-flex items-center gap-1 text-mention font-medium ${ok ? 'text-success-700' : 'text-danger-700'}`}>
-                                        {!ok && <WifiOff size={12} aria-hidden="true" />}
-                                        {!last ? 'Jamais connecté' : ok ? 'Connecté' : 'Non connecté'}
-                                      </span>
+                                      {!last ? (
+                                        <StatusTag label="Jamais connecté" family="danger" icon={WifiOff} />
+                                      ) : (
+                                        <StatusTagFromLabel label={statusLabel} />
+                                      )}
                                     </td>
                                   </tr>
                                 );
@@ -1594,13 +1619,13 @@ export function ClientsPage() {
             </tbody>
           </table>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-border-subtle text-small text-text-muted">
-          <label className="inline-flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2 border-t border-border-subtle text-mention text-text-muted">
+          <label className="inline-flex items-center gap-2 text-small">
             Afficher
             <select
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
-              className="h-control px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className="h-control-sm px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             >
               {PAGE_SIZES.map((n) => (
                 <option key={n} value={n}>
@@ -1610,7 +1635,7 @@ export function ClientsPage() {
             </select>
             par page
           </label>
-          <span>
+          <span className="text-small">
             {filteredClients.length ? (Math.min(page, pageCount) - 1) * pageSize + 1 : 0}–{Math.min(Math.min(page, pageCount) * pageSize, filteredClients.length)} sur{' '}
             {fmt(filteredClients.length)} client(s)
           </span>
@@ -1620,11 +1645,11 @@ export function ClientsPage() {
               aria-label="Page précédente"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="h-control w-9 inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50"
+              className="h-control-sm w-control-sm inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
-            <span className="px-2 tabular-nums text-text">
+            <span className="px-2 font-qty text-text text-small">
               {Math.min(page, pageCount)} / {pageCount}
             </span>
             <button
@@ -1632,7 +1657,7 @@ export function ClientsPage() {
               aria-label="Page suivante"
               disabled={page >= pageCount}
               onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
-              className="h-control w-9 inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50"
+              className="h-control-sm w-control-sm inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             >
               <ChevronRight size={16} aria-hidden="true" />
             </button>
@@ -3303,6 +3328,6 @@ export function ClientsPage() {
           </div>
         </div>
       </Modal>
-    </div>);
-
+    </PageShell>
+  );
 }

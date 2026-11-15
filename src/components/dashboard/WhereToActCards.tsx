@@ -5,9 +5,10 @@ import { DonutRing, HorizontalBarList, Legend } from '../charts';
 import { formatMonthFr } from '../../state/mock/dates';
 import { BACKOFFICE_ROUTE_PATHS, type BackofficeRouteKey } from '../../utils/backofficePermissions';
 import { fmt, pct, volume, type DashboardData, type ParkRow } from '../../utils/dashboardKpis';
+import { Panel } from '../shell/PageShell';
+import { Button } from '../ui/Button';
 import type { DetailSpec } from './DetailModal';
 
-const cardCls = 'bg-surface rounded-card border border-border p-5 space-y-4';
 const ratio = (r: ParkRow) => pct(r.connected, r.installed);
 
 function readShown(key: string): string[] | null {
@@ -116,78 +117,80 @@ export function ParkHealthRings({
       routeQuery: isNetwork ? `?revendeur=${encodeURIComponent(r.key)}` : undefined
     });
 
-  return (
-    <div className={cardCls}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h3 className="text-h4 text-text">{isNetwork ? 'Revendeurs : santé du parc' : 'Mes clients : santé du parc'}</h3>
-          <p className="text-small text-text-muted">
-            Centre = % des installés qui sont connectés · cliquez sur un anneau pour le détail
-            {!isNetwork && ' · « + Client » pour choisir parmi tous vos clients'}
-          </p>
-        </div>
-        <div className="relative" ref={pickerRef}>
-          <button
-            type="button"
-            aria-expanded={pickerOpen}
-            aria-controls={`${storageKey}-picker`}
-            onClick={() => setPickerOpen((o) => !o)}
-            className="inline-flex items-center gap-1.5 h-control px-3 text-button-sm rounded-control bg-surface text-primary border border-primary hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-          >
-            <Plus size={16} aria-hidden="true" />
-            {isNetwork ? 'Revendeur' : 'Client'}
-          </button>
-          {pickerOpen && (
-            <div
-              id={`${storageKey}-picker`}
-              role="dialog"
-              aria-label={`Choisir les ${what}s affichés`}
-              className="absolute right-0 z-30 mt-2 w-72 rounded-card border border-border bg-surface p-3 shadow-raised space-y-2"
-            >
-              <p className="text-small font-semibold text-text">{isNetwork ? 'Revendeurs' : 'Clients'} affichés</p>
-              {rows.length > 8 && (
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={`Rechercher un ${what}`}
-                  aria-label={`Rechercher un ${what}`}
-                  className="w-full h-control px-3 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-                />
-              )}
-              <div className="flex items-center justify-between text-mention text-text-muted">
-                <span>
-                  {shown.length} affiché(s) sur {rows.length}
-                </span>
-                {!isNetwork && (
-                  <button type="button" onClick={() => update(defaults)} className="font-medium text-primary hover:underline">
-                    Les {DEF_COUNT} à surveiller
-                  </button>
-                )}
-              </div>
-              <div className="max-h-64 overflow-y-auto divide-y divide-border-subtle">
-                {filtered.map((r) => (
-                  <label key={r.key} className="flex items-center gap-2 py-1.5 text-small text-text cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={shown.includes(r.key)}
-                      onChange={(e) =>
-                        update(e.target.checked ? [...shown, r.key] : shown.filter((k) => k !== r.key))
-                      }
-                      className="h-4 w-4 accent-primary"
-                    />
-                    <span className="flex-1 truncate">{r.label}</span>
-                    <span className="text-mention text-text-muted tabular-nums">
-                      {ratio(r)} % · {fmt(r.sold)} éq.
-                    </span>
-                  </label>
-                ))}
-              </div>
-              <p className="text-mention text-text-muted">Au moins un reste affiché. Le choix est gardé sur ce poste.</p>
-            </div>
+  const picker = (
+    <div className="relative" ref={pickerRef}>
+      <Button
+        type="button"
+        variant="secondary"
+        aria-expanded={pickerOpen}
+        aria-controls={`${storageKey}-picker`}
+        onClick={() => setPickerOpen((o) => !o)}
+      >
+        <Plus size={16} aria-hidden="true" />
+        {isNetwork ? 'Revendeur' : 'Client'}
+      </Button>
+      {pickerOpen && (
+        <div
+          id={`${storageKey}-picker`}
+          role="dialog"
+          aria-label={`Choisir les ${what}s affichés`}
+          className="absolute right-0 z-30 mt-2 w-72 rounded-card border border-border-strong bg-surface p-3 shadow-raised space-y-2"
+        >
+          <p className="text-small font-semibold text-text">{isNetwork ? 'Revendeurs' : 'Clients'} affichés</p>
+          {rows.length > 8 && (
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={`Rechercher un ${what}`}
+              aria-label={`Rechercher un ${what}`}
+              className="w-full h-control px-3 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+            />
           )}
+          <div className="flex items-center justify-between text-mention text-text-muted">
+            <span>
+              {shown.length} affiché(s) sur {rows.length}
+            </span>
+            {!isNetwork && (
+              <button type="button" onClick={() => update(defaults)} className="font-medium text-primary hover:underline">
+                Les {DEF_COUNT} à surveiller
+              </button>
+            )}
+          </div>
+          <div className="max-h-64 overflow-y-auto divide-y divide-border-subtle">
+            {filtered.map((r) => (
+              <label key={r.key} className="flex items-center gap-2 py-1.5 text-small text-text cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={shown.includes(r.key)}
+                  onChange={(e) => update(e.target.checked ? [...shown, r.key] : shown.filter((k) => k !== r.key))}
+                  className="h-4 w-4 accent-primary"
+                />
+                <span className="flex-1 truncate">{r.label}</span>
+                <span className="text-mention text-text-muted font-qty">
+                  {ratio(r)} % · {fmt(r.sold)} éq.
+                </span>
+              </label>
+            ))}
+          </div>
+          <p className="text-mention text-text-muted">Au moins un reste affiché. Le choix est gardé sur ce poste.</p>
         </div>
-      </div>
+      )}
+    </div>
+  );
+
+  return (
+    <Panel
+      title={isNetwork ? 'Revendeurs : santé du parc' : 'Mes clients : santé du parc'}
+      hint={
+        <>
+          Centre = % des installés qui sont connectés · cliquez sur un anneau pour le détail
+          {!isNetwork && ' · « + Client » pour choisir parmi tous vos clients'}
+        </>
+      }
+      actions={picker}
+      bodyClassName="p-4 space-y-4"
+    >
       <Legend
         items={[
           { tone: 'success', label: 'Connectés' },
@@ -204,8 +207,8 @@ export function ParkHealthRings({
               type="button"
               onClick={() => openRow(r)}
               aria-label={`${r.label} : ${ratio(r)} % des installés connectés, ${fmt(r.sold)} vendus`}
-              className={`flex flex-col items-center gap-1 rounded-card border p-3 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                low ? 'bg-danger-50 border-danger-200 hover:border-danger' : 'bg-surface border-border-subtle hover:border-primary-200 hover:bg-primary-50'
+              className={`flex flex-col items-center gap-1 rounded-card border border-border p-3 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus hover:border-border-strong ${
+                low ? 'shadow-rail-danger bg-surface' : 'bg-surface'
               }`}
             >
               <DonutRing
@@ -219,7 +222,7 @@ export function ParkHealthRings({
                 ]}
               />
               <span className="text-small font-medium text-text text-center leading-tight">{r.label}</span>
-              <span className="text-mention text-text-muted">{fmt(r.sold)} vendus</span>
+              <span className="text-mention text-text-muted font-qty">{fmt(r.sold)} vendus</span>
             </button>
           );
         })}
@@ -229,7 +232,7 @@ export function ParkHealthRings({
           À regarder en premier : <b>{worst.label}</b>, seulement {ratio(worst)} % de ses équipements installés sont connectés.
         </p>
       )}
-    </div>
+    </Panel>
   );
 }
 
@@ -244,13 +247,11 @@ export function TopPacksCard({ data, onOpenDetail }: { data: DashboardData; onOp
   );
   const lead = rows[0];
   return (
-    <div className={cardCls}>
-      <div>
-        <h3 className="text-h4 text-text">{isNetwork ? 'Packs les plus choisis' : 'Mes clients par pack'}</h3>
-        <p className="text-small text-text-muted">
-          {isNetwork ? `Nombre de clients par pack (${fmt(tot)} packs en cours)` : `Pack actuel de chaque client (${fmt(tot)} clients)`}
-        </p>
-      </div>
+    <Panel
+      title={isNetwork ? 'Packs les plus choisis' : 'Mes clients par pack'}
+      hint={isNetwork ? `Nombre de clients par pack (${fmt(tot)} packs en cours)` : `Pack actuel de chaque client (${fmt(tot)} clients)`}
+      bodyClassName="p-4 space-y-4"
+    >
       <HorizontalBarList
         ranked
         ariaLabel={isNetwork ? 'Packs les plus choisis' : 'Mes clients par pack'}
@@ -299,7 +300,7 @@ export function TopPacksCard({ data, onOpenDetail }: { data: DashboardData; onOp
           )
         )}
       </p>
-    </div>
+    </Panel>
   );
 }
 
@@ -320,15 +321,11 @@ export function SimOverCard({
   const month = formatMonthFr(data.overMonth);
   const first = rows.find((r) => r.overSims > 0);
   return (
-    <div className={cardCls}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h3 className="text-h4 text-text">Puces en surconsommation par revendeur</h3>
-          <p className="text-small text-text-muted">
-            {month} · {fmt(tot)} puces au-delà de leur forfait · +{volume(totMB)} au total · barre = volume dépassé, du plus fort au plus faible
-          </p>
-        </div>
-        {canOpen('sims') && (
+    <Panel
+      title="Puces en surconsommation par revendeur"
+      hint={`${month} · ${fmt(tot)} puces au-delà de leur forfait · +${volume(totMB)} au total · barre = volume dépassé, du plus fort au plus faible`}
+      actions={
+        canOpen('sims') ? (
           <button
             type="button"
             onClick={() => navigate(`${BACKOFFICE_ROUTE_PATHS.sims}?periode=mois&mois=${data.overMonth}&detail=surconso`)}
@@ -336,8 +333,10 @@ export function SimOverCard({
           >
             Voir plus de détails <ArrowRight size={14} aria-hidden="true" />
           </button>
-        )}
-      </div>
+        ) : undefined
+      }
+      bodyClassName="p-4 space-y-4"
+    >
       <HorizontalBarList
         ariaLabel="Puces en surconsommation par revendeur"
         tone="danger"
@@ -349,7 +348,7 @@ export function SimOverCard({
           valueLabel: `+${volume(r.excessMB)}`,
           extra: (
             <span className="w-28 shrink-0 text-right text-mention text-text-muted">
-              <span className="block text-small font-semibold text-text">{fmt(r.overSims)} puce(s)</span>
+              <span className="block text-small font-semibold text-text font-qty">{fmt(r.overSims)} puce(s)</span>
               {pct(r.overSims, r.sims)} % de ses puces
             </span>
           )
@@ -378,6 +377,6 @@ export function SimOverCard({
           Le plus gros dépassement : <b>{first.label}</b> (+{volume(first.excessMB)} sur {fmt(first.overSims)} puces).
         </p>
       )}
-    </div>
+    </Panel>
   );
 }

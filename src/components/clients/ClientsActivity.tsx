@@ -11,7 +11,7 @@ import type { DetailSpec } from '../dashboard/DetailModal';
 import type { FleetClient } from '../../state/FleetStore';
 import { daysBetween, formatMonthFr, parseDate } from '../../state/mock/dates';
 import { fmt, frDate, frIso, ownerKey, ownerLabel, pct, type ClientsData } from '../../utils/clientsKpis';
-import { SectionTitle } from './ClientsOverview';
+import { Panel, SectionRule } from '../shell/PageShell';
 
 type Props = {
   data: ClientsData;
@@ -22,12 +22,14 @@ type Props = {
 
 const SERIES_TONES: ChartTone[] = ['series2', 'series3', 'series4'];
 
-function Card({ children, side }: { children: ReactNode; side: ReactNode }) {
+function Card({ title, hint, children, side }: { title: string; hint?: string; children: ReactNode; side: ReactNode }) {
   return (
-    <div className="bg-surface rounded-card border border-border p-5 grid grid-cols-1 xl:grid-cols-3 gap-5">
-      <div className="xl:col-span-2 min-w-0">{children}</div>
-      <div className="rounded-control border border-border-subtle bg-surface-muted p-4 min-w-0">{side}</div>
-    </div>
+    <Panel title={title} hint={hint} bodyClassName="p-0">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-0">
+        <div className="xl:col-span-2 min-w-0 p-4 border-b xl:border-b-0 xl:border-r border-border-subtle">{children}</div>
+        <div className="min-w-0 p-4 bg-surface-muted">{side}</div>
+      </div>
+    </Panel>
   );
 }
 
@@ -137,16 +139,19 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
   };
 
   const chip = (on: boolean) =>
-    `rounded-pill border px-3 py-1 text-mention font-medium transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-      on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-primary-50'
+    `rounded-control border px-3 py-1 text-mention font-medium transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+      on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-surface-muted'
     }`;
 
   return (
-    <section aria-labelledby="cli-activite" className="space-y-4">
-      <SectionTitle id="cli-activite" title="Activité et renouvellement" hint="Cliquez sur un graphique pour voir le détail à droite" />
+    <section aria-labelledby="cli-activite" className="grid grid-cols-12 gap-4">
+      <SectionRule id="cli-activite" title="Activité et renouvellement" hint="Cliquez sur un graphique pour voir le détail à droite" />
 
       {/* CLI-C-01 Connexion mensuelle des clients */}
+      <div className="col-span-12">
       <Card
+        title="Connexion mensuelle des clients"
+        hint="C-01 · journal des connexions fictif (à confirmer back-end)"
         side={
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
@@ -216,14 +221,11 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
           </div>
         }
       >
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h3 className="text-small font-semibold text-text">Connexion mensuelle des clients</h3>
-            <p className="text-mention text-text-muted">
-              Connexions par mois, janvier → décembre {asOf.getFullYear()} · {fmt(c01.connected30)} client(s) actif(s) connecté(s) dans les 30
-              derniers jours · {fmt(c01.without30)} sans connexion · C-01
-            </p>
-          </div>
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+          <p className="text-mention text-text-muted">
+            Connexions par mois, janvier → décembre {asOf.getFullYear()} · {fmt(c01.connected30)} client(s) actif(s) connecté(s) dans les 30
+            derniers jours · {fmt(c01.without30)} sans connexion · C-01
+          </p>
           <label className="relative">
             <span className="sr-only">Filtrer par client</span>
             <Search size={14} aria-hidden="true" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
@@ -255,9 +257,13 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
           </p>
         )}
       </Card>
+      </div>
 
       {/* CLI-C-03 Pic du nombre de clients connectés */}
+      <div className="col-span-12">
       <Card
+        title="Pic du nombre de clients connectés"
+        hint={`Pic : ${fmt(c03.months[c03.peakIdx].value)} clients connectés en ${formatMonthFr(c03.months[c03.peakIdx].month)} · C-03`}
         side={
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
@@ -283,10 +289,8 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
           </div>
         }
       >
-        <h3 className="text-small font-semibold text-text">Pic du nombre de clients connectés</h3>
         <p className="text-mention text-text-muted mb-2">
-          Pic : <b className="text-text">{fmt(c03.months[c03.peakIdx].value)} clients connectés</b> en {formatMonthFr(c03.months[c03.peakIdx].month)} ·
-          dernière connexion via PC {fmt(c03.channelSplit.PC)} · Mobile {fmt(c03.channelSplit.Mobile)} · C-03
+          Dernière connexion via PC {fmt(c03.channelSplit.PC)} · Mobile {fmt(c03.channelSplit.Mobile)}
         </p>
         <BarChart
           data={c03.months.map((m, i) => ({ label: i === c03.peakIdx ? `${m.label} · pic` : m.label, value: m.value, tone: i === c03.peakIdx ? 'series1' : 'series2' }))}
@@ -301,9 +305,13 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
           ]}
         />
       </Card>
+      </div>
 
       {/* CLI-D-03 Nouveaux clients vs bloqués par mois */}
+      <div className="col-span-12">
       <Card
+        title="Nouveaux clients vs clients bloqués par mois"
+        hint="6 derniers mois · arrivée = création du client · départ = passage en bloqué · D-03"
         side={
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
@@ -328,8 +336,6 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
           </div>
         }
       >
-        <h3 className="text-small font-semibold text-text">Nouveaux clients vs clients bloqués par mois</h3>
-        <p className="text-mention text-text-muted mb-2">6 derniers mois · arrivée = création du client · départ = passage en bloqué · D-03</p>
         <ColumnChart
           mode="grouped"
           series={[
@@ -348,9 +354,13 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
           ]}
         />
       </Card>
+      </div>
 
       {/* CLI-D-04 Échéances des packs par mois */}
+      <div className="col-span-12">
       <Card
+        title="Échéances des packs par mois"
+        hint={`${fmt(d04.expiredCount)} déjà expiré(s) · ${fmt(d04.soonCount)} expirent dans les ${data.delayDays} prochains jours · D-04`}
         side={
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
@@ -382,21 +392,17 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
           </div>
         }
       >
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-small font-semibold text-text">Échéances des packs par mois</h3>
+        <div className="flex flex-wrap items-center justify-end gap-2 mb-2">
           <div className="inline-flex items-center gap-1">
-            <button type="button" aria-label="Année précédente" onClick={() => setD04Year((y) => y - 1)} className="h-control w-9 inline-flex items-center justify-center rounded-control border border-border hover:bg-surface-muted">
+            <button type="button" aria-label="Année précédente" onClick={() => setD04Year((y) => y - 1)} className="h-control-sm w-control-sm inline-flex items-center justify-center rounded-control border border-border hover:bg-surface-muted">
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
-            <span className="px-2 text-small font-semibold tabular-nums">{d04Year}</span>
-            <button type="button" aria-label="Année suivante" onClick={() => setD04Year((y) => y + 1)} className="h-control w-9 inline-flex items-center justify-center rounded-control border border-border hover:bg-surface-muted">
+            <span className="px-2 text-small font-semibold font-qty">{d04Year}</span>
+            <button type="button" aria-label="Année suivante" onClick={() => setD04Year((y) => y + 1)} className="h-control-sm w-control-sm inline-flex items-center justify-center rounded-control border border-border hover:bg-surface-muted">
               <ChevronRight size={16} aria-hidden="true" />
             </button>
           </div>
         </div>
-        <p className="text-mention text-text-muted mb-2">
-          {fmt(d04.expiredCount)} déjà expiré(s) · {fmt(d04.soonCount)} expirent dans les {data.delayDays} prochains jours · D-04
-        </p>
         {isNetwork && (
           <div className="mb-3 flex flex-wrap gap-2" role="radiogroup" aria-label="Propriétaire">
             <button type="button" role="radio" aria-checked={!d04Owner} onClick={() => setD04Owner(null)} className={chip(!d04Owner)}>
@@ -410,14 +416,14 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
           </div>
         )}
         <div className="mb-3 grid grid-cols-2 gap-3">
-          <div className="rounded-control border border-border-subtle p-3">
-            <div className="text-h4 text-danger-700 tabular-nums">{pct(d04.expiredCount, d04.total)} %</div>
+          <div className={`rounded-control border border-border p-3 ${d04.expiredCount > 0 ? 'shadow-rail-danger' : ''}`}>
+            <div className="text-kpi text-text font-qty">{pct(d04.expiredCount, d04.total)} %</div>
             <div className="text-mention text-text-muted">
               clients expirés · {fmt(d04.expiredCount)} / {fmt(d04.total)}
             </div>
           </div>
-          <div className="rounded-control border border-border-subtle p-3">
-            <div className="text-h4 text-warning-700 tabular-nums">{pct(d04.soonCount, d04.total)} %</div>
+          <div className={`rounded-control border border-border p-3 ${d04.soonCount > 0 ? 'shadow-rail-warning' : ''}`}>
+            <div className="text-kpi text-text font-qty">{pct(d04.soonCount, d04.total)} %</div>
             <div className="text-mention text-text-muted">
               échéance ≤ {data.delayDays} j · {fmt(d04.soonCount)} / {fmt(d04.total)}
             </div>
@@ -443,6 +449,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
           ]}
         />
       </Card>
+      </div>
     </section>
   );
 }

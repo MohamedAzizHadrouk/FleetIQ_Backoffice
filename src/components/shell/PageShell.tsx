@@ -122,3 +122,42 @@ export function SectionRule({
     </div>
   );
 }
+
+/** Panneau Industrial Tech (DL § 9.7) – en-tête / corps / pied optionnels. */
+export function Panel({
+  title,
+  hint,
+  actions,
+  footer,
+  children,
+  className = '',
+  bodyClassName = 'p-4',
+  as: Tag = 'section'
+}: {
+  title?: ReactNode;
+  hint?: ReactNode;
+  actions?: ReactNode;
+  footer?: ReactNode;
+  children: ReactNode;
+  className?: string;
+  /** Sans rembourrage si le corps est un tableau pleine largeur. */
+  bodyClassName?: string;
+  as?: 'section' | 'div' | 'article';
+}) {
+  const hasHead = title != null || hint != null || actions != null;
+  return (
+    <Tag className={`bg-surface border border-border rounded-card min-w-0 ${className}`}>
+      {hasHead && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 border-b border-border">
+          {title != null && (typeof title === 'string' ? <h3 className="text-section text-text">{title}</h3> : title)}
+          {hint != null && <span className="text-mention text-text-muted">{hint}</span>}
+          {actions != null && <div className="ml-auto flex flex-wrap items-center gap-2">{actions}</div>}
+        </div>
+      )}
+      <div className={bodyClassName}>{children}</div>
+      {footer != null && (
+        <div className="flex items-center gap-3 px-4 py-2 border-t border-border-subtle text-mention text-text-muted">{footer}</div>
+      )}
+    </Tag>
+  );
+}

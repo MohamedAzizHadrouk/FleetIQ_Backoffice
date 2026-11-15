@@ -12,7 +12,6 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   Building2,
-  CircleCheck,
   CirclePlus,
   Clock,
   Globe,
@@ -29,9 +28,10 @@ import {
 } from 'lucide-react';
 import { Modal } from '../Modal';
 import { BarChart } from '../charts';
+import { StatusTag, StatusTagFromLabel } from '../ui/StatusTag';
 import type { ClientProfile, OfferChange, Pack, SimCard, SimConsumption, UserConnection } from '../../state/FleetStore';
 import { daysBetween, formatMonthFr, toIsoMonth } from '../../state/mock/dates';
-import { fmt, frDate, frIso, healthScore, monthlyConnections12, pct, type ClientInfo, type Priority } from '../../utils/clientsKpis';
+import { fmt, frDate, frIso, healthScore, monthlyConnections12, pct, type ClientInfo } from '../../utils/clientsKpis';
 
 export type FicheTab = 'synthese' | 'equipements' | 'activite' | 'informations';
 const TABS: Array<{ key: FicheTab; label: string }> = [
@@ -40,14 +40,6 @@ const TABS: Array<{ key: FicheTab; label: string }> = [
   { key: 'activite', label: 'Activité' },
   { key: 'informations', label: 'Informations' }
 ];
-
-/* T-001 : « À surveiller » = Attention (warning), pas info/primary */
-const PRIORITY_CLS: Record<Priority, string> = {
-  Critique: 'bg-danger-50 text-danger-700 border-danger-200',
-  'À risque': 'bg-warning-50 text-warning-700 border-warning-200',
-  'À surveiller': 'bg-warning-50 text-warning-700 border-warning-200',
-  OK: 'bg-success-50 text-success-700 border-success-200'
-};
 
 type Props = {
   info: ClientInfo | null;
@@ -67,11 +59,11 @@ type Props = {
 };
 
 function Tile({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: 'danger' | 'warning' | 'success' }) {
-  const color = tone === 'danger' ? 'text-danger-700' : tone === 'warning' ? 'text-warning-700' : tone === 'success' ? 'text-success-700' : 'text-text';
+  const rail = tone === 'danger' ? 'shadow-rail-danger' : tone === 'warning' ? 'shadow-rail-warning' : '';
   return (
-    <div className="rounded-control border border-border-subtle bg-surface p-3">
+    <div className={`rounded-card border border-border bg-surface p-3 ${rail}`}>
       <div className="text-overline uppercase text-text-muted">{label}</div>
-      <div className={`mt-1 text-h4 tabular-nums ${color}`}>{value}</div>
+      <div className="mt-1 text-kpi text-text font-qty">{value}</div>
       {sub && <div className="text-mention text-text-muted">{sub}</div>}
     </div>
   );
@@ -152,25 +144,30 @@ export function ClientFiche({
     <Modal isOpen={!!info} onClose={onClose} title="Détails du client" size="xl">
       <div className="space-y-5">
         {/* En-tête : type, statut, revendeur, pack, priorité */}
-        <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-border-subtle">
+        <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-border">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-primary-50 text-primary rounded-pill flex items-center justify-center">
               <Users size={24} aria-hidden="true" />
             </div>
             <div>
-              <h3 className="text-h4 text-text">{c.name}</h3>
+              <h3 className="text-section text-text">{c.name}</h3>
               <div className="flex flex-wrap items-center gap-2 mt-1 text-mention">
-                <span className={`px-2.5 py-0.5 rounded-control font-medium ${c.type === 'Revendeur' ? 'bg-primary-100 text-primary' : 'bg-border-subtle text-text'}`}>
-                  {c.type === 'Revendeur' ? 'Revendeur' : 'Client final'}
-                </span>
                 <span
-                  className={`inline-flex items-center gap-1.5 h-6 px-2 rounded-tag border text-mention font-medium ${
-                    info.active ? 'bg-success-50 text-success-700 border-success-200' : 'bg-danger-50 text-danger-700 border-danger-200'
+                  className={`inline-flex h-6 px-2 items-center rounded-tag border text-mention font-medium ${
+                    c.type === 'Revendeur' ? 'bg-info-50 text-info-700 border-info-200' : 'bg-neutral-50 text-neutral-700 border-neutral-200'
                   }`}
                 >
-                  {info.active ? <CircleCheck size={14} aria-hidden="true" /> : <TriangleAlert size={14} aria-hidden="true" />}
-                  {info.active ? (info.blockedInDays != null ? `Actif · bloqué dans ${info.blockedInDays} j` : 'Actif') : 'Bloqué'}
+                  {c.type === 'Revendeur' ? 'Revendeur' : 'Client final'}
                 </span>
+                {info.active ? (
+                  info.blockedInDays != null ? (
+                    <StatusTag label={`Actif · bloqué dans ${info.blockedInDays} j`} family="warning" icon={TriangleAlert} />
+                  ) : (
+                    <StatusTagFromLabel label="Actif" />
+                  )
+                ) : (
+                  <StatusTagFromLabel label="Bloqué" />
+                )}
                 <span className="text-text-muted">
                   Propriétaire : {info.owner} · {info.packs.length ? info.packs.map((p) => p.name).join(' + ') : 'Sans pack'}
                 </span>
@@ -179,13 +176,13 @@ export function ClientFiche({
           </div>
           <div className="text-right">
             <div className="text-overline uppercase text-text-muted">Priorité</div>
-            <span className={`inline-flex items-center mt-1 h-6 px-2 rounded-tag border text-mention font-semibold ${PRIORITY_CLS[info.priority]}`}>
-              {info.priority}
-            </span>
+            <div className="mt-1">
+              <StatusTagFromLabel label={info.priority} />
+            </div>
           </div>
         </div>
 
-        <div role="tablist" aria-label="Sections de la fiche" className="flex flex-wrap gap-1 border-b border-border-subtle">
+        <div role="tablist" aria-label="Sections de la fiche" className="flex flex-wrap border-b border-border">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -193,8 +190,8 @@ export function ClientFiche({
               role="tab"
               aria-selected={tab === t.key}
               onClick={() => setTab(t.key)}
-              className={`px-3 h-control -mb-px border-b-2 text-small font-medium transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                tab === t.key ? 'border-primary text-primary' : 'border-transparent text-text-muted hover:text-text'
+              className={`relative h-control px-3 text-label transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                tab === t.key ? 'text-primary font-semibold after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[3px] after:bg-primary' : 'text-text-muted hover:text-text'
               }`}
             >
               {t.label}

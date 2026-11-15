@@ -72,10 +72,10 @@ export function ClientsFilterBar({
   onClearAlert
 }: Props) {
   return (
-    <div className="p-4 border-b border-border-subtle bg-surface-muted space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="grid grid-cols-12 gap-x-4 gap-y-3 px-4 py-3 border-b border-border bg-surface">
+      <div className="col-span-12 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-small font-semibold text-text">
-          <SlidersHorizontal size={16} className="text-text-muted" />
+          <SlidersHorizontal size={16} className="text-text-muted" aria-hidden="true" />
           Filtres
           {activeFilterCount > 0 && (
             <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-pill bg-primary text-text-inverse text-mention font-medium">
@@ -94,46 +94,35 @@ export function ClientsFilterBar({
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3">
+      <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3">
         <div className="lg:col-span-5">
-          <label className="block text-overline font-medium text-text-muted uppercase mb-1">
-            Recherche
-          </label>
+          <label className="block text-mention font-medium text-text mb-1">Recherche</label>
           <div className="relative">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
               size={16}
+              aria-hidden="true"
             />
             <input
               type="text"
               placeholder="Nom, e-mail…"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-surface border border-border-strong rounded-card focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small"
+              className={`${selectCls} pl-9`}
             />
           </div>
         </div>
         <div className="lg:col-span-3">
-          <label className="block text-overline font-medium text-text-muted uppercase mb-1">
-            Type client
-          </label>
-          <select
-            value={typeFilter}
-            onChange={(e) => onTypeChange(e.target.value)}
-            className="w-full bg-surface border border-border-strong rounded-card px-3 py-2 text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus">
+          <label className="block text-mention font-medium text-text mb-1">Type client</label>
+          <select value={typeFilter} onChange={(e) => onTypeChange(e.target.value)} className={selectCls}>
             <option value="">Tous les types</option>
             <option value="Simple">Simple</option>
             <option value="Revendeur">Revendeur</option>
           </select>
         </div>
         <div className="lg:col-span-4">
-          <label className="block text-overline font-medium text-text-muted uppercase mb-1">
-            Statut
-          </label>
-          <select
-            value={statusFilter}
-            onChange={(e) => onStatusChange(e.target.value)}
-            className="w-full bg-surface border border-border-strong rounded-card px-3 py-2 text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus">
+          <label className="block text-mention font-medium text-text mb-1">Statut</label>
+          <select value={statusFilter} onChange={(e) => onStatusChange(e.target.value)} className={selectCls}>
             <option value="">Tous les statuts</option>
             <option value="Active">Actif</option>
             <option value="Blocked">Bloqué</option>
@@ -142,10 +131,10 @@ export function ClientsFilterBar({
       </div>
 
       {(onOwnerChange || onPackChange || onConnChange) && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3">
           {onOwnerChange && owners && (
             <div>
-              <label htmlFor="cli-f-owner" className="block text-overline font-medium text-text-muted uppercase mb-1">
+              <label htmlFor="cli-f-owner" className="block text-mention font-medium text-text mb-1">
                 Propriétaire
               </label>
               <select id="cli-f-owner" value={ownerFilter} onChange={(e) => onOwnerChange(e.target.value)} className={selectCls}>
@@ -160,7 +149,7 @@ export function ClientsFilterBar({
           )}
           {onPackChange && packs && (
             <div>
-              <label htmlFor="cli-f-pack" className="block text-overline font-medium text-text-muted uppercase mb-1">
+              <label htmlFor="cli-f-pack" className="block text-mention font-medium text-text mb-1">
                 Pack
               </label>
               <select id="cli-f-pack" value={packFilter} onChange={(e) => onPackChange(e.target.value)} className={selectCls}>
@@ -176,7 +165,7 @@ export function ClientsFilterBar({
           )}
           {onConnChange && (
             <div>
-              <label htmlFor="cli-f-conn" className="block text-overline font-medium text-text-muted uppercase mb-1">
+              <label htmlFor="cli-f-conn" className="block text-mention font-medium text-text mb-1">
                 Connexion équip.
               </label>
               <select id="cli-f-conn" value={connFilter} onChange={(e) => onConnChange(e.target.value)} className={selectCls}>
@@ -191,22 +180,23 @@ export function ClientsFilterBar({
       )}
 
       {alertLabel && (
-        <div className="flex flex-wrap items-center gap-2 rounded-control border border-primary-200 bg-primary-50 px-3 py-2 text-small text-text">
-          <Filter size={14} className="text-primary" aria-hidden="true" />
+        <div className="col-span-12 flex flex-wrap items-center gap-2 rounded-control border border-info-200 bg-info-50 px-3 py-2 text-small text-text">
+          <Filter size={14} className="text-info-700" aria-hidden="true" />
           À traiter : <b>{alertLabel}</b>
           {onClearAlert && (
             <button
               type="button"
               onClick={onClearAlert}
-              className="ml-auto inline-flex items-center gap-1 text-mention font-medium text-primary hover:underline"
+              aria-label={`Retirer le filtre ${alertLabel}`}
+              className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-control text-info-700 hover:bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
             >
-              <X size={12} aria-hidden="true" /> Retirer
+              <X size={12} aria-hidden="true" />
             </button>
           )}
         </div>
       )}
 
-      <div className="rounded-card border border-border bg-surface p-3">
+      <div className="col-span-12 rounded-card border border-border bg-surface p-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <label className="flex items-center gap-3 cursor-pointer select-none">
             <button
@@ -263,9 +253,9 @@ export function ClientsFilterBar({
         )}
       </div>
 
-      <div className="text-mention text-text-muted">
-        {filteredCount} client{filteredCount !== 1 ? 's' : ''} affiché
-        {filteredCount !== totalCount ? ` sur ${totalCount}` : ''}
+      <div className="col-span-12 flex items-center gap-3 text-small text-text border-t border-border pt-2">
+        {filteredCount} / {totalCount} client{filteredCount !== 1 ? 's' : ''}
+        {filteredCount !== totalCount ? ' · filtrés' : ''}
       </div>
     </div>
   );

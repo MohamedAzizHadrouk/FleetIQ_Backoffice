@@ -45,7 +45,7 @@ const COMPARE_LABELS: Record<CompareMode, string> = { m30: 'il y a 30 j', y1: 'l
 
 function Section({ id, title, hint, children }: { id: string; title: string; hint: string; children: ReactNode }) {
   return (
-    <section aria-labelledby={id} className="space-y-4 col-span-12">
+    <section aria-labelledby={id} className="col-span-12 grid grid-cols-12 gap-4">
       <SectionRule id={id} title={title} hint={hint} />
       {children}
     </section>
@@ -361,9 +361,9 @@ export function DashboardPage() {
 
       {visibleKpis.length > 0 && (
         <Section id="tdb-essentiel" title="L’essentiel" hint="Un chiffre par sujet, comparé à son objectif · cliquez pour le détail">
-          {/* TDB-D-01…D-05 / TDB-R-01…R-04 */}
+          {/* TDB-D-01…D-05 / TDB-R-01…R-04 — rangée KPI à parts égales (DL § 3.2) */}
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${
+            className={`col-span-12 grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch ${
               visibleKpis.length >= 5 ? 'xl:grid-cols-5' : visibleKpis.length === 4 ? 'xl:grid-cols-4' : 'xl:grid-cols-3'
             }`}
           >
@@ -384,11 +384,17 @@ export function DashboardPage() {
         }
       >
         {/* TDB-D-06 / TDB-R-05 – bandeau Urgent */}
-        <UrgentBand items={data.todo} onOpenItem={openTodo} onOpenBell={() => setBellOpen(true)} />
-        {(showD07 || showD08) && (
-          <div className={`grid grid-cols-1 gap-4 ${showD07 && showD08 ? 'xl:grid-cols-2' : ''}`}>
-            {showD07 && <EquipmentPartsCard data={data} onOpenDetail={setDetail} />}
-            {showD08 && <SimPartsCard data={data} onOpenDetail={setDetail} />}
+        <div className="col-span-12">
+          <UrgentBand items={data.todo} onOpenItem={openTodo} onOpenBell={() => setBellOpen(true)} />
+        </div>
+        {showD07 && (
+          <div className={showD08 ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
+            <EquipmentPartsCard data={data} onOpenDetail={setDetail} />
+          </div>
+        )}
+        {showD08 && (
+          <div className={showD07 ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
+            <SimPartsCard data={data} onOpenDetail={setDetail} />
           </div>
         )}
       </Section>
@@ -396,10 +402,20 @@ export function DashboardPage() {
       {anyWhere && (
         <Section id="tdb-agir" title="Où agir" hint="Cliquez sur une ligne pour le détail">
           {show(isReseller ? 'R-07' : 'D-09') && (
-            <ParkHealthRings key={ringsKey} data={data} storageKey={ringsKey} onOpenDetail={setDetail} />
+            <div className="col-span-12">
+              <ParkHealthRings key={ringsKey} data={data} storageKey={ringsKey} onOpenDetail={setDetail} />
+            </div>
           )}
-          {show(isReseller ? 'R-08' : 'D-10') && <TopPacksCard data={data} onOpenDetail={setDetail} />}
-          {!isReseller && show('D-11') && <SimOverCard data={data} onOpenDetail={setDetail} canOpen={canOpen} />}
+          {show(isReseller ? 'R-08' : 'D-10') && (
+            <div className={!isReseller && show('D-11') ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
+              <TopPacksCard data={data} onOpenDetail={setDetail} />
+            </div>
+          )}
+          {!isReseller && show('D-11') && (
+            <div className={show(isReseller ? 'R-08' : 'D-10') ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
+              <SimOverCard data={data} onOpenDetail={setDetail} canOpen={canOpen} />
+            </div>
+          )}
         </Section>
       )}
 
