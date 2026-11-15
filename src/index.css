@@ -10,25 +10,41 @@
 
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
-/* TUNAV base styles (Bloc B de index-css-snippet.css) */
+/* TUNAV base styles + jetons Industrial Tech (T-002) */
 @layer base {
   :root {
     /* Jetons CSS (mêmes valeurs que tailwind-theme.js) – utiles pour Leaflet, jsPDF, styles en ligne */
     --tunav-primary: #0848FE;       /* Bleu Royal */
-    --tunav-primary-hover: #063ACB; /* dérivé – à valider */
+    --tunav-primary-hover: #063ACB;
     --tunav-accent: #0099FF;        /* Bleu Ciel – jamais pour du petit texte */
     --tunav-text: #3F3F3F;          /* Anthracite */
     --tunav-text-muted: #6E6E6E;    /* Gris texte */
     --tunav-gris: #777777;          /* Gris – neutre graphique */
     --tunav-surface: #FFFFFF;
     --tunav-surface-muted: #F2F6FF; /* Fond clair */
-    --tunav-border: #DDDDDD;        /* dérivé – à valider */
+    --tunav-border: #DDDDDD;
     --tunav-success: #1B7F3B;  --tunav-success-700: #176C32;
     --tunav-warning: #B45309;  --tunav-warning-700: #994708;
     --tunav-danger:  #C62828;  --tunav-danger-700:  #A82222;
-    --tunav-focus: #0848FE;         /* proposition – voir tokens.md §8 */
+    --tunav-focus: #0848FE;
     --font-latin: "Poppins", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
     --font-arabe: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, "Geeza Pro", "Noto Sans Arabic", Arial, sans-serif;
+
+    /* Industrial Tech – mesures (tokens-update.md §4) */
+    --r-tag: 2px;
+    --r-control: 4px;
+    --r-card: 6px;
+    --r-modal: 8px;
+    --h-control: 36px;
+    --h-control-sm: 28px;
+    --h-control-touch: 44px;
+    --h-row: 48px;
+    --h-row-compact: 36px;
+    --h-topbar: 48px;
+    --w-sidebar: 240px;
+    --w-rail: 56px;
+    --shadow-raised: 0 2px 8px 0 rgba(63, 63, 63, 0.14);
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   }
 
   html {
@@ -39,15 +55,14 @@
   body {
     font-family: var(--font-latin);
     font-weight: 400;
-    font-size: 1rem;          /* 16 px – texte courant */
+    font-size: 1rem;
     line-height: 1.6;
-    background-color: #F2F6FF; /* Fond clair – fond de l'application ; cartes en Blanc */
-    color: #3F3F3F;            /* Anthracite – 9,73:1 sur Fond clair, 10,53:1 sur Blanc */
+    background-color: #F2F6FF;
+    color: #3F3F3F;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Arabe (si la carte en a besoin) : police compagne, interligne 1,8, jamais d'approche ni d'italique */
   [lang="ar"], [dir="rtl"] {
     font-family: var(--font-arabe);
     line-height: 1.8;
@@ -55,23 +70,29 @@
   }
   [lang="ar"] em, [lang="ar"] i { font-style: normal; font-weight: 500; }
 
-  /* Focus clavier par défaut (filet de sécurité si un composant n'a pas ses classes focus-visible) */
   :focus-visible {
     outline: 3px solid var(--tunav-focus);
     outline-offset: 2px;
   }
   :focus:not(:focus-visible) { outline: none; }
 
-  /* Placeholders lisibles (Gris texte 5,10:1 sur Blanc) */
   ::placeholder { color: #6E6E6E; opacity: 1; }
 
-  /* Sélection de texte */
   ::selection { background-color: #E1E9FF; color: #3F3F3F; }
 
-  /* Chiffres alignés dans les tableaux et KPI (vérifier que Poppins expose « tnum » – à contrôler à l'œil) */
-  table, .tabular-nums { font-variant-numeric: tabular-nums; }
+  /* Chiffres : proportionnels (T-001) ; alignement à droite via text-right.
+     Stub chasse fixe 0,63 em – colonnes quantités seulement (.font-qty / .font-qty-digit). */
+  table, .tabular-nums { font-variant-numeric: proportional-nums; }
+  .font-qty {
+    text-align: right;
+    font-variant-numeric: proportional-nums;
+  }
+  .font-qty-digit {
+    display: inline-block;
+    width: 0.63em;
+    text-align: center;
+  }
 
-  /* Mouvement réduit : coupe les translations / animations (framer-motion, hover:-translate-y) */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -79,5 +100,21 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+@layer components {
+  /* Tableau de base Industrial Tech (DL § 9.8) */
+  .fiq-table {
+    @apply w-full border-collapse text-small text-text;
+  }
+  .fiq-table thead th {
+    @apply h-row-head px-3 text-left text-overline uppercase text-text bg-surface-muted border-b border-border-strong whitespace-nowrap;
+  }
+  .fiq-table tbody td {
+    @apply h-row px-3 py-1.5 border-b border-border-subtle align-middle;
+  }
+  .fiq-table tbody tr:hover {
+    @apply bg-surface-muted;
   }
 }

@@ -1,22 +1,14 @@
 /**
- * TUNAV – FleetIQ Back-office – thème Tailwind 3.4 (theme.extend)
- * Carte : FleetIQ 02 « Design tokens TUNAV pour le Backoffice » – agent UI/UX – 2026-11-14
- * Documentation complète, contrastes et règles de composants : tokens.md (même dossier).
+ * TUNAV – FleetIQ Back-office – thème Tailwind 3.4 (theme.extend) – « Industrial Tech »
+ * Appliqué T-002 (2026-11-15) depuis assets/redesign/tailwind-theme.proposed.js (R1 validé).
+ * Écarts : assets/redesign/tokens-update.md · règles : assets/redesign/design-language.md.
  *
  * Légende des commentaires :
- *   [Marque]       valeur du BRAND.md / brand book validé le 2026-11-11 (palette.md, typographie.md, images-icones.md)
- *   [Dérivé]       teinte ou ombre calculée à partir d'une couleur de marque – proposition, à valider
- *   [Proposition]  valeur proposée par l'agent UI/UX – à valider
+ *   [Marque]    valeur du BRAND.md / Brand Book validé le 2026-11-11 – INCHANGÉE
+ *   [Dérivé]    teinte ou ombre calculée à partir d'une couleur de marque (formule indiquée)
+ *   [R1]        jeton nouveau ou modifié par R1 – « à ajouter au Brand Book » (interface produit)
  *
- * Règle absolue : le « Ciel logo » du symbole n'existe PAS dans ce thème. Il est réservé au symbole du logo
- * (fichiers de brand-book/assets/4-logo/) et n'est jamais utilisé dans l'interface.
- *
- * Utilisation (carte 03) – tailwind.config.js :
- *   import tunavTheme from './src/theme/tailwind-theme.js'; // chemin au choix de la carte 03
- *   export default {
- *     content: ['./index.html', './src/**\/*.{js,ts,jsx,tsx}'],
- *     theme: { extend: tunavTheme },
- *   };
+ * Couleurs et polices de la marque : aucune valeur modifiée. Le « Ciel logo » du symbole reste absent de ce thème.
  */
 
 const tunavTheme = {
@@ -91,6 +83,14 @@ const tunavTheme = {
       200: '#C1D1FF', // [Dérivé]
       700: '#0848FE', // texte sur fond 50 (5,76:1)
     },
+    neutral: {
+      // [R1] famille d'état « Neutre » (En stock, Planifiée, bientôt) – mêmes valeurs que border.subtle / border / text,
+      // nommées comme les autres familles pour écrire bg-{famille}-50 text-{famille}-700 border-{famille}-200.
+      // Attention : ces 3 clés remplacent celles de la palette « neutral » par défaut de Tailwind (non utilisée dans l'application).
+      50: '#EFEFEF', // [Dérivé] Gris 12 % sur blanc (= border.subtle)
+      200: '#DDDDDD', // [Dérivé] Gris 25 % sur blanc (= border.DEFAULT)
+      700: '#3F3F3F', // [Marque] Anthracite – 9,16:1 sur neutral.50
+    },
 
     /* ---- Graphiques : 4 séries maximum (images-icones.md §5) ---- */
     chart: {
@@ -128,21 +128,70 @@ const tunavTheme = {
     button: ['1rem', { lineHeight: '1.25', letterSpacing: '0.01em', fontWeight: '500' }], // 16 Medium
     'button-sm': ['0.875rem', { lineHeight: '1.25', letterSpacing: '0.01em', fontWeight: '500' }], // [Proposition] 14 – boutons compacts de tableau
     overline: ['0.75rem', { lineHeight: '1.4', letterSpacing: '0.08em', fontWeight: '600' }], // 12 SemiBold CAPITALES
-    kpi: ['2.25rem', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }], // 36 Bold (= « chiffre clé » mobile, fixe dans le back-office – proposition)
+    kpi: ['1.75rem', { lineHeight: '1.15', letterSpacing: '-0.02em', fontWeight: '700' }], // [R1] 28 Bold (était 36) – valeur des cartes KPI, 5 cartes par rangée sans retour à la ligne
+    title: ['1.25rem', { lineHeight: '1.4', letterSpacing: '0', fontWeight: '600' }], // [R1] 20 SemiBold – titre de page dans la barre du haut
+    section: ['1rem', { lineHeight: '1.5', letterSpacing: '0', fontWeight: '600' }], // [R1] 16 SemiBold – titre de panneau
   },
 
   borderRadius: {
-    control: '8px', // [Proposition] boutons, champs, pastilles rectangulaires, éléments de menu
-    card: '12px', // [Proposition] cartes KPI, panneaux, tableaux, menus déroulants
-    modal: '16px', // [Marque] cadre à coins arrondis 16 px (images-icones.md §6, héros du site) – modales, carte de connexion
-    pill: '9999px', // pastilles d'état arrondies
+    tag: '2px', // [R1] nouveau – étiquette d'état, étiquette de catégorie, nom de pack
+    control: '4px', // [R1] était 8px – boutons, champs, listes, groupes segmentés, entrées de menu
+    card: '6px', // [R1] était 12px – panneaux, cartes KPI, tableaux, menus déroulants, notifications
+    modal: '8px', // [R1] était 16px – modales, carte de connexion. Le cadre 16 px du Brand Book (images-icones.md §6) reste la règle des images du site.
+    pill: '9999px', // inchangé – usage restreint : compteur de la cloche, avatar, interrupteur
   },
 
   boxShadow: {
-    // [Proposition] ombres teintées Anthracite, discrètes. Jamais pour « sauver » un contraste de texte.
-    card: '0 1px 2px 0 rgba(63, 63, 63, 0.06), 0 1px 3px 0 rgba(63, 63, 63, 0.10)',
-    raised: '0 4px 12px -2px rgba(63, 63, 63, 0.14)', // survol de carte cliquable, menus déroulants
-    overlay: '0 16px 48px -8px rgba(63, 63, 63, 0.28)', // modales
+    // [R1] « le filet avant l'ombre » : une ombre seulement pour ce qui flotte au-dessus de la page.
+    card: 'none', // [R1] était 0 1px 2px … – les cartes n'ont plus d'ombre (jeton gardé pour la migration, à retirer ensuite)
+    raised: '0 2px 8px 0 rgba(63, 63, 63, 0.14)', // [R1][Dérivé] Anthracite 14 % – menu déroulant, menu contextuel, cloche, infobulle (était 0 4px 12px -2px)
+    overlay: '0 12px 32px -8px rgba(63, 63, 63, 0.28)', // [R1][Dérivé] Anthracite 28 % – modale, tiroir (était 0 16px 48px -8px)
+    // [R1] filet d'état : trait intérieur de 3 px sur le bord gauche (carte, première cellule d'une ligne, bandeau)
+    'rail-success': 'inset 3px 0 0 0 #1B7F3B', // [Marque – état web] Succès
+    'rail-warning': 'inset 3px 0 0 0 #B45309', // [Marque – état web] Avertissement
+    'rail-danger': 'inset 3px 0 0 0 #C62828', // [Marque – état web] Erreur
+    'rail-info': 'inset 3px 0 0 0 #0848FE', // [Marque] Bleu Royal
+    // [R1] notification flottante = filet d'état + ombre « raised »
+    'toast-success': 'inset 3px 0 0 0 #1B7F3B, 0 2px 8px 0 rgba(63, 63, 63, 0.14)',
+    'toast-warning': 'inset 3px 0 0 0 #B45309, 0 2px 8px 0 rgba(63, 63, 63, 0.14)',
+    'toast-danger': 'inset 3px 0 0 0 #C62828, 0 2px 8px 0 rgba(63, 63, 63, 0.14)',
+    'toast-info': 'inset 3px 0 0 0 #0848FE, 0 2px 8px 0 rgba(63, 63, 63, 0.14)',
+  },
+
+  /* ---- [R1] Mesures de la coque et densité (échelle 4 / 8 px) – utilisables en h-*, w-*, min-h-*, top-*, ml-* ---- */
+  spacing: {
+    control: '36px', // contrôle par défaut (bouton, champ, liste) – bureau
+    'control-sm': '28px', // contrôle compact (dans un tableau, un pied de panneau) – ≥ 24 px (WCAG 2.5.8)
+    'control-touch': '44px', // contrôle tactile (< 1024 px) – règle maison 44 px
+    row: '48px', // ligne de tableau confortable (2 lignes de texte au plus)
+    'row-compact': '36px', // ligne de tableau compacte (1 ligne)
+    'row-head': '36px', // en-tête de tableau
+    topbar: '48px', // barre du haut (bureau)
+    'topbar-mobile': '56px', // barre du haut (< 768 px)
+    sidebar: '240px', // barre latérale (inchangée)
+    rail: '56px', // barre latérale réduite, 768–1023 px
+  },
+
+  maxWidth: {
+    content: '1680px', // [R1] largeur maximale de la grille de contenu (12 colonnes, gouttière 16 px)
+  },
+
+  zIndex: {
+    // [R1] un seul ordre d'empilement pour toute l'application
+    topbar: '30',
+    dropdown: '40',
+    overlay: '50',
+    toast: '60',
+  },
+
+  transitionDuration: {
+    fast: '120ms', // [R1] survol, pression, focus
+    base: '160ms', // [R1] menu, infobulle, modale (opacité)
+    slow: '240ms', // [R1] tiroir mobile, notification
+  },
+
+  transitionTimingFunction: {
+    standard: 'cubic-bezier(0.2, 0, 0, 1)', // [R1] courbe unique
   },
 
   ringWidth: {
