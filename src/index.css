@@ -1,0 +1,83 @@
+/* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
+/* TUNAV – Poppins + IBM Plex Sans Arabic (SIL OFL 1.1) – carte FleetIQ 03, extrait design-tokens/index-css-snippet.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+@import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+
+/* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
+
+/* TUNAV base styles (Bloc B de index-css-snippet.css) */
+@layer base {
+  :root {
+    /* Jetons CSS (mêmes valeurs que tailwind-theme.js) – utiles pour Leaflet, jsPDF, styles en ligne */
+    --tunav-primary: #0848FE;       /* Bleu Royal */
+    --tunav-primary-hover: #063ACB; /* dérivé – à valider */
+    --tunav-accent: #0099FF;        /* Bleu Ciel – jamais pour du petit texte */
+    --tunav-text: #3F3F3F;          /* Anthracite */
+    --tunav-text-muted: #6E6E6E;    /* Gris texte */
+    --tunav-gris: #777777;          /* Gris – neutre graphique */
+    --tunav-surface: #FFFFFF;
+    --tunav-surface-muted: #F2F6FF; /* Fond clair */
+    --tunav-border: #DDDDDD;        /* dérivé – à valider */
+    --tunav-success: #1B7F3B;  --tunav-success-700: #176C32;
+    --tunav-warning: #B45309;  --tunav-warning-700: #994708;
+    --tunav-danger:  #C62828;  --tunav-danger-700:  #A82222;
+    --tunav-focus: #0848FE;         /* proposition – voir tokens.md §8 */
+    --font-latin: "Poppins", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --font-arabe: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, "Geeza Pro", "Noto Sans Arabic", Arial, sans-serif;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-latin);
+    font-weight: 400;
+    font-size: 1rem;          /* 16 px – texte courant */
+    line-height: 1.6;
+    background-color: #F2F6FF; /* Fond clair – fond de l'application ; cartes en Blanc */
+    color: #3F3F3F;            /* Anthracite – 9,73:1 sur Fond clair, 10,53:1 sur Blanc */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Arabe (si la carte en a besoin) : police compagne, interligne 1,8, jamais d'approche ni d'italique */
+  [lang="ar"], [dir="rtl"] {
+    font-family: var(--font-arabe);
+    line-height: 1.8;
+    letter-spacing: 0 !important;
+  }
+  [lang="ar"] em, [lang="ar"] i { font-style: normal; font-weight: 500; }
+
+  /* Focus clavier par défaut (filet de sécurité si un composant n'a pas ses classes focus-visible) */
+  :focus-visible {
+    outline: 3px solid var(--tunav-focus);
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) { outline: none; }
+
+  /* Placeholders lisibles (Gris texte 5,10:1 sur Blanc) */
+  ::placeholder { color: #6E6E6E; opacity: 1; }
+
+  /* Sélection de texte */
+  ::selection { background-color: #E1E9FF; color: #3F3F3F; }
+
+  /* Chiffres alignés dans les tableaux et KPI (vérifier que Poppins expose « tnum » – à contrôler à l'œil) */
+  table, .tabular-nums { font-variant-numeric: tabular-nums; }
+
+  /* Mouvement réduit : coupe les translations / animations (framer-motion, hover:-translate-y) */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
