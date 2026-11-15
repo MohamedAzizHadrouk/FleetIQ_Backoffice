@@ -10,6 +10,8 @@ import { ArrowRight, CheckCircle2, Clock, Cpu, Wifi, WifiOff } from 'lucide-reac
 import type { ReactNode } from 'react';
 import { DonutRing, Legend, StackedBar } from '../charts';
 import type { DetailSpec } from '../dashboard/DetailModal';
+import { SectionRule } from '../shell/PageShell';
+import { FAMILY_CLS } from '../ui/StatusTag';
 import type { KpiTable } from '../../utils/dashboardKpis';
 import {
   byNetworkText,
@@ -24,7 +26,6 @@ import {
   type EqRow,
   type StateCounts
 } from '../../utils/equipmentsKpis';
-import { SectionTitle } from '../clients/ClientsOverview';
 
 type Props = {
   rows: EqRow[];
@@ -54,23 +55,31 @@ const maxDays = (l: EqRow[], f: (r: EqRow) => number | null) => {
   return `${fmt(Math.floor(v))} j`;
 };
 
-function TopCard({ kpiId, title, icon: Icon, children, onOpen }: { kpiId: string; title: string; icon: typeof Cpu; children: ReactNode; onOpen: () => void }) {
+function TopCard({
+  kpiId,
+  title,
+  children,
+  onOpen,
+  rail
+}: {
+  kpiId: string;
+  title: string;
+  children: ReactNode;
+  onOpen: () => void;
+  rail?: string;
+}) {
   return (
     <button
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className="text-left w-full bg-surface rounded-card border border-border p-5 hover:border-primary-200 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className={`group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 pt-3 hover:border-border-strong transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${rail ?? ''}`}
     >
-      <div className="flex items-start justify-between mb-3 gap-2">
-        <h3 className="text-overline uppercase text-text-muted">{title}</h3>
-        <span className="flex h-control w-9 shrink-0 items-center justify-center rounded-control bg-primary-100 text-primary">
-          <Icon size={18} aria-hidden="true" />
-        </span>
-      </div>
+      <span className="text-overline uppercase text-text-muted">{title}</span>
       {children}
-      <span className="mt-3 flex items-center justify-end gap-1 text-mention text-primary">
-        Voir le détail <ArrowRight size={12} aria-hidden="true" />
+      <span className="mt-auto inline-flex items-center gap-1 pt-2 border-t border-border-subtle text-mention font-medium text-primary">
+        Voir le détail
+        <ArrowRight size={14} aria-hidden="true" />
       </span>
     </button>
   );
@@ -79,12 +88,13 @@ function TopCard({ kpiId, title, icon: Icon, children, onOpen }: { kpiId: string
 function RateCard({
   kpiId,
   title,
-  icon,
+  icon: Icon,
   n,
   of,
   base,
   tone,
-  onOpen
+  onOpen,
+  rail
 }: {
   kpiId: string;
   title: string;
@@ -94,15 +104,17 @@ function RateCard({
   base: string;
   tone: 'success' | 'danger' | 'warning';
   onOpen: () => void;
+  rail?: string;
 }) {
   const txt = tone === 'success' ? 'text-success-700' : tone === 'danger' ? 'text-danger-700' : 'text-warning-700';
   return (
-    <TopCard kpiId={kpiId} title={title} icon={icon} onOpen={onOpen}>
-      <div className="flex items-baseline gap-2">
-        <span className="text-kpi text-text tabular-nums">{fmt(n)}</span>
+    <TopCard kpiId={kpiId} title={title} onOpen={onOpen} rail={rail}>
+      <span className="flex items-baseline gap-2 flex-wrap">
+        <span className="text-kpi text-text font-qty">{fmt(n)}</span>
         <span className={`text-small font-semibold ${txt}`}>{pct(n, of)} %</span>
-      </div>
-      <p className="text-small text-text-muted mt-1">
+        <Icon size={16} className="text-text-muted" aria-hidden="true" />
+      </span>
+      <p className="text-small text-text-muted">
         sur {fmt(of)} {base}
       </p>
     </TopCard>
@@ -240,13 +252,21 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
   const live = installed.filter((r) => r.live);
   const off30 = installed.filter((r) => r.off30);
   const pending = sold.filter((r) => r.pending30);
-  const cards: Array<{ key: EqAlertKey; id: string; title: string; tag: string; tagCls: string; list: EqRow[]; icon: typeof Cpu }> = [
+  const cards: Array<{
+    key: EqAlertKey;
+    id: string;
+    title: string;
+    tag: string;
+    family: 'danger' | 'warning';
+    list: EqRow[];
+    icon: typeof Cpu;
+  }> = [
     {
       key: 'direct',
       id: 'EQ-A-23',
       title: `Déconnectés depuis plus de ${fmt(alertDays)} j`,
       tag: 'SAV · en direct',
-      tagCls: 'bg-danger-50 text-danger-700 border-danger-200',
+      family: 'danger',
       list: live,
       icon: WifiOff
     },
@@ -255,7 +275,7 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
       id: 'EQ-A-21',
       title: `Non connectés > ${TODO_DAYS} j`,
       tag: 'SAV',
-      tagCls: 'bg-danger-50 text-danger-700 border-danger-200',
+      family: 'danger',
       list: off30,
       icon: WifiOff
     },
@@ -264,23 +284,29 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
       id: 'EQ-A-22',
       title: `Installation en attente > ${TODO_DAYS} j`,
       tag: 'Installation',
-      tagCls: 'bg-warning-50 text-warning-700 border-warning-200',
+      family: 'warning',
       list: pending,
       icon: Clock
     }
   ];
 
+  const notInstalledRail = c.notInstalled > 0 ? 'shadow-rail-warning' : undefined;
+  const notConnectedRail = c.notConnected > 0 ? 'shadow-rail-danger' : undefined;
+
   return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+    <div className="grid grid-cols-12 gap-4 gap-y-8">
+      <div className="col-span-12 space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 items-stretch">
           {/* EQ-E-01 Parc (E-01) */}
-          <TopCard kpiId="EQ-E-01" title="Parc" icon={Cpu} onOpen={openParc}>
-            <div className="text-kpi text-text tabular-nums">{fmt(c.park)}</div>
-            <p className="text-small text-text-muted mt-1">
+          <TopCard kpiId="EQ-E-01" title="Parc" onOpen={openParc}>
+            <span className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-kpi text-text font-qty">{fmt(c.park)}</span>
+              <Cpu size={16} className="text-text-muted" aria-hidden="true" />
+            </span>
+            <p className="text-small text-text-muted">
               {fmt(c.sold)} vendus · {fmt(c.stock)} en stock
             </p>
-            <div className="mt-2">
+            <div className="mt-1">
               <StackedBar
                 height="md"
                 labelMinShare={1}
@@ -294,14 +320,30 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
               />
             </div>
           </TopCard>
-          {/* EQ-E-05 Installés (E-05) */}
           <RateCard kpiId="EQ-E-05" title="Installés" icon={CheckCircle2} n={c.installed} of={c.sold} base="vendus" tone="success" onOpen={() => openState('installe')} />
-          {/* EQ-E-04 Non installés (E-04) */}
-          <RateCard kpiId="EQ-E-04" title="Non installés" icon={Clock} n={c.notInstalled} of={c.sold} base="vendus" tone="warning" onOpen={() => openState('non_installe')} />
-          {/* EQ-E-02 Connectés (E-02) */}
+          <RateCard
+            kpiId="EQ-E-04"
+            title="Non installés"
+            icon={Clock}
+            n={c.notInstalled}
+            of={c.sold}
+            base="vendus"
+            tone="warning"
+            onOpen={() => openState('non_installe')}
+            rail={notInstalledRail}
+          />
           <RateCard kpiId="EQ-E-02" title="Connectés" icon={Wifi} n={c.connected} of={c.installed} base="installés" tone="success" onOpen={() => openState('connecte')} />
-          {/* EQ-E-03 Non connectés (E-03) */}
-          <RateCard kpiId="EQ-E-03" title="Non connectés" icon={WifiOff} n={c.notConnected} of={c.installed} base="installés" tone="danger" onOpen={() => openState('non_connecte')} />
+          <RateCard
+            kpiId="EQ-E-03"
+            title="Non connectés"
+            icon={WifiOff}
+            n={c.notConnected}
+            of={c.installed}
+            base="installés"
+            tone="danger"
+            onOpen={() => openState('non_connecte')}
+            rail={notConnectedRail}
+          />
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <Legend
@@ -318,12 +360,14 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
         </div>
       </div>
 
-      <section aria-labelledby="eq-todo" className="space-y-3">
-        <SectionTitle id="eq-todo" title="À traiter" hint="Cliquez sur une carte pour filtrer la liste des équipements" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section aria-labelledby="eq-todo" className="col-span-12 grid grid-cols-12 gap-4">
+        <SectionRule id="eq-todo" title="À traiter" hint="Cliquez sur une carte pour filtrer la liste des équipements" />
+        <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-4">
           {cards.map((a) => {
             const on = alertFilter === a.key;
             const Icon = a.icon;
+            const rail =
+              a.list.length > 0 ? (a.family === 'danger' ? 'shadow-rail-danger' : 'shadow-rail-warning') : '';
             return (
               <button
                 key={a.key}
@@ -331,8 +375,8 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
                 aria-pressed={on}
                 data-kpi={a.id}
                 onClick={() => onAlertClick(a.key)}
-                className={`text-left rounded-card border p-4 transition-shadow focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                  on ? 'border-primary bg-primary-50' : 'border-border bg-surface'
+                className={`text-left rounded-card border p-4 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${rail} ${
+                  on ? 'border-primary bg-primary-50' : 'border-border bg-surface hover:border-border-strong'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -340,10 +384,14 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
                     <Icon size={16} aria-hidden="true" className="text-text-muted" />
                     {a.title}
                   </span>
-                  <span className={`shrink-0 px-2 py-0.5 rounded-pill border text-mention font-semibold uppercase ${a.tagCls}`}>{a.tag}</span>
+                  <span
+                    className={`shrink-0 inline-flex items-center h-6 px-2 rounded-tag border text-mention font-semibold uppercase tracking-[0.06em] whitespace-nowrap ${FAMILY_CLS[a.family]}`}
+                  >
+                    {a.tag}
+                  </span>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-kpi text-text tabular-nums">{fmt(a.list.length)}</span>
+                  <span className="text-kpi text-text font-qty">{fmt(a.list.length)}</span>
                   <span className="text-small text-text-muted">équipement(s)</span>
                 </div>
                 <p className="text-mention text-text-muted truncate" title={byNetworkText(a.list, isNetwork)}>

@@ -37,6 +37,9 @@ import { BellMenu } from '../components/dashboard/BellMenu';
 import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModal';
 import { SectionTitle } from '../components/clients/ClientsOverview';
 import { CriticalBanner, PacksOverview } from '../components/packs/PacksOverview';
+import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { Button } from '../components/ui/Button';
+import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { ALERT_META, alertDetail } from '../components/packs/packsAlerts';
 import { FeaturesSection, PacksChosenSection, UsageSection } from '../components/packs/PacksCharts';
 import {
@@ -500,70 +503,87 @@ export function SubscriptionsPage() {
   const exportPackClientsExcel = () => exportPackClientsToExcel(filteredClients, packById as unknown as Map<number, StorePack>);
   const exportPackClientsPdf = () => exportPackClientsToPdf(filteredClients, packById as unknown as Map<number, StorePack>);
 
-  const ctrlBtn =
-    'inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control border transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   const dateInput =
     'h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   const shownClients = listClients.slice(0, visibleCount);
   const filterActive = !!alertFilter || !!packFilter || !!clientSearch.trim();
   const packFilterLabel = packFilter === 'none' ? 'Sans pack' : packById.get(Number(packFilter))?.name;
 
-  return (
-    <div className="space-y-8 pb-8">
-      {/* En-tête v3 : titre, Documentation (bientôt), exports, Nouveau pack, date du jour, cloche toujours à droite */}
-      <header className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-title text-text">Gestion des Packs</h1>
-            <button
-              type="button"
-              aria-disabled="true"
-              title="Documentation des KPI : bientôt (carte FleetIQ 11)"
-              onClick={(e) => e.preventDefault()}
-              className="inline-flex items-center gap-1.5 h-control px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
-            >
-              <BookOpen size={16} aria-hidden="true" />
-              Documentation
-              <span className="rounded-pill bg-border-subtle px-2 py-0.5 text-mention text-text">bientôt</span>
-            </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <TableExportButtons
-              size="compact"
-              onExportExcel={exportPackClientsExcel}
-              onExportPdf={exportPackClientsPdf}
-              disabled={filteredClients.length === 0}
-            />
-            {canCreateEditPacks && (
-              <button
-                type="button"
-                onClick={openCreatePackModal}
-                className="inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
-              >
-                <Plus size={16} aria-hidden="true" />
-                Nouveau pack
-              </button>
-            )}
-            <span className="inline-flex items-center gap-2 h-control px-3 rounded-control border border-border bg-surface text-small text-text">
-              <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
-              Aujourd’hui <b className="tabular-nums">{today.toLocaleDateString('fr-FR')}</b>
-            </span>
-            <BellMenu
-              items={bellItems}
-              open={bellOpen}
-              onToggle={setBellOpen}
-              onOpenItem={(t) => setDetail(alertDetail(t.id as PkAlertKey, data))}
-              canOpen={(r) => r === 'subscriptions'}
-            />
-          </div>
-        </div>
-        <p className="text-small text-text-muted">
-          Créez des packs, affectez des fonctionnalités, puis associez un pack à chaque client. Aucun prix sur cette page.
-          {!canCreateEditPacks && canManagePayment ? ' Finance : paiement seulement (création et modification des packs réservées à l’Admin).' : ''}
-        </p>
+  const dateFr = today.toLocaleDateString('fr-FR');
+  const docsBtn = (
+    <Button type="button" variant="neutral" size="compact" disabled title="Documentation des KPI : bientôt (carte FleetIQ 11)">
+      <BookOpen size={16} aria-hidden="true" />
+      Documentation
+      <StatusTagFromLabel label="bientôt" />
+    </Button>
+  );
+  const bell = (
+    <BellMenu
+      items={bellItems}
+      open={bellOpen}
+      onToggle={setBellOpen}
+      onOpenItem={(t) => setDetail(alertDetail(t.id as PkAlertKey, data))}
+      canOpen={(r) => r === 'subscriptions'}
+    />
+  );
+  const subtitle = (
+    <>
+      Créez des packs, affectez des fonctionnalités, puis associez un pack à chaque client. Aucun prix sur cette page.
+      {!canCreateEditPacks && canManagePayment ? ' Finance : paiement seulement (création et modification des packs réservées à l’Admin).' : ''}
+    </>
+  );
 
-        {/* Barre d'outils : période (≤ 1 an), « Au » = aujourd'hui, comparaison optionnelle */}
-        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3">
+  return (
+    <PageShell
+      topBar={<TopBar title="Gestion des Packs" titleExtra={docsBtn} date={dateFr} bell={bell} />}
+      pageHeader={
+        <PageHeader
+          mobileTitle="Gestion des Packs"
+          context={subtitle}
+          actions={
+            <>
+              <span className="hidden sm:inline-flex">{docsBtn}</span>
+              <TableExportButtons
+                size="compact"
+                onExportExcel={exportPackClientsExcel}
+                onExportPdf={exportPackClientsPdf}
+                disabled={filteredClients.length === 0}
+              />
+              {canCreateEditPacks && (
+                <Button type="button" variant="primary" onClick={openCreatePackModal}>
+                  <Plus size={16} aria-hidden="true" />
+                  Nouveau pack
+                </Button>
+              )}
+              <div className="md:hidden">{bell}</div>
+            </>
+          }
+        />
+      }
+      toolbar={
+        <PageToolbar
+          note={
+            <>
+              Période : <b className="text-text">{frDate(period.from)} → {frDate(period.to)}</b> ({fmt(period.days)} j)
+              {compareRes.period ? (
+                <>
+                  {' '}
+                  · comparée au <b className="text-text">{frDate(compareRes.period.from)} → {frDate(compareRes.period.to)}</b>
+                </>
+              ) : (
+                ' · sans comparaison'
+              )}
+              {` · période personnalisée : ${fmt(MAX_PERIOD_DAYS)} j maximum · alertes et échéances calculées au ${frDate(today)} · connecté = données ≤ ${fmt(data.connDays)} j`}
+              {(periodRes.error || compareRes.error) && (
+                <span role="alert" className="ml-2 font-medium text-danger-700">
+                  {periodRes.error || compareRes.error}
+                  {periodRes.error ? ' (30 derniers jours affichés)' : ''}
+                </span>
+              )}
+            </>
+          }
+        >
+          {/* Période (≤ 1 an), « Au » = aujourd'hui, comparaison optionnelle */}
           <div className="inline-flex flex-wrap items-center gap-0.5 rounded-control border border-border p-0.5" role="group" aria-label="Période">
             <CalendarDays size={16} aria-hidden="true" className="mx-1.5 text-text-muted" />
             {PERIOD_OPTIONS.map((p) => (
@@ -597,15 +617,10 @@ export function SubscriptionsPage() {
             </label>
           )}
           <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-          <button
-            type="button"
-            aria-pressed={compareOn}
-            onClick={() => setCompareOn((v) => !v)}
-            className={`${ctrlBtn} ${compareOn ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-primary border-primary hover:bg-primary-50'}`}
-          >
+          <Button type="button" variant={compareOn ? 'primary' : 'secondary'} aria-pressed={compareOn} onClick={() => setCompareOn((v) => !v)}>
             <GitCompareArrows size={16} aria-hidden="true" />
             Comparer
-          </button>
+          </Button>
           {compareOn && (
             <>
               <label className="inline-flex items-center gap-2 text-small text-text">
@@ -626,37 +641,20 @@ export function SubscriptionsPage() {
               )}
             </>
           )}
-        </div>
-        <p className="text-mention text-text-muted">
-          Période : <b className="text-text">{frDate(period.from)} → {frDate(period.to)}</b> ({fmt(period.days)} j)
-          {compareRes.period ? (
-            <>
-              {' '}
-              · comparée au <b className="text-text">{frDate(compareRes.period.from)} → {frDate(compareRes.period.to)}</b>
-            </>
-          ) : (
-            ' · sans comparaison'
-          )}
-          {` · période personnalisée : ${fmt(MAX_PERIOD_DAYS)} j maximum · alertes et échéances calculées au ${frDate(today)} · connecté = données ≤ ${fmt(data.connDays)} j`}
-          {(periodRes.error || compareRes.error) && (
-            <span role="alert" className="ml-2 font-medium text-danger-700">
-              {periodRes.error || compareRes.error}
-              {periodRes.error ? ' (30 derniers jours affichés)' : ''}
-            </span>
-          )}
-        </p>
-        {!bannerClosed && (
-          <CriticalBanner
-            data={data}
-            onClose={() => setBannerClosed(true)}
-            onShow={() => {
-              setAlertFilter('critique');
-              setVisibleCount(PAGE_SIZE);
-              catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }}
-          />
-        )}
-      </header>
+        </PageToolbar>
+      }
+    >
+      {!bannerClosed && (
+        <CriticalBanner
+          data={data}
+          onClose={() => setBannerClosed(true)}
+          onShow={() => {
+            setAlertFilter('critique');
+            setVisibleCount(PAGE_SIZE);
+            catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+        />
+      )}
 
       <PacksOverview data={data} periodLabel={periodLabel} compareLabel={compareLabel} alertFilter={alertFilter} onOpenDetail={setDetail} />
 
@@ -1442,6 +1440,6 @@ export function SubscriptionsPage() {
         </div>
       </Modal>
 
-    </div>
+    </PageShell>
   );
 }

@@ -48,6 +48,9 @@ import {
 import { exportSimsToExcel, exportSimsToPdf, getSimStatus } from '../utils/simTableExport';
 import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModal';
 import { SectionTitle } from '../components/clients/ClientsOverview';
+import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { Button } from '../components/ui/Button';
+import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { SimsOffers, SimsTopCards } from '../components/sims/SimsOverview';
 import { SimsConsumption } from '../components/sims/SimsConsumption';
 import { SimsStats } from '../components/sims/SimsStats';
@@ -562,73 +565,75 @@ export function SimsPage() {
     'h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus';
   const overClient = data.alerts.overClients[0];
 
-  return (
-    <div className="space-y-8 pb-8">
-      {/* 0. En-tête v3 : titre, Documentation (bientôt), exports, Offres puce, Ajouter une puce, date, cloche à droite */}
-      <header className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-title text-text">Gestion des puces</h1>
-            <button
-              type="button"
-              aria-disabled="true"
-              title="Documentation des KPI : bientôt (carte FleetIQ 11)"
-              onClick={(e) => e.preventDefault()}
-              className="inline-flex items-center gap-1.5 h-control px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
-            >
-              <BookOpen size={16} aria-hidden="true" />
-              Documentation
-              <span className="rounded-pill bg-border-subtle px-2 py-0.5 text-mention text-text">bientôt</span>
-            </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <TableExportButtons size="compact" onExportExcel={exportFilteredExcel} onExportPdf={exportFilteredPdf} disabled={filteredSims.length === 0} />
-            {canManageSims && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setIsOffersListOpen(true)}
-                  className="inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control border border-border bg-surface text-text hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-                >
-                  <Tag size={16} aria-hidden="true" />
-                  Offres puce
-                </button>
-                <button
-                  type="button"
-                  onClick={openCreateSim}
-                  className="inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
-                >
-                  <Plus size={16} aria-hidden="true" />
-                  Ajouter une puce
-                </button>
-              </>
-            )}
-            <span className="inline-flex items-center gap-2 h-control px-3 rounded-control border border-border bg-surface text-small text-text">
-              <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
-              Aujourd’hui <b className="tabular-nums">{mockToday.toLocaleDateString('fr-FR')}</b>
-            </span>
-            <SimsBell
-              data={data}
-              showPrices={showPrices}
-              open={bellOpen}
-              onToggle={setBellOpen}
-              onOverClient={(c) => setDetail(overClientDetail(dctx, c))}
-              onOpenSim={openFiche}
-              onAlertGroup={(k) => setDetail(alertDetail(dctx, k))}
-              onShowAll={() => {
-                setFilters({ ...EMPTY_FILTERS, alert: 'toutes' });
-                scrollToList();
-              }}
-            />
-          </div>
-        </div>
-        <p className="text-small text-text-muted">
-          Puces SIM de Tunav et de ses revendeurs : offre, prix fixe par puce et par mois, affectation aux clients et équipements. Une puce est installée
-          (son équipement est posé) ou non installée.{!canManageSims ? ' Finance : consultation seulement (aucune action).' : ''}
-        </p>
+  const dateFr = mockToday.toLocaleDateString('fr-FR');
+  const docsBtn = (
+    <Button type="button" variant="neutral" size="compact" disabled title="Documentation des KPI : bientôt (carte FleetIQ 11)">
+      <BookOpen size={16} aria-hidden="true" />
+      Documentation
+      <StatusTagFromLabel label="bientôt" />
+    </Button>
+  );
+  const bell = (
+    <SimsBell
+      data={data}
+      showPrices={showPrices}
+      open={bellOpen}
+      onToggle={setBellOpen}
+      onOverClient={(c) => setDetail(overClientDetail(dctx, c))}
+      onOpenSim={openFiche}
+      onAlertGroup={(k) => setDetail(alertDetail(dctx, k))}
+      onShowAll={() => {
+        setFilters({ ...EMPTY_FILTERS, alert: 'toutes' });
+        scrollToList();
+      }}
+    />
+  );
+  const subtitle = (
+    <>
+      Puces SIM de Tunav et de ses revendeurs : offre, prix fixe par puce et par mois, affectation aux clients et équipements. Une puce est installée
+      (son équipement est posé) ou non installée.{!canManageSims ? ' Finance : consultation seulement (aucune action).' : ''}
+    </>
+  );
 
-        {/* Barre d'outils : Réseau en premier, puis période */}
-        <div className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-4 py-3">
+  return (
+    <PageShell
+      topBar={<TopBar title="Gestion des puces" titleExtra={docsBtn} date={dateFr} bell={bell} />}
+      pageHeader={
+        <PageHeader
+          mobileTitle="Gestion des puces"
+          context={subtitle}
+          actions={
+            <>
+              <span className="hidden sm:inline-flex">{docsBtn}</span>
+              <TableExportButtons size="compact" onExportExcel={exportFilteredExcel} onExportPdf={exportFilteredPdf} disabled={filteredSims.length === 0} />
+              {canManageSims && (
+                <>
+                  <Button type="button" variant="neutral" onClick={() => setIsOffersListOpen(true)}>
+                    <Tag size={16} aria-hidden="true" />
+                    Offres puce
+                  </Button>
+                  <Button type="button" variant="primary" onClick={openCreateSim}>
+                    <Plus size={16} aria-hidden="true" />
+                    Ajouter une puce
+                  </Button>
+                </>
+              )}
+              <div className="md:hidden">{bell}</div>
+            </>
+          }
+        />
+      }
+      toolbar={
+        <PageToolbar
+          note={
+            <>
+              Période : <b className="text-text">{period.label}</b>
+              {period.estimated ? ' (estimée à partir des totaux mensuels)' : ''} · {fmt(data.total)} puces : Tunav {fmt(data.tunavSims)} · revendeurs{' '}
+              {fmt(data.resellerSims)} · paramètres (à confirmer) : @MinMo {fmt(MIN_MO)} Mo · @RemindPct {fmt(REMIND_PCT)} % · @MuteDays {fmt(MUTE_DAYS)} j
+            </>
+          }
+        >
+          {/* Réseau en premier, puis période */}
           <label className="inline-flex items-center gap-2 text-small text-text">
             <Network size={16} aria-hidden="true" className="text-text-muted" />
             <span className="font-medium">Réseau</span>
@@ -668,13 +673,9 @@ export function SimsPage() {
               ))}
             </select>
           )}
-        </div>
-        <p className="text-mention text-text-muted">
-          Période : <b className="text-text">{period.label}</b>
-          {period.estimated ? ' (estimée à partir des totaux mensuels)' : ''} · {fmt(data.total)} puces : Tunav {fmt(data.tunavSims)} · revendeurs{' '}
-          {fmt(data.resellerSims)} · paramètres (à confirmer) : @MinMo {fmt(MIN_MO)} Mo · @RemindPct {fmt(REMIND_PCT)} % · @MuteDays {fmt(MUTE_DAYS)} j
-        </p>
-      </header>
+        </PageToolbar>
+      }
+    >
 
       {/* 1. Quatre cartes · 2. Puces installées par offre (PU-P-05) */}
       <SimsTopCards
@@ -1421,6 +1422,6 @@ export function SimsPage() {
           </div>
         </div>
       </Modal>
-    </div>
+    </PageShell>
   );
 }

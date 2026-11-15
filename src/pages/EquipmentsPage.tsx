@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Gestion des Équipements v3 – carte FleetIQ 07 (maquette Equipements-v3 · Documentation-Equipements-v3).
  * Ordre de la page : en-tête (titre, Documentation « bientôt », date des données, cloche EQ-A-23) → cartes du haut
  * (EQ-E-01 … EQ-E-05) → À traiter (EQ-A-23, EQ-A-21, EQ-A-22) → liste EQ-T-11 (fiche EQ-F-11) → Répartition
@@ -42,6 +42,9 @@ import { EquipmentsOverview } from '../components/equipments/EquipmentsOverview'
 import { EquipmentsRepartition } from '../components/equipments/EquipmentsRepartition';
 import { EquipmentsBell, LiveAlertToast } from '../components/equipments/EquipmentsAlerts';
 import { EquipmentFicheSummary } from '../components/equipments/EquipmentFicheSummary';
+import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { Button } from '../components/ui/Button';
+import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { EquipmentType, EQUIPMENT_TYPES, useFleetStore } from '../state/FleetStore';
 import { parseDate } from '../state/mock/dates';
 import { useBackofficePermissions, useBackofficeRole } from '../hooks/useBackofficePermissions';
@@ -697,64 +700,70 @@ export function EquipmentsPage() {
   const exportFilteredPdf = () => exportEquipmentsToPdf(equipmentExportOptions);
 
   const toast = !toastClosed && liveAlerts.length > 0 ? liveAlerts[0] : null;
+  const dateFr = mockToday.toLocaleDateString('fr-FR');
+  const pageSubtitle = `${
+    isNetwork
+      ? 'Parc des boîtiers GPS de tout le réseau (Tunav, puis les revendeurs) : installés ou non, connectés ou non, quoi faire.'
+      : `Parc des boîtiers GPS de vos clients (${currentUserName}) : installés ou non, connectés ou non, quoi faire.`
+  }${permissions?.equipments.readOnly ? ' Consultation seule.' : ''}`;
+  const docsBtn = (
+    <Button type="button" variant="neutral" size="compact" disabled title="Documentation des KPI : bientôt (carte FleetIQ 11)">
+      <BookOpen size={16} aria-hidden="true" />
+      Documentation
+      <StatusTagFromLabel label="bientôt" />
+    </Button>
+  );
+  const bell = (
+    <EquipmentsBell
+      alerts={liveAlerts}
+      alertDays={alertDays}
+      open={bellOpen}
+      onToggle={setBellOpen}
+      onOpenRow={openFiche}
+      onShowAll={() => toggleAlert('direct')}
+    />
+  );
 
   return (
-    <div className="space-y-8 pb-8">
-      {/* En-tête : titre, Documentation (bientôt), exports, ajout, date des données, cloche EQ-A-23 */}
-      <header className="space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-title text-text">Gestion des Équipements</h1>
-            <button
-              type="button"
-              aria-disabled="true"
-              title="Documentation des KPI : bientôt (carte FleetIQ 11)"
-              onClick={(e) => e.preventDefault()}
-              className="inline-flex items-center gap-1.5 h-control px-3 text-button-sm rounded-control border border-border bg-surface text-text-muted cursor-not-allowed"
-            >
-              <BookOpen size={16} aria-hidden="true" />
-              Documentation
-              <span className="rounded-pill bg-border-subtle px-2 py-0.5 text-mention text-text">bientôt</span>
-            </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <TableExportButtons
-              size="compact"
-              onExportExcel={exportFilteredExcel}
-              onExportPdf={exportFilteredPdf}
-              disabled={filteredEquipments.length === 0}
-            />
-            {permissions?.equipments.canAdd && (
-              <button
-                onClick={openAddStock}
-                className="inline-flex items-center gap-2 h-control px-3 text-button-sm rounded-control bg-primary text-text-inverse hover:bg-primary-hover transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
-              >
-                <Plus size={16} aria-hidden="true" />
-                Ajouter un équipement
-              </button>
-            )}
-            <span className="inline-flex items-center gap-2 h-control px-3 rounded-control border border-border bg-surface text-small text-text">
-              <span className="h-2 w-2 rounded-pill bg-success" aria-hidden="true" />
-              Données au <b className="tabular-nums">{mockToday.toLocaleDateString('fr-FR')}</b>
-            </span>
-            <EquipmentsBell
-              alerts={liveAlerts}
-              alertDays={alertDays}
-              open={bellOpen}
-              onToggle={setBellOpen}
-              onOpenRow={openFiche}
-              onShowAll={() => toggleAlert('direct')}
-            />
-          </div>
-        </div>
-        <p className="text-small text-text-muted">
-          {isNetwork
-            ? 'Parc des boîtiers GPS de tout le réseau (Tunav, puis les revendeurs) : installés ou non, connectés ou non, quoi faire.'
-            : `Parc des boîtiers GPS de vos clients (${currentUserName}) : installés ou non, connectés ou non, quoi faire.`}
-          {permissions?.equipments.readOnly ? ' Consultation seule.' : ''}
-        </p>
-      </header>
-
+    <PageShell
+      topBar={<TopBar title="Gestion des Équipements" titleExtra={docsBtn} dateLabel="Données au" date={dateFr} bell={bell} />}
+      pageHeader={
+        <PageHeader
+          mobileTitle="Gestion des Équipements"
+          context={pageSubtitle}
+          actions={
+            <>
+              <span className="hidden sm:inline-flex">{docsBtn}</span>
+              <TableExportButtons
+                size="compact"
+                onExportExcel={exportFilteredExcel}
+                onExportPdf={exportFilteredPdf}
+                disabled={filteredEquipments.length === 0}
+              />
+              {permissions?.equipments.canAdd && (
+                <Button type="button" variant="primary" onClick={openAddStock}>
+                  <Plus size={16} aria-hidden="true" />
+                  Ajouter un équipement
+                </Button>
+              )}
+              <div className="md:hidden">{bell}</div>
+            </>
+          }
+        />
+      }
+      toolbar={
+        <PageToolbar
+          note={
+            <>
+              Données au <b className="text-text">{dateFr}</b> · connecté = un envoi depuis {connDays} j ou moins · alertes « En direct » = déconnectés &gt;{' '}
+              {alertDays} j
+            </>
+          }
+        >
+          <span className="text-label text-text">État du parc</span>
+        </PageToolbar>
+      }
+    >
       <EquipmentsOverview
         rows={allRows}
         isNetwork={isNetwork}
@@ -1576,6 +1585,6 @@ export function EquipmentsPage() {
           </div>
         </div>
       </Modal>
-    </div>
+    </PageShell>
   );
 }
