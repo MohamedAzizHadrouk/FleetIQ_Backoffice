@@ -145,13 +145,13 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
 
   return (
     <section aria-labelledby="cli-activite" className="grid grid-cols-12 gap-4">
-      <SectionRule id="cli-activite" title="Activité et renouvellement" hint="Cliquez sur un graphique pour voir le détail à droite" />
+      <SectionRule id="cli-activite" title="Activité et renouvellement" />
 
       {/* CLI-C-01 Connexion mensuelle des clients */}
       <div className="col-span-12">
       <Card
         title="Connexion mensuelle des clients"
-        hint="C-01 · journal des connexions fictif (à confirmer back-end)"
+        
         side={
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
@@ -178,7 +178,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
             </div>
             {isNetwork && (
               <div>
-                <div className="text-overline uppercase text-text-muted mb-1">Par propriétaire · cliquez pour afficher sa courbe</div>
+                <div className="text-overline uppercase text-text-muted mb-1">Par propriétaire</div>
                 <ul className="space-y-1">
                   {c01.owners.map((o) => {
                     const on = c01Owners.includes(o.key);
@@ -263,7 +263,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
       <div className="col-span-12">
       <Card
         title="Pic du nombre de clients connectés"
-        hint={`Pic : ${fmt(c03.months[c03.peakIdx].value)} clients connectés en ${formatMonthFr(c03.months[c03.peakIdx].month)} · C-03`}
+        hint={`Pic : ${fmt(c03.months[c03.peakIdx].value)} clients · ${formatMonthFr(c03.months[c03.peakIdx].month)}`}
         side={
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
@@ -311,7 +311,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
       <div className="col-span-12">
       <Card
         title="Nouveaux clients vs clients bloqués par mois"
-        hint="6 derniers mois · arrivée = création du client · départ = passage en bloqué · D-03"
+        
         side={
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
@@ -360,7 +360,7 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
       <div className="col-span-12">
       <Card
         title="Échéances des packs par mois"
-        hint={`${fmt(d04.expiredCount)} déjà expiré(s) · ${fmt(d04.soonCount)} expirent dans les ${data.delayDays} prochains jours · D-04`}
+        hint={`${fmt(d04.expiredCount)} expiré(s) · ${fmt(d04.soonCount)} ≤ ${data.delayDays} j`}
         side={
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">

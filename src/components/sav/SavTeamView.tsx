@@ -95,15 +95,15 @@ export function SavTeamView(p: Props) {
       {/* SAV-S-01 … S-05 */}
       <div className="col-span-12 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4">
         <KpiButton kpi="SAV-S-01" icon={ClipboardList} title="Interventions ouvertes" value={fmt(kpis.open)} sub={`${fmt(kpis.toPlan)} à planifier · ${fmt(kpis.running)} en cours`} onClick={() => goList({ status: 'Ouvertes' })} />
-        <KpiButton kpi="SAV-S-02" icon={CalendarPlus} title="À planifier" value={fmt(kpis.toPlan)} unit="sans technicien" sub="à affecter à un technicien" onClick={() => p.scrollTo('sav-a-planifier')} />
-        <KpiButton kpi="SAV-S-03" icon={Clock} tone={kpis.late ? 'danger' : 'default'} title="En retard" value={fmt(kpis.late)} sub="date de rendez-vous dépassée" onClick={() => goList({ status: 'En retard' })} />
+        <KpiButton kpi="SAV-S-02" icon={CalendarPlus} title="À planifier" value={fmt(kpis.toPlan)} unit="sans technicien" onClick={() => p.scrollTo('sav-a-planifier')} />
+        <KpiButton kpi="SAV-S-03" icon={Clock} tone={kpis.late ? 'danger' : 'default'} title="En retard" value={fmt(kpis.late)} onClick={() => goList({ status: 'En retard' })} />
         <KpiButton
           kpi="SAV-S-04"
           icon={CircleCheck}
           tone={kpis.closed30 && kpis.firstVisitPct < SAV_FIRST_VISIT_GOAL ? 'danger' : 'default'}
           title="Résolues à la 1re visite"
           value={kpis.closed30 ? `${fmt(kpis.firstVisitPct)} %` : '—'}
-          sub={`${fmt(kpis.closed30)} terminées sur 30 j · objectif ${SAV_FIRST_VISIT_GOAL} %`}
+          sub={`${fmt(kpis.closed30)} / 30 j · obj. ${SAV_FIRST_VISIT_GOAL} %`}
           onClick={() => goList({ status: 'Terminée' })}
         />
         <KpiButton
@@ -112,7 +112,7 @@ export function SavTeamView(p: Props) {
           title="Délai moyen"
           value={kpis.avgDelayDays == null ? '—' : kpis.avgDelayDays.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}
           unit="jours"
-          sub="du signalement à la clôture (30 j)"
+          sub="30 j"
           onClick={() => goList({ status: 'Terminée' })}
         />
       </div>
@@ -146,7 +146,7 @@ export function SavTeamView(p: Props) {
       </div>
 
       {/* SAV-S-07 Charge par technicien */}
-      <Section kpi="SAV-S-07" title="Charge par technicien" sub="ouvertes (planifiées + en cours), en retard, aujourd’hui · cliquez pour sa liste">
+      <Section kpi="SAV-S-07" title="Charge par technicien" sub="ouvertes · en retard · aujourd’hui">
         <ul className="px-4 md:px-6 pb-4 space-y-2">
           {loads.map((l) => (
             <li key={l.tech.id}>
@@ -183,7 +183,7 @@ export function SavTeamView(p: Props) {
         id="sav-a-planifier"
         kpi="SAV-S-08"
         title="À planifier"
-        sub={`${fmt(p.toPlan.length)} signalement(s) sans technicien · le technicien de la zone est proposé, date de demain par défaut`}
+        sub={`${fmt(p.toPlan.length)} signalement(s)`}
         right={
           p.canPlan && (
             <button type="button" className={BTN_SECONDARY} onClick={() => setCreateOpen(true)}>
@@ -278,7 +278,7 @@ export function SavTeamView(p: Props) {
       </Section>
 
       {/* SAV-S-09 Toutes les interventions */}
-      <Section id="sav-liste" kpi="SAV-S-09" title="Toutes les interventions" sub={`${fmt(filtered.length)} intervention(s) · les retards d’abord, puis par date · cliquez sur une ligne pour la fiche`}>
+      <Section id="sav-liste" kpi="SAV-S-09" title="Toutes les interventions" sub={`${fmt(filtered.length)} intervention(s)`}>
         <div className="flex flex-wrap items-center gap-2 px-4 md:px-6 pb-3">
           <label className="relative">
             <span className="sr-only">Rechercher</span>

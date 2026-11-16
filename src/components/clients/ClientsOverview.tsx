@@ -257,7 +257,7 @@ export function ClientsOverview({
         <SectionRule
           id="cli-todo"
           title="À traiter"
-          hint="Cliquez sur une carte pour filtrer le tableau des clients"
+         
           right={
             canSeeCommercial ? (
               <label className="inline-flex items-center gap-2 text-small text-text">
@@ -315,7 +315,7 @@ export function ClientsOverview({
                 <p className="text-mention text-text-muted truncate" title={a.detail}>
                   {a.detail}
                 </p>
-                <p className="mt-1 text-mention text-text-muted">{on ? 'Filtre actif · cliquez pour le retirer' : `${meta.mockup}`}</p>
+                {on && <p className="mt-1 text-mention text-text-muted">Filtre actif</p>}
               </button>
             );
           })}
@@ -328,7 +328,6 @@ export function ClientsOverview({
         <div className="col-span-12 xl:col-span-6">
           <Panel
             title="Clients et équipements par pack"
-            hint="Un client à plusieurs packs compte dans chacun · longueur = équipements du pack · cliquez pour filtrer le tableau · D-01"
             bodyClassName="p-4"
           >
             <HorizontalBarList
@@ -350,11 +349,6 @@ export function ClientsOverview({
         <div className="col-span-12 xl:col-span-6">
           <Panel
             title={isNetwork ? 'Équipements hors ligne par propriétaire' : 'Équipements hors ligne par client'}
-            hint={
-              isNetwork
-                ? 'Un propriétaire par ligne · cliquez pour voir ses clients · D-02'
-                : 'Triés par non connectés · cliquez pour ouvrir la fiche · D-02'
-            }
             bodyClassName="p-0"
             footer={
               <Legend

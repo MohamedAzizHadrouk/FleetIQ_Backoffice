@@ -2,12 +2,11 @@
  * Tableau de bord v3 – carte FleetIQ 05 (maquette Main-v3 · Documentation-TableauDeBord-v3).
  * - Vue Tunav (Admin TUNAV, Finance) : TDB-D-01…D-12, tout le réseau.
  * - Vue revendeur : TDB-R-01…R-08, ses clients seulement (@ResellerId), sans stock Tunav, sans puces, sans packs Tunav.
- * - Filtre « Vue équipe » (ajout approuvé le 2026-11-14) : Toutes · Finance · Commercial · SAV · Admin ;
- *   Finance s'ouvre sur « Finance » ; jamais montré au revendeur.
+ * - Toujours la vue complète (ex-« Toutes ») — filtre Vue équipe retiré.
  * - Aucun prix sur cette page.
  */
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { BookOpen, CalendarDays, GitCompareArrows, Settings } from 'lucide-react';
+import { CalendarDays, GitCompareArrows, Settings } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { TableExportButtons } from '../components/TableExportButtons';
 import { BarChart, Sparkline } from '../components/charts';
@@ -16,9 +15,8 @@ import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModa
 import { GoalKpiCard, type CompareInfo } from '../components/dashboard/GoalKpiCard';
 import { EquipmentPartsCard, SimPartsCard } from '../components/dashboard/PartsCards';
 import { ParkHealthRings, SimOverCard, TopPacksCard } from '../components/dashboard/WhereToActCards';
-import { PageHeader, PageShell, PageToolbar, SectionRule, TopBar } from '../components/shell/PageShell';
+import { PageChrome, PageShell, SectionRule } from '../components/shell/PageShell';
 import { Button } from '../components/ui/Button';
-import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { useFleetStore } from '../state/FleetStore';
 import { addDays, parseDate, startOfDay, toIsoDate } from '../state/mock/dates';
 import { useBackofficePermissions, useBackofficeRole } from '../hooks/useBackofficePermissions';
@@ -26,16 +24,13 @@ import { canAccessRoute, type BackofficeRouteKey } from '../utils/backofficePerm
 import {
   computeDashboard,
   fmt,
-  isVisibleForTeam,
   pct,
   PRIORITY_LABELS,
   snapshotSeries,
   snapshotValue,
-  TEAM_VIEWS,
   volume,
   type DashboardScope,
   type GoalKpi,
-  type TeamView,
   type TodoItem
 } from '../utils/dashboardKpis';
 import { exportTableToExcel, exportTableToPdf } from '../utils/tableExport';
@@ -43,10 +38,10 @@ import { exportTableToExcel, exportTableToPdf } from '../utils/tableExport';
 type CompareMode = 'm30' | 'y1';
 const COMPARE_LABELS: Record<CompareMode, string> = { m30: 'il y a 30 j', y1: 'l’an dernier' };
 
-function Section({ id, title, hint, children }: { id: string; title: string; hint: string; children: ReactNode }) {
+function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section aria-labelledby={id} className="col-span-12 grid grid-cols-12 gap-4">
-      <SectionRule id={id} title={title} hint={hint} />
+      <SectionRule id={id} title={title} />
       {children}
     </section>
   );
@@ -64,10 +59,8 @@ export function DashboardPage() {
   const realToday = useMemo(() => startOfDay(new Date()), []);
   const [asOfIso, setAsOfIso] = useState(toIsoDate(realToday));
   const asOf = parseDate(asOfIso) ?? realToday;
-  const isToday = asOfIso === toIsoDate(realToday);
   const [compareOn, setCompareOn] = useState(false);
   const [compareMode, setCompareMode] = useState<CompareMode>('m30');
-  const [team, setTeam] = useState<TeamView>(role === 'finance_tunav' ? 'Finance' : 'Toutes');
   const [bellOpen, setBellOpen] = useState(false);
   const [detail, setDetail] = useState<DetailSpec | null>(null);
   const [thresholdOpen, setThresholdOpen] = useState(false);
@@ -99,8 +92,7 @@ export function DashboardPage() {
     [scope, asOfIso, disconnectThresholdHours, store.clients, store.equipments, store.simCards, store.simOffers]
   );
 
-  const show = (mockupId: string) => isReseller || isVisibleForTeam(mockupId, team);
-  const visibleKpis = data.kpis.filter((k) => show(k.mockupId));
+  const visibleKpis = data.kpis;
   const compareDate = compareMode === 'm30' ? addDays(asOf, -30) : addDays(asOf, -365);
   const compareFor = (k: GoalKpi): CompareInfo =>
     compareOn
@@ -118,11 +110,8 @@ export function DashboardPage() {
       big: rate != null ? `${rate} %` : fmt(k.value),
       caption:
         rate != null
-          ? `${fmt(k.value)} sur ${fmt(k.of ?? 0)} ${k.unit}${k.goal != null ? ` · objectif ${k.goal} % (proposition)` : ''}`
-          : `${k.unit} · ${k.context}`,
-      what: k.what,
-      definition: k.definition,
-      formula: k.formula,
+          ? `${fmt(k.value)} / ${fmt(k.of ?? 0)} ${k.unit}${k.goal != null ? ` · objectif ${k.goal} %` : ''}`
+          : k.unit,
       table: k.table,
       chart: k.monthly ? (
         <div className="space-y-1">
@@ -136,9 +125,6 @@ export function DashboardPage() {
             min={rate != null ? Math.max(0, Math.min(...series, current) - 5) : undefined}
             ariaLabel={`Évolution sur 12 mois, valeur actuelle ${rate != null ? `${rate} %` : fmt(k.value)}`}
           />
-          <span className="text-mention text-text-muted">
-            Évolution sur 12 mois · instantanés mensuels fictifs (historique quotidien à confirmer back-end)
-          </span>
         </div>
       ) : undefined,
       route: k.route,
@@ -150,9 +136,7 @@ export function DashboardPage() {
     setDetail({
       title: t.title,
       big: fmt(t.count),
-      caption: `${t.unit} · ${PRIORITY_LABELS[t.priority]} · règle ${t.sourceRule}`,
-      what: t.what,
-      note: <p className="text-text-muted">{t.detail}</p>,
+      caption: `${t.unit} · ${PRIORITY_LABELS[t.priority]}`,
       table: t.table && t.table.rows.length ? t.table : undefined,
       route: t.route,
       routeLabel: t.routeLabel,
@@ -213,57 +197,18 @@ export function DashboardPage() {
     setThresholdOpen(false);
   };
 
-  const subtitle = isReseller
-    ? `Vue revendeur ${currentUserName} : uniquement vos clients et leurs équipements.`
-    : 'Vue Tunav : tout le réseau (clients directs et revendeurs). L’essentiel de chaque page, sans le détail.';
   const ringsKey = isReseller ? `fiq-tdb-r07-${currentUserName}` : 'fiq-tdb-d09';
-  const showD07 = show(isReseller ? 'R-06' : 'D-07');
-  const showD08 = !isReseller && show('D-08');
-  const whereIds = isReseller ? ['R-07', 'R-08'] : ['D-09', 'D-10', 'D-11'];
-  const anyWhere = whereIds.some(show);
+  const showSimsParts = !isReseller;
   const dateFr = realToday.toLocaleDateString('fr-FR');
-
-  const docsBtn = (
-    <Button
-      type="button"
-      variant="neutral"
-      size="compact"
-      disabled
-      aria-disabled="true"
-      title="Documentation des KPI : bientôt (carte FleetIQ 11)"
-      onClick={(e) => e.preventDefault()}
-    >
-      <BookOpen size={16} aria-hidden="true" />
-      Documentation
-      <StatusTagFromLabel label="bientôt" />
-    </Button>
-  );
 
   return (
     <PageShell
-      topBar={
-        <TopBar
+      header={
+        <PageChrome
           title="Tableau de bord"
-          titleExtra={docsBtn}
           date={dateFr}
           actions={
-            canEditThreshold ? (
-              <Button type="button" variant="neutral" onClick={openThreshold} title="Seuil global « connecté »">
-                <Settings size={16} aria-hidden="true" className="text-text-muted" />
-                Connecté ≤ {fmt(data.connDays)} j
-              </Button>
-            ) : undefined
-          }
-          bell={<BellMenu items={data.todo} open={bellOpen} onToggle={setBellOpen} onOpenItem={openTodo} canOpen={canOpen} />}
-        />
-      }
-      pageHeader={
-        <PageHeader
-          mobileTitle="Tableau de bord"
-          context={subtitle}
-          actions={
             <>
-              {docsBtn}
               <TableExportButtons
                 size="compact"
                 onExportExcel={() => exportTableToExcel(exportHeaders, exportRows(), 'Tableau de bord', exportName)}
@@ -271,96 +216,64 @@ export function DashboardPage() {
                   exportTableToPdf(`Tableau de bord – état au ${asOf.toLocaleDateString('fr-FR')}`, exportHeaders, exportRows(), exportName)
                 }
               />
-              <div className="md:hidden">
-                <BellMenu items={data.todo} open={bellOpen} onToggle={setBellOpen} onOpenItem={openTodo} canOpen={canOpen} />
-              </div>
+              {canEditThreshold ? (
+                <Button type="button" variant="neutral" onClick={openThreshold} title="Seuil global « connecté »">
+                  <Settings size={16} aria-hidden="true" className="text-text-muted" />
+                  Connecté ≤ {fmt(data.connDays)} j
+                </Button>
+              ) : null}
+            </>
+          }
+          bell={<BellMenu items={data.todo} open={bellOpen} onToggle={setBellOpen} onOpenItem={openTodo} canOpen={canOpen} />}
+          tools={
+            <>
+              <label className="inline-flex items-center gap-2 text-label text-text">
+                <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
+                État au
+                <input
+                  type="date"
+                  lang="fr"
+                  value={asOfIso}
+                  max={toIsoDate(realToday)}
+                  onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
+                  className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
+                />
+              </label>
+              <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
+                Aujourd’hui
+              </Button>
+              <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
+              <Button
+                type="button"
+                variant={compareOn ? 'primary' : 'secondary'}
+                aria-pressed={compareOn}
+                onClick={() => setCompareOn((v) => !v)}
+              >
+                <GitCompareArrows size={16} aria-hidden="true" />
+                Comparer
+              </Button>
+              {compareOn && (
+                <label className="inline-flex items-center gap-2 text-small text-text">
+                  à
+                  <select
+                    value={compareMode}
+                    onChange={(e) => setCompareMode(e.target.value as CompareMode)}
+                    aria-label="Date de comparaison"
+                    className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
+                  >
+                    <option value="m30">Il y a 30 jours</option>
+                    <option value="y1">Même date l’an dernier</option>
+                  </select>
+                </label>
+              )}
             </>
           }
         />
       }
-      toolbar={
-        <PageToolbar
-          note={
-            <>
-              État au <b className="text-text">{asOf.toLocaleDateString('fr-FR')}</b>
-              {isToday ? ' (aujourd’hui)' : ''} · échéances, alertes et objectifs calculés à cette date
-              {compareOn && (
-                <>
-                  {' '}
-                  · comparé au <b className="text-text">{compareDate.toLocaleDateString('fr-FR')}</b> (instantanés fictifs)
-                </>
-              )}
-              {!isToday && ' · états des équipements et des puces : situation du jour (pas encore d’historique quotidien)'}
-              {` · connecté = données reçues dans les ${fmt(data.connDays)} j`}
-            </>
-          }
-        >
-          <label className="inline-flex items-center gap-2 text-label text-text">
-            <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
-            État au
-            <input
-              type="date"
-              lang="fr"
-              value={asOfIso}
-              max={toIsoDate(realToday)}
-              onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
-              className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
-            />
-          </label>
-          <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
-            Aujourd’hui
-          </Button>
-          <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-          <Button
-            type="button"
-            variant={compareOn ? 'primary' : 'secondary'}
-            aria-pressed={compareOn}
-            onClick={() => setCompareOn((v) => !v)}
-          >
-            <GitCompareArrows size={16} aria-hidden="true" />
-            Comparer
-          </Button>
-          {compareOn && (
-            <label className="inline-flex items-center gap-2 text-small text-text">
-              à
-              <select
-                value={compareMode}
-                onChange={(e) => setCompareMode(e.target.value as CompareMode)}
-                aria-label="Date de comparaison"
-                className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
-              >
-                <option value="m30">Il y a 30 jours</option>
-                <option value="y1">Même date l’an dernier</option>
-              </select>
-            </label>
-          )}
-          {!isReseller && (
-            <>
-              <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-              <div className="inline-flex rounded-control border border-border-strong overflow-hidden" role="radiogroup" aria-label="Vue équipe">
-                {TEAM_VIEWS.map((t, i) => (
-                  <button
-                    key={t}
-                    type="button"
-                    role="radio"
-                    aria-checked={team === t}
-                    onClick={() => setTeam(t)}
-                    className={`h-[34px] px-3 text-button-sm ${i > 0 ? 'border-l border-border' : ''} ${
-                      team === t ? 'bg-primary text-text-inverse' : 'bg-surface text-text hover:bg-surface-muted'
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </PageToolbar>
-      }
     >
 
       {visibleKpis.length > 0 && (
-        <Section id="tdb-essentiel" title="L’essentiel" hint="Un chiffre par sujet, comparé à son objectif · cliquez pour le détail">
+        <Section id="tdb-essentiel" title="L’essentiel">
           {/* TDB-D-01…D-05 / TDB-R-01…R-04 — rangée KPI à parts égales (DL § 3.2) */}
           <div
             className={`col-span-12 grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch ${
@@ -374,60 +287,40 @@ export function DashboardPage() {
         </Section>
       )}
 
-      <Section
-        id="tdb-stock"
-        title="Du stock au service"
-        hint={
-          isReseller
-            ? 'Vos équipements découpés en parts · cliquez sur une part ou une ligne'
-            : 'Tous les équipements et toutes les puces, découpés en parts · cliquez sur une part ou une ligne'
-        }
-      >
+      <Section id="tdb-stock" title="Du stock au service">
         {/* TDB-D-06 / TDB-R-05 – bandeau Urgent */}
         <div className="col-span-12">
           <UrgentBand items={data.todo} onOpenItem={openTodo} onOpenBell={() => setBellOpen(true)} />
         </div>
-        {showD07 && (
-          <div className={showD08 ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
-            <EquipmentPartsCard data={data} onOpenDetail={setDetail} />
-          </div>
-        )}
-        {showD08 && (
-          <div className={showD07 ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
+        <div className={showSimsParts ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
+          <EquipmentPartsCard data={data} onOpenDetail={setDetail} />
+        </div>
+        {showSimsParts && (
+          <div className="col-span-12 xl:col-span-6">
             <SimPartsCard data={data} onOpenDetail={setDetail} />
           </div>
         )}
       </Section>
 
-      {anyWhere && (
-        <Section id="tdb-agir" title="Où agir" hint="Cliquez sur une ligne pour le détail">
-          {show(isReseller ? 'R-07' : 'D-09') && (
-            <div className="col-span-12">
-              <ParkHealthRings key={ringsKey} data={data} storageKey={ringsKey} onOpenDetail={setDetail} />
-            </div>
-          )}
-          {show(isReseller ? 'R-08' : 'D-10') && (
-            <div className={!isReseller && show('D-11') ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
-              <TopPacksCard data={data} onOpenDetail={setDetail} />
-            </div>
-          )}
-          {!isReseller && show('D-11') && (
-            <div className={show(isReseller ? 'R-08' : 'D-10') ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
-              <SimOverCard data={data} onOpenDetail={setDetail} canOpen={canOpen} />
-            </div>
-          )}
-        </Section>
-      )}
+      <Section id="tdb-agir" title="Où agir">
+        <div className="col-span-12">
+          <ParkHealthRings key={ringsKey} data={data} storageKey={ringsKey} onOpenDetail={setDetail} />
+        </div>
+        <div className={!isReseller ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
+          <TopPacksCard data={data} onOpenDetail={setDetail} />
+        </div>
+        {!isReseller && (
+          <div className="col-span-12 xl:col-span-6">
+            <SimOverCard data={data} onOpenDetail={setDetail} canOpen={canOpen} />
+          </div>
+        )}
+      </Section>
 
       <DetailModal detail={detail} onClose={() => setDetail(null)} canOpen={canOpen} />
 
       {/* Seuil global « connecté » (réglage BO existant, 7 j par défaut) – Admin TUNAV */}
       <Modal isOpen={thresholdOpen} onClose={() => setThresholdOpen(false)} title="Seuil « connecté »" size="md">
         <div className="space-y-4">
-          <p className="text-small text-text">
-            Un équipement installé est « connecté » s’il a envoyé des données depuis moins de ce délai. Le même seuil sert à toutes
-            les pages. L’alerte « déconnecté depuis plus de {store.dashboardSettings.alertDays} j » reste un seuil séparé.
-          </p>
           <div>
             <label htmlFor="tdb-threshold" className="block text-label text-text mb-1">
               Délai sans données (jours)
@@ -442,7 +335,7 @@ export function DashboardPage() {
               onChange={(e) => setThresholdDraft(e.target.value)}
               className="w-full h-control px-2.5 border border-border-strong rounded-control text-small focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
             />
-            <p className="mt-1 text-mention text-text-muted">Entre 1 et 30 jours · 7 jours par défaut.</p>
+            <p className="mt-1 text-mention text-text-muted">1–30 jours</p>
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
             <Button type="button" variant="secondary" onClick={() => setThresholdOpen(false)}>

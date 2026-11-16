@@ -274,7 +274,7 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
 
       {/* À traiter */}
       <section aria-labelledby="pk-todo" className="col-span-12 grid grid-cols-12 gap-4">
-        <SectionTitle id="pk-todo" title="À traiter" hint="Cliquez sur une carte pour le détail et filtrer la liste des clients" />
+        <SectionTitle id="pk-todo" title="À traiter" />
         <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           {(['critique', 'anticiper', 'hors_pack', 'bloques'] as PkAlertKey[]).map((k) => {
             const meta = ALERT_META[k];

@@ -6,13 +6,14 @@ import { Button } from '../ui/Button';
 import { BACKOFFICE_ROUTE_PATHS, type BackofficeRouteKey } from '../../utils/backofficePermissions';
 import type { KpiTable } from '../../utils/dashboardKpis';
 
-/** Contenu d'une fenêtre de détail : chiffre, explication, définition, tableau, graphique, lien vers la page source. */
+/** Contenu d'une fenêtre de détail : chiffre, tableau, graphique, lien vers la page source. */
 export type DetailSpec = {
   title: string;
   /** ID KPI (TDB-…) affiché discrètement */
   kpiId?: string;
   big: string;
   caption: string;
+  /** @deprecated non rendu – champs KPI conservés pour compatibilité des appelants */
   what?: string;
   definition?: string;
   formula?: string;
@@ -98,33 +99,16 @@ export function DetailModal({ detail, onClose, canOpen }: Props) {
     <Modal isOpen={!!d} onClose={onClose} title={d?.title ?? ''} size={wide ? 'xl' : 'lg'} footer={footer}>
       {d && (
         <div className="space-y-6">
-          {/* Chiffre + légende – aérés, pas collés */}
           <div className="space-y-2">
             <div className="text-kpi tabular-nums text-text">{d.big}</div>
-            <p className="max-w-3xl text-small leading-relaxed text-text-muted">{d.caption}</p>
+            {d.caption ? <p className="max-w-3xl text-small leading-relaxed text-text-muted">{d.caption}</p> : null}
           </div>
-
-          {d.what && (
-            <p className="rounded-control border border-border-subtle bg-surface-muted/80 px-4 py-3 text-small leading-relaxed text-text">
-              {d.what}
-            </p>
-          )}
 
           {d.chart && <div className="space-y-3">{d.chart}</div>}
 
           {d.table && <KpiDataTable table={d.table} />}
 
           {d.note && <div className="space-y-3">{d.note}</div>}
-
-          {(d.definition || d.formula) && (
-            <details className="rounded-control border border-border-subtle bg-surface-muted px-4 py-3 text-small">
-              <summary className="cursor-pointer font-medium text-text">
-                Définition et formule{d.kpiId ? ` · ${d.kpiId}` : ''}
-              </summary>
-              {d.definition && <p className="mt-3 leading-relaxed text-text">{d.definition}</p>}
-              {d.formula && <p className="mt-2 leading-relaxed text-text-muted">Formule métier : {d.formula}</p>}
-            </details>
-          )}
         </div>
       )}
     </Modal>

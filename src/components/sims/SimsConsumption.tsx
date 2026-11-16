@@ -323,7 +323,7 @@ export function SimsConsumption({ data, period, onOpenSim, onOverNetwork }: Prop
         id="pu-c25"
         kpiId="PU-C-25"
         title="Puces en surconsommation par revendeur"
-        sub={`${period.label} · ${fmt(overTotal)} puce(s) au-delà du forfait · cliquez sur une barre pour voir les puces`}
+        sub={`${period.label} · ${fmt(overTotal)} puce(s) au-delà du forfait`}
       >
         <HorizontalBarList
           ariaLabel="Puces en surconsommation par revendeur"

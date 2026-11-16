@@ -361,7 +361,7 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
       </div>
 
       <section aria-labelledby="eq-todo" className="col-span-12 grid grid-cols-12 gap-4">
-        <SectionRule id="eq-todo" title="À traiter" hint="Cliquez sur une carte pour filtrer la liste des équipements" />
+        <SectionRule id="eq-todo" title="À traiter" />
         <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-4">
           {cards.map((a) => {
             const on = alertFilter === a.key;
@@ -397,7 +397,7 @@ export function EquipmentsOverview({ rows, isNetwork, connDays, alertDays, alert
                 <p className="text-mention text-text-muted truncate" title={byNetworkText(a.list, isNetwork)}>
                   {byNetworkText(a.list, isNetwork)}
                 </p>
-                <p className="mt-1 text-mention text-text-muted">{on ? 'Filtre actif · cliquez pour le retirer' : a.id.replace('EQ-', '')}</p>
+                {on && <p className="mt-1 text-mention text-text-muted">Filtre actif</p>}
               </button>
             );
           })}

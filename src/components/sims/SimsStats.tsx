@@ -93,10 +93,10 @@ export function SimsStats({ data, period, ctx, cons, networks, onStatus, onOffer
 
   return (
     <section aria-labelledby="pu-stats" className="space-y-3">
-      <SectionTitle id="pu-stats" title="Statistiques puces" hint="Cliquez sur une barre, une couleur ou un mois pour voir le détail" />
+      <SectionTitle id="pu-stats" title="Statistiques puces" />
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         {/* PU-S-22 (S-22) */}
-        <Block id="pu-s22" kpiId="PU-S-22" title="Statut des puces" sub={`${fmt(data.installed)} puce(s) sur ${fmt(data.total)} sont dans un équipement posé · cliquez sur une couleur`}>
+        <Block id="pu-s22" kpiId="PU-S-22" title="Statut des puces" sub={`${fmt(data.installed)} / ${fmt(data.total)} installées`}>
           <StackedBar
             ariaLabel="Statut des puces"
             height="lg"
@@ -116,7 +116,7 @@ export function SimsStats({ data, period, ctx, cons, networks, onStatus, onOffer
         </Block>
 
         {/* PU-S-21 (S-21) */}
-        <Block id="pu-s21" kpiId="PU-S-21" title="Puces installées par offre" sub="Pour chaque offre : puces installées / total · cliquez sur une offre">
+        <Block id="pu-s21" kpiId="PU-S-21" title="Puces installées par offre" sub="Installées / total">
           <div className="space-y-3">
             {data.offers.map((o) => (
               <div key={o.key} className="space-y-1">
@@ -148,7 +148,7 @@ export function SimsStats({ data, period, ctx, cons, networks, onStatus, onOffer
         </Block>
 
         {/* PU-C-22 (C-22) */}
-        <Block id="pu-c22" kpiId="PU-C-22" title="Consommation par opérateur" sub={`${period.label} · volume consommé par opérateur · cliquez sur une barre pour voir ses puces`}>
+        <Block id="pu-c22" kpiId="PU-C-22" title="Consommation par opérateur" sub={period.label}>
           <HorizontalBarList
             ariaLabel="Consommation par opérateur"
             rows={data.operators.map((o, i) => ({

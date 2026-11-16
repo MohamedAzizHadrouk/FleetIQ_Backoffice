@@ -80,7 +80,6 @@ export function EquipmentPartsCard({
         kpiId,
         big: fmt(data.stock),
         caption: `équipements · ${pct(data.stock, total)} % du total`,
-        what: 'Équipements pas encore vendus à un client : stock Tunav et stock des revendeurs.',
         table: { headers: ['Stock', 'Équipements'], rows: data.stockByNetwork.map((s) => [s.label, s.count]) },
         route: 'equipments',
         routeLabel: 'Équipements',
@@ -88,14 +87,14 @@ export function EquipmentPartsCard({
       });
       return;
     }
-    const INFO: Record<Exclude<PartKey, 'stock'>, [string, string, (r: ParkRow) => number, (r: ParkRow) => number, string]> = {
-      total: ['Total', isNetwork ? 'Tous les équipements vendus à un client (le stock est détaillé à part).' : 'Tous les équipements vendus à vos clients.', (r) => r.sold, (r) => r.sold, 'des vendus'],
-      wait: ['Vendus, non installés', 'Vendus à un client mais pas encore posés dans un véhicule.', (r) => r.notInstalled, (r) => r.sold, 'de ses vendus'],
-      inst: ['Installés', 'Posés dans un véhicule. Un installé est soit connecté, soit non connecté.', (r) => r.installed, (r) => r.sold, 'de ses vendus'],
-      on: ['Connectés', `Installés et données reçues dans les ${conn} : le client a le service.`, (r) => r.connected, (r) => r.installed, 'de ses installés'],
-      off: ['Non connectés', `Installés mais aucune donnée reçue depuis plus de ${conn} : le client n’a pas le service.`, (r) => r.notConnected, (r) => r.installed, 'de ses installés']
+    const INFO: Record<Exclude<PartKey, 'stock'>, [string, (r: ParkRow) => number, (r: ParkRow) => number, string]> = {
+      total: ['Total', (r) => r.sold, (r) => r.sold, 'des vendus'],
+      wait: ['Vendus, non installés', (r) => r.notInstalled, (r) => r.sold, 'de ses vendus'],
+      inst: ['Installés', (r) => r.installed, (r) => r.sold, 'de ses vendus'],
+      on: ['Connectés', (r) => r.connected, (r) => r.installed, 'de ses installés'],
+      off: ['Non connectés', (r) => r.notConnected, (r) => r.installed, 'de ses installés']
     };
-    const [label, what, v, base, baseLabel] = INFO[k];
+    const [label, v, base, baseLabel] = INFO[k];
     const n = v(x) + (k === 'total' ? stock : 0);
     const tableRows: Array<Array<string | number>> = (sel === '*' ? rows : [x])
       .map((r) => [r.label, v(r), `${pct(v(r), base(r))} % ${baseLabel}`] as Array<string | number>)
@@ -106,9 +105,6 @@ export function EquipmentPartsCard({
       kpiId,
       big: fmt(n),
       caption: `équipements · ${k === 'on' || k === 'off' ? `${pct(n, x.installed)} % des installés` : `${pct(n, total)} % du total`}`,
-      what,
-      definition: 'Total = stock + vendus non installés + installés · Installés = connectés + non connectés.',
-      formula: '% connectés = connectés ÷ installés',
       table: { headers: [by, 'Équipements', '%'], rows: tableRows },
       route: 'equipments',
       routeLabel: 'Équipements',
@@ -187,19 +183,16 @@ export function SimPartsCard({ data, onOpenDetail }: { data: DashboardData; onOp
   const overMB = data.overRows.reduce((s, r) => s + r.excessMB, 0);
   const open = (k: 'all' | 'ins' | 'non') => {
     const INFO = {
-      all: ['Toutes les puces', 'Puces avec un abonnement en cours.', (r: ParkRow) => r.sims ?? 0, total],
-      ins: ['Puces installées', 'La puce est dans un équipement posé dans un véhicule.', (r: ParkRow) => r.simsInstalled ?? 0, ins],
-      non: ['Puces non installées', 'La puce est dans un équipement pas encore posé, ou en stock.', (r: ParkRow) => (r.sims ?? 0) - (r.simsInstalled ?? 0), non]
+      all: ['Toutes les puces', (r: ParkRow) => r.sims ?? 0, total],
+      ins: ['Puces installées', (r: ParkRow) => r.simsInstalled ?? 0, ins],
+      non: ['Puces non installées', (r: ParkRow) => (r.sims ?? 0) - (r.simsInstalled ?? 0), non]
     } as const;
-    const [title, what, v, n] = INFO[k];
+    const [title, v, n] = INFO[k];
     onOpenDetail({
       title,
       kpiId: 'TDB-D-08',
       big: fmt(n),
       caption: `puces · ${pct(n, total)} % du total`,
-      what,
-      definition: 'Total = installées + non installées. Une puce est toujours dans un équipement ou en stock.',
-      formula: 'Installée = puce affectée à un équipement installé',
       table: {
         headers: ['Revendeur', 'Puces', '%'],
         rows: data.parkRows

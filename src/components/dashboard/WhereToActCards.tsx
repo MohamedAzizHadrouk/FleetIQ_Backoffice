@@ -87,15 +87,12 @@ export function ParkHealthRings({
   const what = isNetwork ? 'revendeur' : 'client';
   const sorted = [...rows].sort((a, b) => a.label.localeCompare(b.label, 'fr'));
   const filtered = query.trim() ? sorted.filter((r) => r.label.toLowerCase().includes(query.trim().toLowerCase())) : sorted;
-  const conn = `${fmt(data.connDays)} j`;
-
   const openRow = (r: ParkRow) =>
     onOpenDetail({
       title: r.label,
       kpiId: isNetwork ? 'TDB-D-09' : 'TDB-R-07',
       big: `${ratio(r)} %`,
-      caption: `de ses ${fmt(r.installed)} équipements installés sont connectés · ${fmt(r.sold)} vendus`,
-      definition: `Centre = connectés ÷ installés · parts de l’anneau = connectés, non connectés, non installés ÷ vendus · alerte visuelle sous 60 %. Connecté = données reçues dans les ${conn}.`,
+      caption: `${fmt(r.connected)} / ${fmt(r.installed)} installés · ${fmt(r.sold)} vendus`,
       table: {
         headers: ['État', 'Équipements', '%'],
         rows: [
@@ -173,7 +170,6 @@ export function ParkHealthRings({
               </label>
             ))}
           </div>
-          <p className="text-mention text-text-muted">Au moins un reste affiché. Le choix est gardé sur ce poste.</p>
         </div>
       )}
     </div>
@@ -182,12 +178,6 @@ export function ParkHealthRings({
   return (
     <Panel
       title={isNetwork ? 'Revendeurs : santé du parc' : 'Mes clients : santé du parc'}
-      hint={
-        <>
-          Centre = % des installés qui sont connectés · cliquez sur un anneau pour le détail
-          {!isNetwork && ' · « + Client » pour choisir parmi tous vos clients'}
-        </>
-      }
       actions={picker}
       bodyClassName="p-4 space-y-4"
     >
@@ -270,10 +260,6 @@ export function TopPacksCard({ data, onOpenDetail }: { data: DashboardData; onOp
             kpiId: isNetwork ? 'TDB-D-10' : 'TDB-R-08',
             big: fmt(r.clients),
             caption: `clients · ${pct(r.clients, tot)} % du total`,
-            what: isNetwork
-              ? `${r.tunav} chez Tunav, ${r.resellers} via les revendeurs · ${fmt(r.equipments)} équipements.`
-              : `${fmt(r.equipments)} équipements chez vos clients avec ce pack.`,
-            definition: 'Clients par pack = nombre de clients distincts dont l’affectation en cours porte ce pack.',
             route: isNetwork ? 'subscriptions' : 'clients',
             routeLabel: isNetwork ? 'Packs' : 'Gestion Clients',
             // FleetIQ 08 / 06 : la page cible s'ouvre filtrée sur ce pack
@@ -323,7 +309,7 @@ export function SimOverCard({
   return (
     <Panel
       title="Puces en surconsommation par revendeur"
-      hint={`${month} · ${fmt(tot)} puces au-delà de leur forfait · +${volume(totMB)} au total · barre = volume dépassé, du plus fort au plus faible`}
+      hint={`${month} · ${fmt(tot)} puces · +${volume(totMB)}`}
       actions={
         canOpen('sims') ? (
           <button
@@ -360,10 +346,7 @@ export function SimOverCard({
             title: `Surconsommation · ${r.label}`,
             kpiId: 'TDB-D-11',
             big: fmt(r.overSims),
-            caption: `puce(s) au-delà du forfait en ${month} · +${volume(r.excessMB)} · ${pct(r.overSims, r.sims)} % de ses ${fmt(r.sims)} puces`,
-            what: 'Une puce en surconsommation a utilisé plus de data que son forfait mensuel. Le dépassement est facturé en plus ou ralentit l’équipement.',
-            definition: 'Surconsommation = consommation du mois > forfait de l’offre (forfait data à confirmer back-end).',
-            formula: 'Dépassement = somme (consommation − forfait) des puces concernées',
+            caption: `puce(s) · +${volume(r.excessMB)} · ${pct(r.overSims, r.sims)} % de ${fmt(r.sims)}`,
             route: 'sims',
             routeLabel: 'Gestion des puces',
             // FleetIQ 09 : liste filtrée sur ce réseau et ce mois (PU-P-07 / PU-C-25)

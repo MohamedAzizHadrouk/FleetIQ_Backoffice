@@ -1,11 +1,13 @@
 import type { ReactNode } from 'react';
 
 type PageShellProps = {
-  /** Zone B – barre du haut (desktop) : titre, date, cloche, extras. */
-  topBar: ReactNode;
-  /** Zone C – en-tête de page : contexte + actions. */
+  /** Preferred – single sticky chrome (`PageChrome`). */
+  header?: ReactNode;
+  /** @deprecated Prefer `header={<PageChrome …/>}`. */
+  topBar?: ReactNode;
+  /** @deprecated Prefer `header={<PageChrome …/>}`. */
   pageHeader?: ReactNode;
-  /** Zone D – barre d'outils (optionnelle). */
+  /** @deprecated Prefer `header={<PageChrome …/>}`. */
   toolbar?: ReactNode;
   /** Zone E – contenu. */
   children: ReactNode;
@@ -15,10 +17,11 @@ type PageShellProps = {
 };
 
 /**
- * Coque de page Industrial Tech – zones B → E (DL § 3.1).
+ * Coque de page Industrial Tech – chrome sticky + contenu (DL § 3.1).
  * Zone A (sidebar) et F (toast) restent dans Layout / Toast.
  */
 export function PageShell({
+  header,
   topBar,
   pageHeader,
   toolbar,
@@ -28,15 +31,70 @@ export function PageShell({
 }: PageShellProps) {
   return (
     <div className={`fiq-shell flex min-h-0 flex-col ${reserveToastSpace ? 'pb-24' : ''} ${className}`}>
-      {topBar}
-      {pageHeader}
-      {toolbar}
+      {header ?? (
+        <>
+          {topBar}
+          {pageHeader}
+          {toolbar}
+        </>
+      )}
       <div className="w-full min-w-0 flex-1 space-y-6 p-4 md:p-6">{children}</div>
     </div>
   );
 }
 
-/** Zone B – barre du haut bureau (masquée < 768 px : titre passe en zone C). */
+type PageChromeProps = {
+  title: string;
+  date: string;
+  dateLabel?: string;
+  titleExtra?: ReactNode;
+  meta?: ReactNode;
+  actions?: ReactNode;
+  bell?: ReactNode;
+  /** Filters / period chips – soft tools strip (omitted when empty). */
+  tools?: ReactNode;
+};
+
+/**
+ * Chrome sticky unifié – primary row + optional tools strip.
+ * Remplace TopBar + PageHeader + PageToolbar.
+ */
+export function PageChrome({
+  title,
+  date,
+  dateLabel = 'Aujourd’hui',
+  titleExtra,
+  meta,
+  actions,
+  bell,
+  tools
+}: PageChromeProps) {
+  return (
+    <header className="sticky top-0 z-topbar border-b border-border bg-surface/95 backdrop-blur-sm">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3.5 md:px-6">
+        <h1 className="text-title text-text truncate min-w-0">{title}</h1>
+        {titleExtra}
+        <div className="flex-1 min-w-[0.5rem]" />
+        <div className="flex flex-wrap items-center gap-2 ml-auto">
+          <span className="inline-flex items-center gap-2 rounded-control bg-surface-muted px-2.5 py-1 text-small text-text-muted">
+            <span className="h-2 w-2 shrink-0 rounded-[1px] bg-success" aria-hidden="true" />
+            {dateLabel} <b className="text-text font-semibold tabular-nums">{date}</b>
+          </span>
+          {meta}
+          {actions}
+          {bell}
+        </div>
+      </div>
+      {tools != null && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border-subtle bg-surface-muted/70 px-4 py-2 md:px-6">
+          {tools}
+        </div>
+      )}
+    </header>
+  );
+}
+
+/** @deprecated Prefer `PageChrome`. */
 export function TopBar({
   title,
   titleExtra,
@@ -53,27 +111,16 @@ export function TopBar({
   bell?: ReactNode;
 }) {
   return (
-    <header className="sticky top-0 z-topbar hidden md:flex h-topbar items-center gap-3 px-6 bg-surface border-b border-border">
-      <h1 className="text-title text-text truncate">{title}</h1>
-      {titleExtra}
-      <div className="flex-1" />
-      <span className="inline-flex items-center gap-2 text-small text-text-muted">
-        <span className="h-2 w-2 rounded-[1px] bg-success" aria-hidden="true" />
-        {dateLabel} <b className="text-text font-semibold">{date}</b>
-      </span>
-      {actions}
-      {bell}
-    </header>
+    <PageChrome title={title} titleExtra={titleExtra} dateLabel={dateLabel} date={date} actions={actions} bell={bell} />
   );
 }
 
-/** Zone C – en-tête de page. */
+/** @deprecated Prefer `PageChrome`. */
 export function PageHeader({
   mobileTitle,
   context,
   actions
 }: {
-  /** Titre affiché sous 768 px (quand TopBar est masquée). */
   mobileTitle?: string;
   context?: ReactNode;
   actions?: ReactNode;
@@ -90,10 +137,10 @@ export function PageHeader({
   );
 }
 
-/** Zone D – barre d'outils. */
+/** @deprecated Prefer `PageChrome` tools row. */
 export function PageToolbar({ children, note }: { children: ReactNode; note?: ReactNode }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 md:px-6 py-2 bg-surface border-b border-border">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 md:px-6 py-2 bg-surface-muted/70 border-b border-border">
       {children}
       {note && <p className="basis-full text-mention text-text-muted">{note}</p>}
     </div>

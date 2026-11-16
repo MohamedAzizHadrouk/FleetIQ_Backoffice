@@ -49,7 +49,7 @@ import { ClientsOverview, type CompareCounts } from '../components/clients/Clien
 import { ClientsActivity } from '../components/clients/ClientsActivity';
 import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModal';
 import { BellMenu } from '../components/dashboard/BellMenu';
-import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { PageChrome, PageShell } from '../components/shell/PageShell';
 import { Button } from '../components/ui/Button';
 import { StatusTag, StatusTagFromLabel } from '../components/ui/StatusTag';
 import type { TodoItem } from '../utils/dashboardKpis';
@@ -387,7 +387,6 @@ export function ClientsPage() {
   const realToday = useMemo(() => startOfDay(new Date()), []);
   const [asOfIso, setAsOfIso] = useState(toIsoDate(realToday));
   const asOf = parseDate(asOfIso) ?? realToday;
-  const isToday = asOfIso === toIsoDate(realToday);
   const [compareOn, setCompareOn] = useState(false);
   const [compareMode, setCompareMode] = useState<CompareMode>('m30');
   const [compareCustom, setCompareCustom] = useState(toIsoDate(addDays(realToday, -90)));
@@ -1187,9 +1186,6 @@ export function ClientsPage() {
   const ficheInfo = fiche ? kpis.infos.get(fiche.id) ?? null : null;
   const thCls = 'h-row-head px-3 text-left text-overline uppercase text-text bg-surface-muted border-b border-border-strong whitespace-nowrap';
   const dateFr = realToday.toLocaleDateString('fr-FR');
-  const pageSubtitle = isNetwork
-    ? 'État du portefeuille clients à la date choisie : abonnements, connexions et parc.'
-    : `Vue revendeur ${currentUserName} : uniquement vos clients.`;
   const bell = (
     <BellMenu
       items={bellItems}
@@ -1205,11 +1201,10 @@ export function ClientsPage() {
 
   return (
     <PageShell
-      topBar={<TopBar title="Gestion Clients" date={dateFr} bell={bell} />}
-      pageHeader={
-        <PageHeader
-          mobileTitle="Gestion Clients"
-          context={pageSubtitle}
+      header={
+        <PageChrome
+          title="Gestion Clients"
+          date={dateFr}
           actions={
             <>
               <TableExportButtons
@@ -1224,79 +1219,64 @@ export function ClientsPage() {
                   Ajouter un client
                 </Button>
               )}
-              <div className="md:hidden">{bell}</div>
             </>
           }
-        />
-      }
-      toolbar={
-        <PageToolbar
-          note={
+          bell={bell}
+          tools={
             <>
-              État au <b className="text-text">{asOf.toLocaleDateString('fr-FR')}</b>
-              {isToday ? ' (aujourd’hui)' : ''} · alertes, échéances et connexions calculées à cette date
-              {compare && (
-                <>
-                  {' '}
-                  · comparé au <b className="text-text">{compare.date.toLocaleDateString('fr-FR')}</b> (écarts sur Total clients et Statut)
-                </>
-              )}
-              {!isToday && ' · états des équipements : situation du jour (pas d’historique quotidien)'}
-              {` · connecté = données reçues dans les ${fmt(kpis.connDays)} j`}
-            </>
-          }
-        >
-          <label className="inline-flex items-center gap-2 text-label text-text">
-            <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
-            État au
-            <input
-              type="date"
-              lang="fr"
-              value={asOfIso}
-              max={toIsoDate(realToday)}
-              onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
-              className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
-            />
-          </label>
-          <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
-            Aujourd’hui
-          </Button>
-          <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-          <Button
-            type="button"
-            variant={compareOn ? 'primary' : 'secondary'}
-            aria-pressed={compareOn}
-            onClick={() => setCompareOn((v) => !v)}
-          >
-            <GitCompareArrows size={16} aria-hidden="true" />
-            Comparer
-          </Button>
-          {compareOn && (
-            <>
-              <select
-                value={compareMode}
-                onChange={(e) => setCompareMode(e.target.value as CompareMode)}
-                aria-label="Date de comparaison"
-                className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
-              >
-                <option value="m30">Il y a 30 jours</option>
-                <option value="y1">Même date l’an dernier</option>
-                <option value="custom">Date personnalisée</option>
-              </select>
-              {compareMode === 'custom' && (
+              <label className="inline-flex items-center gap-2 text-label text-text">
+                <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
+                État au
                 <input
                   type="date"
                   lang="fr"
-                  aria-label="Date personnalisée"
-                  value={compareCustom}
-                  max={asOfIso}
-                  onChange={(e) => setCompareCustom(e.target.value)}
+                  value={asOfIso}
+                  max={toIsoDate(realToday)}
+                  onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
                   className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
                 />
+              </label>
+              <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
+                Aujourd’hui
+              </Button>
+              <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
+              <Button
+                type="button"
+                variant={compareOn ? 'primary' : 'secondary'}
+                aria-pressed={compareOn}
+                onClick={() => setCompareOn((v) => !v)}
+              >
+                <GitCompareArrows size={16} aria-hidden="true" />
+                Comparer
+              </Button>
+              {compareOn && (
+                <>
+                  <select
+                    value={compareMode}
+                    onChange={(e) => setCompareMode(e.target.value as CompareMode)}
+                    aria-label="Date de comparaison"
+                    className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
+                  >
+                    <option value="m30">Il y a 30 jours</option>
+                    <option value="y1">Même date l’an dernier</option>
+                    <option value="custom">Date personnalisée</option>
+                  </select>
+                  {compareMode === 'custom' && (
+                    <input
+                      type="date"
+                      lang="fr"
+                      aria-label="Date personnalisée"
+                      value={compareCustom}
+                      max={asOfIso}
+                      onChange={(e) => setCompareCustom(e.target.value)}
+                      className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
+                    />
+                  )}
+                </>
               )}
             </>
-          )}
-        </PageToolbar>
+          }
+        />
       }
     >
       {saveNotice && (

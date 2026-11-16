@@ -58,12 +58,12 @@ function Visit({ iv, asOfIso, eq, onOpen, dayLabel }: { iv: Intervention; asOfIs
   );
 }
 
-function Block({ id, title, sub, empty, children, kpi }: { id: string; title: string; sub: string; empty: string; children: ReactNode[]; kpi?: string }) {
+function Block({ id, title, sub, empty, children, kpi }: { id: string; title: string; sub?: string; empty: string; children: ReactNode[]; kpi?: string }) {
   return (
     <section id={id} data-kpi={kpi} className="col-span-12 scroll-mt-topbar bg-surface rounded-card border border-border min-w-0">
       <div className="px-4 py-2.5 border-b border-border">
         <h2 className="text-section text-text">{title}</h2>
-        <p className="text-mention text-text-muted mt-0.5">{sub}</p>
+        {sub ? <p className="text-mention text-text-muted mt-0.5">{sub}</p> : null}
       </div>
       <div className="p-4">
         {children.length ? (
@@ -82,30 +82,30 @@ export function SavTechnicianView({ kpis, lists, zoneToPlan, asOfIso, isToday, e
     <div className="grid grid-cols-12 gap-4 gap-y-6">
       <div className="col-span-12 grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
         <KpiButton kpi="SAV-T-01" icon={CalendarClock} title={isToday ? 'Aujourd’hui' : 'Ce jour'} value={fmt(kpis.today)} unit="interv." sub={`${fmt(kpis.todayLeft)} restante(s) · ${fmt(kpis.todayDone)} terminée(s)`} onClick={() => scrollTo('sav-tournee')} />
-        <KpiButton kpi="SAV-T-02" icon={Clock} tone={kpis.late ? 'danger' : 'default'} title="En retard" value={fmt(kpis.late)} unit="à faire" sub="date dépassée, à faire en priorité" onClick={() => scrollTo('sav-retard')} />
-        <KpiButton kpi="SAV-T-03" icon={CircleCheck} title="Terminées · 7 j" value={fmt(kpis.closed7)} unit="interv." sub={`${fmt(kpis.first7Pct)} % résolues à la 1re visite`} onClick={() => scrollTo('sav-tournee')} />
-        <KpiButton kpi="SAV-T-04" icon={Search} title="À vérifier dans ma zone" value={fmt(kpis.zoneToPlan)} unit="équip." sub="pas encore planifiés par le responsable" onClick={() => scrollTo('sav-zone')} />
+        <KpiButton kpi="SAV-T-02" icon={Clock} tone={kpis.late ? 'danger' : 'default'} title="En retard" value={fmt(kpis.late)} unit="à faire" onClick={() => scrollTo('sav-retard')} />
+        <KpiButton kpi="SAV-T-03" icon={CircleCheck} title="Terminées · 7 j" value={fmt(kpis.closed7)} unit="interv." sub={`${fmt(kpis.first7Pct)} % 1re visite`} onClick={() => scrollTo('sav-tournee')} />
+        <KpiButton kpi="SAV-T-04" icon={Search} title="À vérifier dans ma zone" value={fmt(kpis.zoneToPlan)} unit="équip." onClick={() => scrollTo('sav-zone')} />
       </div>
 
-      <Block id="sav-retard" kpi="SAV-T-02" title="En retard" sub="à faire en premier" empty="Aucune intervention en retard.">
+      <Block id="sav-retard" kpi="SAV-T-02" title="En retard" empty="Aucune intervention en retard.">
         {lists.late.map((iv) => (
           <Visit key={iv.id} iv={iv} asOfIso={asOfIso} eq={eqBySerial.get(iv.serial)} onOpen={onOpen} dayLabel={frDay(iv.plannedDate)} />
         ))}
       </Block>
 
-      <Block id="sav-tournee" kpi="SAV-T-05" title="Ma tournée du jour" sub="dans l’ordre des rendez-vous · touchez une intervention pour ouvrir la fiche, cocher les contrôles et clôturer" empty="Aucun rendez-vous ce jour.">
+      <Block id="sav-tournee" kpi="SAV-T-05" title="Ma tournée du jour" empty="Aucun rendez-vous ce jour.">
         {lists.today.map((iv) => (
           <Visit key={iv.id} iv={iv} asOfIso={asOfIso} eq={eqBySerial.get(iv.serial)} onOpen={onOpen} dayLabel={dayWord} />
         ))}
       </Block>
 
-      <Block id="sav-prochains" kpi="SAV-T-05" title="Prochains jours" sub="déjà planifiées (14 jours)" empty="Rien de planifié pour les prochains jours.">
+      <Block id="sav-prochains" kpi="SAV-T-05" title="Prochains jours" empty="Rien de planifié pour les prochains jours.">
         {lists.next.map((iv) => (
           <Visit key={iv.id} iv={iv} asOfIso={asOfIso} eq={eqBySerial.get(iv.serial)} onOpen={onOpen} dayLabel={frDay(iv.plannedDate)} />
         ))}
       </Block>
 
-      <Block id="sav-zone" kpi="SAV-T-04" title="À vérifier dans ma zone" sub="équipements signalés, pas encore planifiés · le responsable SAV les planifie" empty="Aucun signalement en attente dans votre zone.">
+      <Block id="sav-zone" kpi="SAV-T-04" title="À vérifier dans ma zone" empty="Aucun signalement en attente dans votre zone.">
         {zoneToPlan.map((iv) => (
           <Visit key={iv.id} iv={iv} asOfIso={asOfIso} eq={eqBySerial.get(iv.serial)} onOpen={onOpen} dayLabel={`signalé ${frDay(toIsoDate(new Date(iv.createdAt)))}`} />
         ))}

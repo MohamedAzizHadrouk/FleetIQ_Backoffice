@@ -430,7 +430,7 @@ export function EquipmentsUnifiedTable({
           <span className="inline-block h-2.5 w-2.5 rounded-pill bg-danger-200 align-middle mr-1" aria-hidden="true" />
           ligne rouge = installé non connecté ·{' '}
           <span className="inline-block h-2.5 w-2.5 rounded-pill bg-warning-200 align-middle mr-1" aria-hidden="true" />
-          ligne jaune = affecté non installé{canOpen ? ' · cliquez sur une ligne pour la fiche' : ''}
+          ligne jaune = affecté non installé
         </span>
         {rows.length > shown && (
           <div className="flex gap-2">

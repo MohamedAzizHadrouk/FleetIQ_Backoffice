@@ -7,20 +7,19 @@
  */
 import { useCallback, useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { BookOpen, CalendarDays } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { TableExportButtons } from '../components/TableExportButtons';
 import { InterventionFiche } from '../components/sav/InterventionFiche';
 import { SavBell } from '../components/sav/SavBell';
 import { SavTeamView } from '../components/sav/SavTeamView';
 import { SavTechnicianView } from '../components/sav/SavTechnicianView';
-import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { PageChrome, PageShell } from '../components/shell/PageShell';
 import { Button } from '../components/ui/Button';
-import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { useBackofficePermissions, useBackofficeRole } from '../hooks/useBackofficePermissions';
 import { useFleetStore, type FleetEquipment, type Intervention } from '../state/FleetStore';
 import { addDays, parseDate, startOfDay, toIsoDate } from '../state/mock/dates';
-import { BACKOFFICE_ROLE_LABELS, canAccessRoute } from '../utils/backofficePermissions';
+import { canAccessRoute } from '../utils/backofficePermissions';
 import { buildRows } from '../utils/equipmentsKpis';
 import {
   CONNECTED_TECHNICIAN_ID,
@@ -100,7 +99,6 @@ export function SavPage() {
 
   /* ---------- vue technicien : ses interventions et sa zone ---------- */
   const me = technicians.find((t) => t.id === CONNECTED_TECHNICIAN_ID) ?? technicians[0];
-  const myZone = zones.find((z) => z.id === me?.zoneId);
   const mine = useMemo(() => interventions.filter((iv) => iv.technicianId === me?.id), [interventions, me]);
   const zoneToPlan = useMemo(
     () => toPlanRows(interventions.filter((iv) => iv.zoneId === me?.zoneId)),
@@ -163,78 +161,56 @@ export function SavPage() {
   const exp = () => exportRows(exportList, asOfIso, eqBySerial, techName, team);
   const exportName = team ? `interventions-sav-${asOfIso}` : `mes-interventions-${asOfIso}`;
 
-  const roleLabel = role ? BACKOFFICE_ROLE_LABELS[role] : '';
   const pageTitle = team ? 'Interventions SAV' : 'Mes interventions';
-  const subtitle = team
-    ? `${roleLabel} · toute l’équipe SAV (${technicians.length} techniciens) : planifier, suivre et mesurer les interventions. Aucun prix.`
-    : `${me?.name ?? 'Technicien'} · zone ${myZone?.name ?? ''} (${myZone?.cities.join(', ') ?? ''}) : vos interventions, sans les autres zones ni les données commerciales.`;
   const dateFr = realToday.toLocaleDateString('fr-FR');
-  const docsBtn = (
-    <Button type="button" variant="neutral" size="compact" disabled title="Documentation des KPI : bientôt (carte FleetIQ 11)">
-      <BookOpen size={16} aria-hidden="true" />
-      Documentation
-      <StatusTagFromLabel label="bientôt" />
-    </Button>
-  );
   const bell = <SavBell kpi={team ? 'SAV-S-10' : 'SAV-T-07'} items={bellItems} open={bellOpen} onToggle={setBellOpen} onSelect={onBell} />;
 
   return (
     <PageShell
-      topBar={<TopBar title={pageTitle} titleExtra={docsBtn} date={dateFr} bell={bell} />}
-      pageHeader={
-        <PageHeader
-          mobileTitle={pageTitle}
-          context={subtitle}
+      header={
+        <PageChrome
+          title={pageTitle}
+          date={dateFr}
           actions={
+            <TableExportButtons
+              size="compact"
+              onExportExcel={() => {
+                const { headers, rows } = exp();
+                exportTableToCsv(headers, rows, exportName);
+              }}
+              onExportPdf={() => {
+                const { headers, rows } = exp();
+                exportTableToPdf(
+                  `${team ? 'Interventions SAV' : `Mes interventions – ${me?.name ?? ''}`} – état au ${asOf.toLocaleDateString('fr-FR')}`,
+                  headers,
+                  rows,
+                  exportName
+                );
+              }}
+            />
+          }
+          bell={bell}
+          tools={
             <>
-              <span className="hidden sm:inline-flex">{docsBtn}</span>
-              <TableExportButtons
-                size="compact"
-                onExportExcel={() => {
-                  const { headers, rows } = exp();
-                  exportTableToCsv(headers, rows, exportName);
-                }}
-                onExportPdf={() => {
-                  const { headers, rows } = exp();
-                  exportTableToPdf(
-                    `${team ? 'Interventions SAV' : `Mes interventions – ${me?.name ?? ''}`} – état au ${asOf.toLocaleDateString('fr-FR')}`,
-                    headers,
-                    rows,
-                    exportName
-                  );
-                }}
-              />
-              <div className="md:hidden">{bell}</div>
+              <label className="inline-flex items-center gap-2 text-label text-text">
+                <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
+                État au
+                <input
+                  type="date"
+                  lang="fr"
+                  value={asOfIso}
+                  min={toIsoDate(addDays(realToday, -60))}
+                  max={toIsoDate(addDays(realToday, 30))}
+                  onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
+                  className="h-control max-md:h-control-touch px-2 border border-border-strong rounded-control text-small max-md:text-body bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
+                />
+              </label>
+              <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
+                Aujourd’hui
+              </Button>
             </>
           }
         />
-      }
-      toolbar={
-        <PageToolbar
-          note={
-            <>
-              État au <b className="text-text">{asOf.toLocaleDateString('fr-FR')}</b>
-              {isToday ? ' (aujourd’hui)' : ''} · tournée du jour, retards et notifications calculés à cette date
-            </>
-          }
-        >
-          <label className="inline-flex items-center gap-2 text-label text-text">
-            <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
-            État au
-            <input
-              type="date"
-              lang="fr"
-              value={asOfIso}
-              min={toIsoDate(addDays(realToday, -60))}
-              max={toIsoDate(addDays(realToday, 30))}
-              onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
-              className="h-control max-md:h-control-touch px-2 border border-border-strong rounded-control text-small max-md:text-body bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
-            />
-          </label>
-          <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
-            Aujourd’hui
-          </Button>
-        </PageToolbar>
       }
     >
 

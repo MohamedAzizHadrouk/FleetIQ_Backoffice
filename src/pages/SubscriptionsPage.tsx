@@ -16,7 +16,6 @@ import {
   Edit2,
   AlertCircle,
   AlertTriangle,
-  BookOpen,
   CheckCircle2,
   Package,
   XCircle,
@@ -37,9 +36,8 @@ import { BellMenu } from '../components/dashboard/BellMenu';
 import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModal';
 import { SectionTitle } from '../components/clients/ClientsOverview';
 import { CriticalBanner, PacksOverview } from '../components/packs/PacksOverview';
-import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { PageChrome, PageShell } from '../components/shell/PageShell';
 import { Button } from '../components/ui/Button';
-import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { ALERT_META, alertDetail } from '../components/packs/packsAlerts';
 import { FeaturesSection, PacksChosenSection, UsageSection } from '../components/packs/PacksCharts';
 import {
@@ -60,7 +58,6 @@ import {
   fmt,
   frDate,
   lastCommLabel,
-  MAX_PERIOD_DAYS,
   namesWithDays,
   PK_ALERT_KEYS,
   resolveCompare,
@@ -510,13 +507,6 @@ export function SubscriptionsPage() {
   const packFilterLabel = packFilter === 'none' ? 'Sans pack' : packById.get(Number(packFilter))?.name;
 
   const dateFr = today.toLocaleDateString('fr-FR');
-  const docsBtn = (
-    <Button type="button" variant="neutral" size="compact" disabled title="Documentation des KPI : bientôt (carte FleetIQ 11)">
-      <BookOpen size={16} aria-hidden="true" />
-      Documentation
-      <StatusTagFromLabel label="bientôt" />
-    </Button>
-  );
   const bell = (
     <BellMenu
       items={bellItems}
@@ -526,23 +516,15 @@ export function SubscriptionsPage() {
       canOpen={(r) => r === 'subscriptions'}
     />
   );
-  const subtitle = (
-    <>
-      Créez des packs, affectez des fonctionnalités, puis associez un pack à chaque client. Aucun prix sur cette page.
-      {!canCreateEditPacks && canManagePayment ? ' Finance : paiement seulement (création et modification des packs réservées à l’Admin).' : ''}
-    </>
-  );
 
   return (
     <PageShell
-      topBar={<TopBar title="Gestion des Packs" titleExtra={docsBtn} date={dateFr} bell={bell} />}
-      pageHeader={
-        <PageHeader
-          mobileTitle="Gestion des Packs"
-          context={subtitle}
+      header={
+        <PageChrome
+          title="Gestion des Packs"
+          date={dateFr}
           actions={
             <>
-              <span className="hidden sm:inline-flex">{docsBtn}</span>
               <TableExportButtons
                 size="compact"
                 onExportExcel={exportPackClientsExcel}
@@ -555,93 +537,80 @@ export function SubscriptionsPage() {
                   Nouveau pack
                 </Button>
               )}
-              <div className="md:hidden">{bell}</div>
+            </>
+          }
+          bell={bell}
+          tools={
+            <>
+              {/* Période (≤ 1 an), « Au » = aujourd'hui, comparaison optionnelle */}
+              <div className="inline-flex flex-wrap items-center gap-0.5 rounded-control border border-border p-0.5" role="group" aria-label="Période">
+                <CalendarDays size={16} aria-hidden="true" className="mx-1.5 text-text-muted" />
+                {PERIOD_OPTIONS.map((p) => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    aria-pressed={periodKind === p.key}
+                    onClick={() => {
+                      setPeriodKind(p.key);
+                      if (p.key === 'custom' && !customFrom) setCustomFrom(toIsoDate(period.from));
+                    }}
+                    className={`h-8 px-3 text-button-sm rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                      periodKind === p.key ? 'bg-primary text-text-inverse' : 'text-text hover:bg-surface-muted'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              {periodKind === 'custom' ? (
+                <span className="inline-flex flex-wrap items-center gap-2 text-small text-text">
+                  Du
+                  <input type="date" aria-label="Début de la période" value={customFrom} max={todayIso} onChange={(e) => setCustomFrom(e.target.value)} className={dateInput} />
+                  au
+                  <input type="date" aria-label="Fin de la période" value={customTo} max={todayIso} onChange={(e) => setCustomTo(e.target.value)} className={dateInput} />
+                </span>
+              ) : (
+                <label className="inline-flex items-center gap-2 text-small text-text">
+                  <span className="font-medium">Au</span>
+                  <input type="date" value={auIso} max={todayIso} onChange={(e) => setAuIso(e.target.value || todayIso)} className={dateInput} />
+                </label>
+              )}
+              <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
+              <Button type="button" variant={compareOn ? 'primary' : 'secondary'} aria-pressed={compareOn} onClick={() => setCompareOn((v) => !v)}>
+                <GitCompareArrows size={16} aria-hidden="true" />
+                Comparer
+              </Button>
+              {compareOn && (
+                <>
+                  <label className="inline-flex items-center gap-2 text-small text-text">
+                    à
+                    <select value={compareKind} onChange={(e) => setCompareKind(e.target.value as CompareKind)} aria-label="Période de comparaison" className={dateInput}>
+                      <option value="prev">Période précédente</option>
+                      <option value="year">Même période l’an dernier</option>
+                      <option value="custom">Personnalisée</option>
+                    </select>
+                  </label>
+                  {compareKind === 'custom' && (
+                    <span className="inline-flex flex-wrap items-center gap-2 text-small text-text">
+                      Du
+                      <input type="date" aria-label="Début de la comparaison" value={cmpFrom} max={todayIso} onChange={(e) => setCmpFrom(e.target.value)} className={dateInput} />
+                      au
+                      <input type="date" aria-label="Fin de la comparaison" value={cmpTo} max={todayIso} onChange={(e) => setCmpTo(e.target.value)} className={dateInput} />
+                    </span>
+                  )}
+                </>
+              )}
+              {(periodRes.error || compareRes.error) && (
+                <p className="basis-full text-mention text-text-muted" role="alert">
+                  <span className="font-medium text-danger-700">
+                    {periodRes.error || compareRes.error}
+                    {periodRes.error ? ' (30 derniers jours affichés)' : ''}
+                  </span>
+                </p>
+              )}
             </>
           }
         />
-      }
-      toolbar={
-        <PageToolbar
-          note={
-            <>
-              Période : <b className="text-text">{frDate(period.from)} → {frDate(period.to)}</b> ({fmt(period.days)} j)
-              {compareRes.period ? (
-                <>
-                  {' '}
-                  · comparée au <b className="text-text">{frDate(compareRes.period.from)} → {frDate(compareRes.period.to)}</b>
-                </>
-              ) : (
-                ' · sans comparaison'
-              )}
-              {` · période personnalisée : ${fmt(MAX_PERIOD_DAYS)} j maximum · alertes et échéances calculées au ${frDate(today)} · connecté = données ≤ ${fmt(data.connDays)} j`}
-              {(periodRes.error || compareRes.error) && (
-                <span role="alert" className="ml-2 font-medium text-danger-700">
-                  {periodRes.error || compareRes.error}
-                  {periodRes.error ? ' (30 derniers jours affichés)' : ''}
-                </span>
-              )}
-            </>
-          }
-        >
-          {/* Période (≤ 1 an), « Au » = aujourd'hui, comparaison optionnelle */}
-          <div className="inline-flex flex-wrap items-center gap-0.5 rounded-control border border-border p-0.5" role="group" aria-label="Période">
-            <CalendarDays size={16} aria-hidden="true" className="mx-1.5 text-text-muted" />
-            {PERIOD_OPTIONS.map((p) => (
-              <button
-                key={p.key}
-                type="button"
-                aria-pressed={periodKind === p.key}
-                onClick={() => {
-                  setPeriodKind(p.key);
-                  if (p.key === 'custom' && !customFrom) setCustomFrom(toIsoDate(period.from));
-                }}
-                className={`h-8 px-3 text-button-sm rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                  periodKind === p.key ? 'bg-primary text-text-inverse' : 'text-text hover:bg-surface-muted'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-          {periodKind === 'custom' ? (
-            <span className="inline-flex flex-wrap items-center gap-2 text-small text-text">
-              Du
-              <input type="date" aria-label="Début de la période" value={customFrom} max={todayIso} onChange={(e) => setCustomFrom(e.target.value)} className={dateInput} />
-              au
-              <input type="date" aria-label="Fin de la période" value={customTo} max={todayIso} onChange={(e) => setCustomTo(e.target.value)} className={dateInput} />
-            </span>
-          ) : (
-            <label className="inline-flex items-center gap-2 text-small text-text">
-              <span className="font-medium">Au</span>
-              <input type="date" value={auIso} max={todayIso} onChange={(e) => setAuIso(e.target.value || todayIso)} className={dateInput} />
-            </label>
-          )}
-          <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-          <Button type="button" variant={compareOn ? 'primary' : 'secondary'} aria-pressed={compareOn} onClick={() => setCompareOn((v) => !v)}>
-            <GitCompareArrows size={16} aria-hidden="true" />
-            Comparer
-          </Button>
-          {compareOn && (
-            <>
-              <label className="inline-flex items-center gap-2 text-small text-text">
-                à
-                <select value={compareKind} onChange={(e) => setCompareKind(e.target.value as CompareKind)} aria-label="Période de comparaison" className={dateInput}>
-                  <option value="prev">Période précédente</option>
-                  <option value="year">Même période l’an dernier</option>
-                  <option value="custom">Personnalisée</option>
-                </select>
-              </label>
-              {compareKind === 'custom' && (
-                <span className="inline-flex flex-wrap items-center gap-2 text-small text-text">
-                  Du
-                  <input type="date" aria-label="Début de la comparaison" value={cmpFrom} max={todayIso} onChange={(e) => setCmpFrom(e.target.value)} className={dateInput} />
-                  au
-                  <input type="date" aria-label="Fin de la comparaison" value={cmpTo} max={todayIso} onChange={(e) => setCmpTo(e.target.value)} className={dateInput} />
-                </span>
-              )}
-            </>
-          )}
-        </PageToolbar>
       }
     >
       {!bannerClosed && (
@@ -666,7 +635,7 @@ export function SubscriptionsPage() {
 
       {/* Catalogue et affectations (écran existant : packs, clients, Modifier, Paiement) */}
       <section aria-labelledby="pk-catalog" className="space-y-3 scroll-mt-4" ref={catalogRef}>
-        <SectionTitle id="pk-catalog" title="Catalogue et affectations" hint="Cliquez sur un pack pour filtrer la liste des clients" />
+        <SectionTitle id="pk-catalog" title="Catalogue et affectations" />
         <div className="space-y-4">
           {/* Packs */}
           <div className="bg-surface rounded-card border border-border overflow-hidden">

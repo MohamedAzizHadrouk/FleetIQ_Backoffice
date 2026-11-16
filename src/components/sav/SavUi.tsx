@@ -59,7 +59,7 @@ export function KpiButton({
   title: string;
   value: string;
   unit?: string;
-  sub: ReactNode;
+  sub?: ReactNode;
   tone?: 'default' | 'danger';
   onClick?: () => void;
   icon: LucideIcon;
@@ -88,7 +88,7 @@ export function KpiButton({
         <span className="text-kpi text-text">{value}</span>
         {unit && <span className="text-small text-text-muted">{unit}</span>}
       </span>
-      <span className="block text-small text-text-muted">{sub}</span>
+      {sub != null && sub !== '' ? <span className="block text-small text-text-muted">{sub}</span> : null}
     </button>
   );
 }

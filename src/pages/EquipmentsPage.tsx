@@ -10,7 +10,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
-  BookOpen,
   CheckCircle2,
   XCircle,
   Plus,
@@ -42,9 +41,8 @@ import { EquipmentsOverview } from '../components/equipments/EquipmentsOverview'
 import { EquipmentsRepartition } from '../components/equipments/EquipmentsRepartition';
 import { EquipmentsBell, LiveAlertToast } from '../components/equipments/EquipmentsAlerts';
 import { EquipmentFicheSummary } from '../components/equipments/EquipmentFicheSummary';
-import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { PageChrome, PageShell } from '../components/shell/PageShell';
 import { Button } from '../components/ui/Button';
-import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { EquipmentType, EQUIPMENT_TYPES, useFleetStore } from '../state/FleetStore';
 import { parseDate } from '../state/mock/dates';
 import { useBackofficePermissions, useBackofficeRole } from '../hooks/useBackofficePermissions';
@@ -701,18 +699,6 @@ export function EquipmentsPage() {
 
   const toast = !toastClosed && liveAlerts.length > 0 ? liveAlerts[0] : null;
   const dateFr = mockToday.toLocaleDateString('fr-FR');
-  const pageSubtitle = `${
-    isNetwork
-      ? 'Parc des boîtiers GPS de tout le réseau (Tunav, puis les revendeurs) : installés ou non, connectés ou non, quoi faire.'
-      : `Parc des boîtiers GPS de vos clients (${currentUserName}) : installés ou non, connectés ou non, quoi faire.`
-  }${permissions?.equipments.readOnly ? ' Consultation seule.' : ''}`;
-  const docsBtn = (
-    <Button type="button" variant="neutral" size="compact" disabled title="Documentation des KPI : bientôt (carte FleetIQ 11)">
-      <BookOpen size={16} aria-hidden="true" />
-      Documentation
-      <StatusTagFromLabel label="bientôt" />
-    </Button>
-  );
   const bell = (
     <EquipmentsBell
       alerts={liveAlerts}
@@ -726,14 +712,13 @@ export function EquipmentsPage() {
 
   return (
     <PageShell
-      topBar={<TopBar title="Gestion des Équipements" titleExtra={docsBtn} dateLabel="Données au" date={dateFr} bell={bell} />}
-      pageHeader={
-        <PageHeader
-          mobileTitle="Gestion des Équipements"
-          context={pageSubtitle}
+      header={
+        <PageChrome
+          title="Gestion des Équipements"
+          dateLabel="Données au"
+          date={dateFr}
           actions={
             <>
-              <span className="hidden sm:inline-flex">{docsBtn}</span>
               <TableExportButtons
                 size="compact"
                 onExportExcel={exportFilteredExcel}
@@ -746,22 +731,10 @@ export function EquipmentsPage() {
                   Ajouter un équipement
                 </Button>
               )}
-              <div className="md:hidden">{bell}</div>
             </>
           }
+          bell={bell}
         />
-      }
-      toolbar={
-        <PageToolbar
-          note={
-            <>
-              Données au <b className="text-text">{dateFr}</b> · connecté = un envoi depuis {connDays} j ou moins · alertes « En direct » = déconnectés &gt;{' '}
-              {alertDays} j
-            </>
-          }
-        >
-          <span className="text-label text-text">État du parc</span>
-        </PageToolbar>
       }
     >
       <EquipmentsOverview
@@ -776,7 +749,7 @@ export function EquipmentsPage() {
 
       {/* EQ-T-11 Liste des équipements, juste sous « À traiter » */}
       <section aria-labelledby="eq-list" className="space-y-3 scroll-mt-4" ref={tableRef}>
-        <SectionTitle id="eq-list" title="Liste des équipements" hint="Cliquez sur une ligne pour la fiche de l’équipement" />
+        <SectionTitle id="eq-list" title="Liste des équipements" />
         <EquipmentsUnifiedTable
           rows={tableRows}
           totalCount={allRows.length}

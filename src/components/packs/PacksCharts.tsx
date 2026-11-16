@@ -92,7 +92,7 @@ export function PacksChosenSection({
         <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
           <div>
             <h3 className="text-h4 text-text">Classement des packs</h3>
-            <p className="text-mention text-text-muted">Cliquez sur un pack pour voir ses clients · un client à plusieurs packs compte dans chacun · P-03</p>
+            
           </div>
           <div className="flex gap-1" role="group" aria-label="Trier par">
             <button type="button" aria-pressed={sortBy === 'clients'} className={tabBtn(sortBy === 'clients')} onClick={() => setSortBy('clients')}>
@@ -167,7 +167,7 @@ export function PacksChosenSection({
         <div className="min-w-0">
           <h3 className="text-h4 text-text">Packs vendus par mois</h3>
           <p className="text-mention text-text-muted mb-2">
-            Janvier → décembre {data.year} · cliquez sur un mois pour le détail · mois à venir vides · P-06
+            Janvier → décembre {data.year}
           </p>
           <ColumnChart
             mode="stacked"
@@ -206,7 +206,7 @@ export function PacksChosenSection({
             )}
           </DetailPanel>
         ) : (
-          <DetailPanel title="Détail du mois" sub="Cliquez sur une colonne">
+          <DetailPanel title="Détail du mois" >
             <p className="text-small text-text">
               {fmt(monthsWithSales.reduce((s, m) => s + m.sales.length, 0))} pack(s) vendu(s) en {data.year}
               {monthsWithSales.length ? ` · meilleur mois : ${formatMonthFr(monthsWithSales.slice().sort((a, b) => b.sales.length - a.sales.length)[0].month)}` : ''}.
@@ -248,11 +248,6 @@ export function FeaturesSection({ data, packs }: { data: PacksData; packs: Pack[
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-h4 text-text">{mode === 'composition' ? 'Composition des packs par module' : 'Fonctionnalités vendues'}</h3>
-          <p className="text-mention text-text-muted">
-            {mode === 'composition'
-              ? 'Fonctionnalités cochées dans chaque pack, par module (« Modifier le pack ») · cliquez sur une case pour la liste · P-04'
-              : `Nombre de clients actifs qui ont la fonctionnalité dans au moins un de leurs packs (sur ${fmt(base)}) · cliquez sur une ligne · P-04`}
-          </p>
         </div>
         <div className="flex flex-wrap gap-1" role="group" aria-label="Vue">
           {(
@@ -351,7 +346,7 @@ export function FeaturesSection({ data, packs }: { data: PacksData; packs: Pack[
               </ul>
             </DetailPanel>
           ) : (
-            <DetailPanel title="Détail" sub="Cliquez sur une case du tableau">
+            <DetailPanel title="Détail" >
               <p className="text-small text-text">
                 {packs.map((p) => `${p.name} : ${fmt(p.features.length)}`).join(' · ')} fonctionnalités sur {fmt(data.features.length)}. {fmt(never.length)} fonctionnalité(s)
                 ne sont vendues à aucun client actif.
@@ -413,7 +408,7 @@ export function FeaturesSection({ data, packs }: { data: PacksData; packs: Pack[
               </ul>
             </DetailPanel>
           ) : (
-            <DetailPanel title="Détail" sub="Cliquez sur une fonctionnalité">
+            <DetailPanel title="Détail" >
               <p className="text-small text-text">
                 {fmt(sold.length)} fonctionnalité(s) vendue(s) à au moins un client actif, {fmt(never.length)} jamais vendue(s) (dans aucun pack ou dans un pack sans client actif).
               </p>
@@ -458,10 +453,6 @@ export function UsageSection({ data, today }: { data: PacksData; today: Date }) 
       <div className={`${panelCls} grid grid-cols-1 xl:grid-cols-[3fr_2fr] gap-5`} data-kpi="PK-P-05">
         <div className="min-w-0">
           <h3 className="text-h4 text-text">Équipements connectés par pack</h3>
-          <p className="text-mention text-text-muted mb-3">
-            Du plus bas au plus haut · cliquez sur le vert ou le rouge d’un pack pour voir ses équipements · alerte sous {MIN_CONN_PCT} % · connecté = données ≤{' '}
-            {fmt(data.connDays)} j · P-05
-          </p>
           <ul className="space-y-3">
             {data.p05.byPack.map((r) => {
               const p = pct(r.connected, r.equipments.length);
@@ -520,7 +511,7 @@ export function UsageSection({ data, today }: { data: PacksData; today: Date }) 
             </ul>
           </DetailPanel>
         ) : (
-          <DetailPanel title="Détail" sub="Cliquez sur une barre">
+          <DetailPanel title="Détail" >
             <p className="text-small text-text">
               {(() => {
                 const low = data.p05.byPack.filter((r) => pct(r.connected, r.equipments.length) < MIN_CONN_PCT);
@@ -548,7 +539,7 @@ export function UsageSection({ data, today }: { data: PacksData; today: Date }) 
               </button>
             </div>
           </div>
-          <p className="text-mention text-text-muted mb-2">Clients par mois d’expiration, par niveau · cliquez sur un mois · A-10, A-11</p>
+          
           <ColumnChart
             mode="stacked"
             height={170}
@@ -589,7 +580,7 @@ export function UsageSection({ data, today }: { data: PacksData; today: Date }) 
             )}
           </DetailPanel>
         ) : (
-          <DetailPanel title="Détail du mois" sub="Cliquez sur une colonne">
+          <DetailPanel title="Détail du mois" >
             <p className="text-small text-text">
               {fmt(data.alerts.critique.length)} critique(s) ≤ {data.critDays} j · {fmt(data.alerts.anticiper.length)} à anticiper ≤ {data.renewDays} j ·{' '}
               {fmt(data.alerts.bloques.length)} expiré(s) ou bloqué(s).

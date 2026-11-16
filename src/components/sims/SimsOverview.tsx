@@ -107,7 +107,7 @@ export function SimsTopCards({ data, period, onTotal, onInstalled, onNotInstalle
 export function SimsOffers({ data, showPrices, onOffer, onOfferList }: Props) {
   return (
     <section aria-labelledby="pu-offers" className="space-y-3" data-kpi="PU-P-05">
-      <SectionTitle id="pu-offers" title="Puces installées par offre" hint="Cliquez sur une offre pour voir ses puces" />
+      <SectionTitle id="pu-offers" title="Puces installées par offre" />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {data.offers.map((o) => {
           const rate = pct(o.installed, o.sims);

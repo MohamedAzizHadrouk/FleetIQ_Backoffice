@@ -28,7 +28,6 @@ import {
   Unlink,
   ArrowLeftRight,
   X,
-  BookOpen,
   CalendarDays,
   Network
 } from 'lucide-react';
@@ -48,9 +47,8 @@ import {
 import { exportSimsToExcel, exportSimsToPdf, getSimStatus } from '../utils/simTableExport';
 import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModal';
 import { SectionTitle } from '../components/clients/ClientsOverview';
-import { PageHeader, PageShell, PageToolbar, TopBar } from '../components/shell/PageShell';
+import { PageChrome, PageShell } from '../components/shell/PageShell';
 import { Button } from '../components/ui/Button';
-import { StatusTagFromLabel } from '../components/ui/StatusTag';
 import { SimsOffers, SimsTopCards } from '../components/sims/SimsOverview';
 import { SimsConsumption } from '../components/sims/SimsConsumption';
 import { SimsStats } from '../components/sims/SimsStats';
@@ -74,11 +72,8 @@ import {
 import {
   ALERT_FILTERS,
   EMPTY_FILTERS,
-  MIN_MO,
-  MUTE_DAYS,
   NETWORK_ORDER,
   PERIOD_OPTIONS,
-  REMIND_PCT,
   STATUS_FILTERS,
   buildPeriod,
   buildSimRows,
@@ -566,13 +561,6 @@ export function SimsPage() {
   const overClient = data.alerts.overClients[0];
 
   const dateFr = mockToday.toLocaleDateString('fr-FR');
-  const docsBtn = (
-    <Button type="button" variant="neutral" size="compact" disabled title="Documentation des KPI : bientôt (carte FleetIQ 11)">
-      <BookOpen size={16} aria-hidden="true" />
-      Documentation
-      <StatusTagFromLabel label="bientôt" />
-    </Button>
-  );
   const bell = (
     <SimsBell
       data={data}
@@ -588,23 +576,15 @@ export function SimsPage() {
       }}
     />
   );
-  const subtitle = (
-    <>
-      Puces SIM de Tunav et de ses revendeurs : offre, prix fixe par puce et par mois, affectation aux clients et équipements. Une puce est installée
-      (son équipement est posé) ou non installée.{!canManageSims ? ' Finance : consultation seulement (aucune action).' : ''}
-    </>
-  );
 
   return (
     <PageShell
-      topBar={<TopBar title="Gestion des puces" titleExtra={docsBtn} date={dateFr} bell={bell} />}
-      pageHeader={
-        <PageHeader
-          mobileTitle="Gestion des puces"
-          context={subtitle}
+      header={
+        <PageChrome
+          title="Gestion des puces"
+          date={dateFr}
           actions={
             <>
-              <span className="hidden sm:inline-flex">{docsBtn}</span>
               <TableExportButtons size="compact" onExportExcel={exportFilteredExcel} onExportPdf={exportFilteredPdf} disabled={filteredSims.length === 0} />
               {canManageSims && (
                 <>
@@ -618,62 +598,54 @@ export function SimsPage() {
                   </Button>
                 </>
               )}
-              <div className="md:hidden">{bell}</div>
+            </>
+          }
+          bell={bell}
+          tools={
+            <>
+              {/* Réseau en premier, puis période */}
+              <label className="inline-flex items-center gap-2 text-small text-text">
+                <Network size={16} aria-hidden="true" className="text-text-muted" />
+                <span className="font-medium">Réseau</span>
+                <select value={network} onChange={(e) => setNetwork(e.target.value)} className={selCls}>
+                  <option value="">Tout le réseau</option>
+                  {allNetworks.map((n) => (
+                    <option key={n} value={n}>
+                      {networkLabel(n)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
+              <div className="inline-flex flex-wrap items-center gap-0.5 rounded-control border border-border p-0.5" role="group" aria-label="Période">
+                <CalendarDays size={16} aria-hidden="true" className="mx-1.5 text-text-muted" />
+                {PERIOD_OPTIONS.map((p) => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    aria-pressed={periodKind === p.key}
+                    onClick={() => setPeriodKind(p.key)}
+                    className={`h-8 px-3 text-button-sm rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                      periodKind === p.key ? 'bg-primary text-text-inverse' : 'text-text hover:bg-surface-muted'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              {periodKind === 'mois' && (
+                <select value={month} onChange={(e) => setMonth(e.target.value)} aria-label="Mois" className={selCls}>
+                  {ctx.yearMonths.map((m) => (
+                    <option key={m} value={m}>
+                      {formatMonthFr(m)}
+                      {m === ctx.currentMonth ? ' (en cours)' : ''}
+                    </option>
+                  ))}
+                </select>
+              )}
             </>
           }
         />
-      }
-      toolbar={
-        <PageToolbar
-          note={
-            <>
-              Période : <b className="text-text">{period.label}</b>
-              {period.estimated ? ' (estimée à partir des totaux mensuels)' : ''} · {fmt(data.total)} puces : Tunav {fmt(data.tunavSims)} · revendeurs{' '}
-              {fmt(data.resellerSims)} · paramètres (à confirmer) : @MinMo {fmt(MIN_MO)} Mo · @RemindPct {fmt(REMIND_PCT)} % · @MuteDays {fmt(MUTE_DAYS)} j
-            </>
-          }
-        >
-          {/* Réseau en premier, puis période */}
-          <label className="inline-flex items-center gap-2 text-small text-text">
-            <Network size={16} aria-hidden="true" className="text-text-muted" />
-            <span className="font-medium">Réseau</span>
-            <select value={network} onChange={(e) => setNetwork(e.target.value)} className={selCls}>
-              <option value="">Tout le réseau</option>
-              {allNetworks.map((n) => (
-                <option key={n} value={n}>
-                  {networkLabel(n)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-          <div className="inline-flex flex-wrap items-center gap-0.5 rounded-control border border-border p-0.5" role="group" aria-label="Période">
-            <CalendarDays size={16} aria-hidden="true" className="mx-1.5 text-text-muted" />
-            {PERIOD_OPTIONS.map((p) => (
-              <button
-                key={p.key}
-                type="button"
-                aria-pressed={periodKind === p.key}
-                onClick={() => setPeriodKind(p.key)}
-                className={`h-8 px-3 text-button-sm rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                  periodKind === p.key ? 'bg-primary text-text-inverse' : 'text-text hover:bg-surface-muted'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-          {periodKind === 'mois' && (
-            <select value={month} onChange={(e) => setMonth(e.target.value)} aria-label="Mois" className={selCls}>
-              {ctx.yearMonths.map((m) => (
-                <option key={m} value={m}>
-                  {formatMonthFr(m)}
-                  {m === ctx.currentMonth ? ' (en cours)' : ''}
-                </option>
-              ))}
-            </select>
-          )}
-        </PageToolbar>
       }
     >
 
@@ -706,7 +678,7 @@ export function SimsPage() {
 
       {/* 3. Liste des puces PU-T-21 (T-21) – une ligne ouvre la fiche PU-F-21 */}
       <section aria-labelledby="pu-t21" className="space-y-3 scroll-mt-4" ref={listRef} data-kpi="PU-T-21">
-        <SectionTitle id="pu-t21" title="Liste des puces" hint="Cliquez sur une puce pour voir sa fiche" />
+        <SectionTitle id="pu-t21" title="Liste des puces" />
         <div className="bg-surface rounded-card border border-border overflow-hidden">
           <div className="p-4 border-b border-border-subtle bg-surface-muted flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[220px]">
@@ -970,7 +942,7 @@ export function SimsPage() {
 
       {/* 4. Consommation data : PU-C-21 puis PU-C-25 */}
       <section aria-labelledby="pu-cons" className="space-y-3">
-        <SectionTitle id="pu-cons" title="Consommation data" hint="Cliquez sur un revendeur pour voir ses clients, sur un client pour voir ses puces" />
+        <SectionTitle id="pu-cons" title="Consommation data" />
         <SimsConsumption data={data} period={period} onOpenSim={openFiche} onOverNetwork={(n) => setDetail(overNetworkDetail(dctx, n))} />
       </section>
 

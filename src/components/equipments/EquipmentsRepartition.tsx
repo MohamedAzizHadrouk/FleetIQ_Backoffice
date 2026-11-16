@@ -47,16 +47,14 @@ const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'aoû
 const pad = (n: number) => String(n).padStart(2, '0');
 const lastDay = (y: number, m: number) => new Date(y, m + 1, 0).getDate();
 
-function Card({ id, title, hint, chart, detail }: { id: string; title: string; hint: string; chart: ReactNode; detail: ReactNode }) {
+function Card({ id, title, hint, chart, detail }: { id: string; title: string; hint?: string; chart: ReactNode; detail: ReactNode }) {
   return (
     <div data-kpi={id} className="bg-surface rounded-card border border-border p-4">
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-4">
         <div className="min-w-0 space-y-2">
           <div>
             <h3 className="text-section text-text">{title}</h3>
-            <p className="text-mention text-text-muted">
-              {hint} · {id.replace('EQ-', '')}
-            </p>
+            {hint ? <p className="text-mention text-text-muted">{hint}</p> : null}
           </div>
           {chart}
         </div>
@@ -157,13 +155,13 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
 
   return (
     <section aria-labelledby="eq-rep" className="space-y-4">
-      <SectionTitle id="eq-rep" title="Répartition" hint="Cliquez sur une barre pour voir le détail à droite" />
+      <SectionTitle id="eq-rep" title="Répartition" />
 
       {/* EQ-G-01 Par revendeur et client */}
       <Card
         id="EQ-G-01"
         title={isNetwork ? 'Par revendeur et client' : 'Par client'}
-        hint={isNetwork ? '% des équipements vendus · Tunav en premier · cliquez sur un revendeur pour ouvrir ses clients' : '% des équipements vendus · les clients avec le plus de problèmes en premier'}
+        
         chart={
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-3">
@@ -219,7 +217,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
         <Card
           id="EQ-G-02"
           title="Top 5 produits vendus"
-          hint="Modèles les plus vendus (équipements affectés à un client) · cliquez pour le détail"
+          
           chart={
             <div className="space-y-2">
               <HorizontalBarList
@@ -270,7 +268,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
                       </li>
                     ))}
                   </ul>
-                  <p className="px-2 text-mention text-text-muted">Cliquez sur une ligne pour voir ses équipements de ce modèle dans le tableau.</p>
+                  
                 </div>
               </DetailPanel>
             ) : (
@@ -285,7 +283,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
         <Card
           id="EQ-G-03"
           title="Dernière communication"
-          hint="Équipements installés et non installés · jours depuis le dernier envoi · cliquez sur une colonne"
+          
           chart={
             <BarChart
               ariaLabel="Équipements par ancienneté du dernier envoi"
@@ -309,7 +307,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
         <Card
           id="EQ-G-04"
           title="Affectations par mois"
-          hint="Équipements affectés à un client, de janvier à décembre · couleur = état actuel · cliquez sur un mois"
+          
           chart={
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-3">
@@ -386,7 +384,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
         <Card
           id="EQ-C-01"
           title={`Connectés et non connectés par ${c01By === 'pack' ? 'pack' : 'client'}`}
-          hint="Équipements installés · triés par non connectés · cliquez pour filtrer le tableau"
+          
           chart={
             <div className="space-y-2">
               <div className="inline-flex gap-1" role="group" aria-label="Regrouper par">
@@ -431,7 +429,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
             </div>
           }
           detail={
-            <DetailPanel title="Taux de connexion par type d’équipement" sub="EQ-C-03 · connectés ÷ installés · cliquez pour filtrer le tableau">
+            <DetailPanel title="Taux de connexion par type d’équipement" sub="Connectés / installés">
               <HorizontalBarList
                 ariaLabel="Taux de connexion par type d’équipement"
                 max={100}
@@ -454,7 +452,7 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
         <Card
           id="EQ-C-02"
           title="Équipements les plus connectés"
-          hint="Jours avec données sur les 30 derniers jours (à confirmer back-end) · cliquez pour la fiche"
+          
           chart={
             <HorizontalBarList
               ranked
