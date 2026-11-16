@@ -87,6 +87,10 @@ export type GoalKpi = {
   snapshotKey: KpiSnapshotKey;
   /** série mensuelle pour un petit graphique dans le détail */
   monthly?: Array<{ label: string; value: number }>;
+  /** « Comparer » (maquette) : [valeur, dénominateur?] il y a 30 j et l'an dernier */
+  prev?: { m30: [number, number?]; y1: [number, number?] };
+  /** courbe 12 mois du détail (mois · valeur, en % pour un taux) */
+  trend?: Array<{ label: string; value: number }>;
 };
 
 export type TodoPriority = 1 | 2 | 3;
@@ -108,6 +112,8 @@ export type TodoItem = {
   /** filtres de la page cible, ex. « ?alerte=blocage » (Gestion Clients, carte 06) */
   routeQuery?: string;
   table?: KpiTable;
+  /** libellé du bouton de la fenêtre (défaut « Ouvrir <page> ») */
+  goLabel?: string;
 };
 
 /** Une ligne « parc » : revendeur (vue Tunav) ou client (vue revendeur) */
@@ -135,6 +141,8 @@ export type DashboardData = {
   todo: TodoItem[];
   /** D-07 / R-06 */
   parkRows: ParkRow[];
+  /** anneaux « santé du parc » (vue revendeur : tous ses clients) ; défaut = parkRows */
+  ringRows?: ParkRow[];
   parkAll: ParkRow;
   /** stock (vue Tunav seulement) ; détail par réseau */
   stock: number;

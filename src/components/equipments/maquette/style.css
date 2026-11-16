@@ -1,0 +1,226 @@
+.mq-equipments{min-height:100%;}
+.mq-equipments{margin:0;background:#F1F5F9}
+.mq-equipments a{color:#1D4ED8}
+.mq-equipments a:hover{color:#1E3A8A}
+.mq-equipments .nav{display:block;padding:10px 12px;border-radius:8px;color:#CBD5E1;text-decoration:none;font-size:14px}
+.mq-equipments .nav:hover{background:#1E293B;color:#FFFFFF}
+.mq-equipments .nav-on{background:#172554;color:#BFDBFE;font-weight:600}
+.mq-equipments .card{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px}
+.mq-equipments .lbl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#475569;font-weight:600}
+.mq-equipments .num{font-family:'IBM Plex Mono',monospace}
+.mq-equipments .tbl{width:100%;border-collapse:collapse;font-size:13px}
+.mq-equipments .tbl th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#475569;font-weight:600;padding:10px 14px;border-bottom:1px solid #E2E8F0;background:#F8FAFC;white-space:nowrap}
+.mq-equipments .tbl td{padding:12px 14px;border-bottom:1px solid #F1F5F9;color:#0F172A;vertical-align:middle}
+.mq-equipments .new{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:#FEF3C7;color:#92400E;margin-left:6px;vertical-align:middle;text-transform:uppercase}
+.mq-equipments .ex{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:#F1F5F9;color:#475569;border:1px dashed #94A3B8;margin-left:6px;vertical-align:middle;text-transform:uppercase}
+.mq-equipments .chart{display:flex;align-items:flex-end;gap:16px;height:170px;border-bottom:1px solid #CBD5E1;padding:0 8px;background-image:linear-gradient(#F1F5F9 1px,transparent 1px);background-size:100% 42.5px}
+.mq-equipments .col{flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%}
+.mq-equipments .bar{width:100%;max-width:48px;border-radius:4px 4px 0 0}
+.mq-equipments .val{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F172A}
+.mq-equipments .xl{display:flex;gap:16px;padding:6px 8px 0}
+.mq-equipments .xl span{flex:1 1 0;text-align:center;font-size:12px;color:#475569}
+.mq-equipments .hrow{display:grid;grid-template-columns:150px 1fr 60px;gap:10px;align-items:center;font-size:13px}
+.mq-equipments .track{height:14px;background:#F1F5F9;border-radius:4px}
+.mq-equipments .decide{background:#EFF6FF;border-radius:8px;padding:10px 12px;font-size:13px;color:#1E3A8A}
+.mq-equipments .key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.mq-equipments .pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.mq-equipments .p-blue{background:#DBEAFE;color:#1E40AF}
+.mq-equipments .p-indigo{background:#E0E7FF;color:#3730A3}
+.mq-equipments .p-amber{background:#FEF3C7;color:#92400E}
+.mq-equipments .p-green{background:#D1FAE5;color:#065F46}
+.mq-equipments .p-red{background:#FEE2E2;color:#991B1B}
+.mq-equipments .p-gray{background:#F1F5F9;color:#334155}
+.mq-equipments .sub{display:block;font-size:12px;color:#475569;margin-top:2px}
+.mq-equipments select,.mq-equipments input{font:inherit;font-size:13px;padding:8px 10px;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF;color:#0F172A}
+.mq-equipments label{font-size:12px;color:#475569;display:flex;flex-direction:column;gap:4px}
+.mq-equipments .v3t{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:#DCFCE7;color:#166534;text-transform:uppercase}
+.mq-equipments .tc3{font:inherit;color:inherit;text-align:left;cursor:pointer;padding:14px 16px;display:flex;flex-direction:column;gap:10px;border-left:3px solid #DC2626;transition:border-color .15s,box-shadow .15s}
+.mq-equipments .tc3:hover{border-color:#93C5FD;box-shadow:0 2px 8px rgba(15,23,42,.06);border-left-color:#DC2626}
+.mq-equipments .tc3-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mq-equipments .tc3-t{font-weight:600;font-size:14px}
+.mq-equipments .tc3-tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;background:#FEE2E2;color:#991B1B}
+.mq-equipments .tc3-n{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#475569}
+.mq-equipments .tc3-n b{font-size:28px;color:#B91C1C;margin-right:6px}
+.mq-equipments .ov3{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:50;display:grid;place-items:center;padding:16px}
+.mq-equipments .md3{background:#fff;border-radius:14px;box-shadow:0 20px 50px rgba(15,23,42,.25);width:100%;max-width:720px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden;font-family:'IBM Plex Sans',system-ui,sans-serif}
+.mq-equipments .md3-h{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #F1F5F9}
+.mq-equipments .md3-h h3{margin:0;font-size:17px}
+.mq-equipments .md3-h button{border:0;background:none;font-size:22px;color:#94A3B8;cursor:pointer}
+.mq-equipments .md3-b{padding:16px 20px;overflow:auto}
+.mq-equipments .md3-f{display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid #F1F5F9}
+.mq-equipments .md3-f button{font:inherit;font-size:13px;font-weight:600;border-radius:8px;padding:8px 14px;cursor:pointer;border:1px solid #2563EB;background:#2563EB;color:#fff}
+.mq-equipments .v2{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:#E0E7FF;color:#3730A3;margin-left:6px;vertical-align:middle;text-transform:uppercase}
+.mq-equipments .team{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;border:1px solid #CBD5E1;color:#334155;margin-left:4px;vertical-align:middle;text-transform:none;letter-spacing:0}
+.mq-equipments #eq-list .sub.num,.mq-equipments #eq-list td.num{white-space:nowrap}
+.mq-equipments .stk{display:flex;height:14px;border-radius:4px;overflow:hidden;background:#F1F5F9;gap:2px;min-width:120px}
+.mq-equipments .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.mq-equipments .top h1{margin:0;font-size:26px;font-weight:700;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mq-equipments .doc-link{font-size:13px;font-weight:600;padding:5px 10px;border:1px solid #BFDBFE;border-radius:8px;background:#EFF6FF;text-decoration:none;color:#1D4ED8}
+.mq-equipments .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#475569;background:#fff;border:1px solid #E2E8F0;border-radius:999px;padding:6px 12px}
+.mq-equipments .chip i{width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 0 3px #D1FAE5}
+.mq-equipments .chip b{color:#0F172A}
+.mq-equipments .k4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.mq-equipments .kc{position:relative;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:16px 18px;min-height:120px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s,box-shadow .15s}
+.mq-equipments .kc:hover{border-color:#93C5FD;box-shadow:0 2px 8px rgba(15,23,42,.06)}
+.mq-equipments .kc .v{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;display:flex;align-items:baseline;gap:8px;margin-top:4px}
+.mq-equipments .kc .v small{font-size:13px;font-weight:500;color:#475569}
+.mq-equipments .kc .more{position:absolute;right:16px;bottom:12px;font-size:11px;color:#94A3B8}
+.mq-equipments .kc:hover .more{color:#2563EB}
+.mq-equipments .kc .ic{position:absolute;right:16px;top:14px;width:32px;height:32px;border-radius:8px;display:grid;place-items:center}
+.mq-equipments .kc .ic svg{width:17px;height:17px}
+.mq-equipments .mt{height:6px;background:#F1F5F9;border-radius:999px;overflow:hidden;display:flex;gap:2px;margin-right:100px}
+.mq-equipments .mt i{display:block;height:100%}
+.mq-equipments .sec{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:-12px}
+.mq-equipments .sec .hint{font-size:12px;color:#475569}
+.mq-equipments .lg{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:#334155}
+.mq-equipments .al2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,340px));gap:12px}
+.mq-equipments .al{font:inherit;color:inherit;text-align:left;cursor:pointer;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.mq-equipments .al:hover{border-color:#93C5FD;background:#F8FBFF}
+.mq-equipments .al .h{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.mq-equipments .al .t{font-weight:600;font-size:13px}
+.mq-equipments .al .n{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#475569}
+.mq-equipments .al .n b{font-size:26px;margin-right:6px}
+.mq-equipments .tg{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;white-space:nowrap}
+.mq-equipments .tg.red{background:#FEE2E2;color:#991B1B}
+.mq-equipments .tg.amber{background:#FFEDD5;color:#9A3412}
+.mq-equipments .split{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;padding:18px 20px;align-items:start}
+.mq-equipments .split h3{margin:0;font-size:15px}
+.mq-equipments .split .s{font-size:12px;color:#475569;margin:2px 0 14px}
+.mq-equipments .hb{display:grid;grid-template-columns:170px 1fr 54px;gap:10px;align-items:center;font:inherit;font-size:13px;border:0;background:none;width:100%;text-align:left;padding:5px 6px;border-radius:6px;cursor:pointer;color:#0F172A}
+.mq-equipments .hb:hover{background:#F8FBFF}
+.mq-equipments .hb.on{background:#EFF6FF}
+.mq-equipments .hb .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mq-equipments .hb .bx{display:flex;height:14px;gap:2px}
+.mq-equipments .hb .bx i{display:block;height:100%;border-radius:3px}
+.mq-equipments .hb .c{font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:right;color:#334155}
+.mq-equipments .vc{display:flex;align-items:flex-end;gap:8px;height:170px;border-bottom:1px solid #CBD5E1;background-image:linear-gradient(#F1F5F9 1px,transparent 1px);background-size:100% 42.5px;padding-top:16px}
+.mq-equipments .vc button{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;border:0;background:none;cursor:pointer;padding:0 3px;border-radius:6px 6px 0 0;font:inherit}
+.mq-equipments .vc button:hover{background:#F8FBFF}
+.mq-equipments .vc button.on{background:#EFF6FF;box-shadow:inset 0 -3px 0 #2563EB}
+.mq-equipments .vc button.fut{cursor:default;background:repeating-linear-gradient(45deg,transparent 0 5px,#F1F5F9 5px 10px)}
+.mq-equipments .vc .stk2{width:100%;max-width:44px;display:flex;flex-direction:column-reverse;border-radius:4px 4px 0 0;overflow:hidden}
+.mq-equipments .vc .stk2 i{display:block;width:100%}
+.mq-equipments .vc .vl{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#334155;min-height:14px}
+.mq-equipments .vx{display:flex;gap:8px;margin-top:6px}
+.mq-equipments .vx span{flex:1;text-align:center;font-size:11px;color:#475569;white-space:nowrap}
+.mq-equipments .vx span.on{color:#2563EB;font-weight:600}
+.mq-equipments .vx span.fut{color:#CBD5E1}
+.mq-equipments .det{border:1px solid #E2E8F0;border-radius:10px;overflow:hidden;min-height:200px;background:#fff}
+.mq-equipments .det .dh{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #F1F5F9;background:#F8FAFC;font-size:13px}
+.mq-equipments .det .db{max-height:340px;overflow:auto}
+.mq-equipments .el{list-style:none;margin:0;padding:0}
+.mq-equipments .el li{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:8px 14px;border-bottom:1px solid #F1F5F9;font-size:13px;cursor:pointer}
+.mq-equipments .el li:last-child{border-bottom:0}
+.mq-equipments .el li:hover{background:#F8FBFF}
+.mq-equipments .el li small{display:block;color:#475569;font-size:11.5px}
+.mq-equipments .el li .mono{font-family:'IBM Plex Mono',monospace;font-size:12px}
+.mq-equipments .st{font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.mq-equipments .st i{width:7px;height:7px;border-radius:50%}
+.mq-equipments .empty{padding:24px;text-align:center;font-size:13px;color:#94A3B8}
+.mq-equipments .ynav{display:inline-flex;align-items:center;gap:6px;vertical-align:middle}
+.mq-equipments .ynav b{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0F172A}
+.mq-equipments .ynav button{width:22px;height:22px;border:1px solid #E2E8F0;background:#fff;border-radius:6px;font:inherit;font-size:13px;line-height:1;color:#334155;cursor:pointer;padding:0}
+.mq-equipments .ynav button:hover{border-color:#93C5FD;color:#2563EB}
+.mq-equipments .donut-w{display:flex;align-items:center;gap:24px;margin-bottom:10px;flex-wrap:wrap}
+.mq-equipments .donut{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;flex:none}
+.mq-equipments .donut > div{width:80px;height:80px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center;align-content:center}
+.mq-equipments .donut b{font-size:22px;line-height:1;font-family:'IBM Plex Mono',monospace}
+.mq-equipments .donut small{font-size:11px;color:#475569}
+.mq-equipments .dleg div{font-size:14px;margin:6px 0;display:flex;align-items:center;gap:6px}
+.mq-equipments .what{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:10px 12px;font-size:13px;margin:0 0 12px;color:#334155}
+.mq-equipments .grp{border:1px solid #E2E8F0;border-radius:10px;margin-bottom:8px;overflow:hidden}
+.mq-equipments .grp summary{list-style:none;display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;font-size:13px}
+.mq-equipments .grp summary::-webkit-details-marker{display:none}
+.mq-equipments .grp summary:hover{background:#F8FBFF}
+.mq-equipments .grp summary .sp{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#334155}
+.mq-equipments .grp[open] summary{border-bottom:1px solid #F1F5F9;background:#F8FAFC}
+.mq-equipments .ft{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mq-equipments .ft div{border:1px solid #E2E8F0;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.mq-equipments .ft > div > span:first-child{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#475569;font-weight:600}
+.mq-equipments .ft b{font-size:15px}
+.mq-equipments .ft small{font-size:11.5px;color:#475569}
+.mq-equipments .act{height:8px;background:#F1F5F9;border-radius:999px;overflow:hidden;margin-top:4px}
+.mq-equipments .act i{display:block;height:100%;background:#059669}
+.mq-equipments .fcount{font-size:12px;color:#475569;align-self:center;margin-left:auto}
+.mq-equipments #eq-list tbody tr{cursor:pointer}
+.mq-equipments #eq-list tbody tr:hover td{box-shadow:inset 0 0 0 9999px rgba(37,99,235,.04)}
+.mq-equipments .k5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.mq-equipments .k5 .kc{padding:16px 16px;min-height:132px;gap:6px}
+.mq-equipments .k5 .kc .v{font-size:27px}
+.mq-equipments .k5 .kc .mt{margin-right:92px;margin-top:6px}
+.mq-equipments .kc .ks{font-size:12px;color:#475569}
+.mq-equipments .trr{display:flex;align-items:center;gap:10px;position:relative}
+.mq-equipments .bell{position:relative;border:1px solid #E2E8F0;background:#fff;border-radius:10px;width:40px;height:40px;display:grid;place-items:center;color:#334155;cursor:pointer;padding:0}
+.mq-equipments .bell:hover{border-color:#93C5FD;color:#1D4ED8}
+.mq-equipments .bell svg{width:18px;height:18px}
+.mq-equipments .bell .cnt{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;box-sizing:border-box;border-radius:999px;background:#DC2626;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;border:2px solid #fff}
+.mq-equipments .bpanel{position:absolute;right:0;top:50px;z-index:40;width:400px;background:#fff;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.16);overflow:hidden}
+.mq-equipments .bpanel.hidden{display:none}
+.mq-equipments .bpanel .bh{padding:10px 14px;border-bottom:1px solid #F1F5F9;background:#F8FAFC;font-size:13px}
+.mq-equipments .bpanel .bh small{display:block;color:#475569;font-size:12px}
+.mq-equipments .bpanel .el{max-height:330px;overflow:auto}
+.mq-equipments .bpanel .bf{padding:10px 14px;border-top:1px solid #F1F5F9;font-size:13px}
+.mq-equipments .toast{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;align-items:center;gap:12px;max-width:540px;background:#fff;border:1px solid #FCA5A5;border-left:4px solid #DC2626;border-radius:10px;padding:12px 14px;box-shadow:0 12px 32px rgba(15,23,42,.18);font-size:13px;font-family:'IBM Plex Sans',system-ui,sans-serif;animation:tin .25s ease-out}
+.mq-equipments .toast b{display:block}
+.mq-equipments .toast small{display:block;color:#475569;font-size:12px;margin-top:2px}
+.mq-equipments .toast .live{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:#DC2626;border-radius:999px;padding:3px 8px;white-space:nowrap}
+.mq-equipments .toast .btn{font:inherit;font-size:13px;font-weight:600;border:1px solid #2563EB;background:#2563EB;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer}
+.mq-equipments .toast .x{border:0;background:none;font-size:18px;color:#94A3B8;cursor:pointer}
+@keyframes tin{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.mq-equipments .toast{animation:none}}
+.mq-equipments .q4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid #F1F5F9}
+.mq-equipments .q4 .q{font:inherit;text-align:left;border:0;border-right:1px solid #F1F5F9;background:#fff;padding:10px 12px;display:flex;flex-direction:column;gap:1px;color:#0F172A}
+.mq-equipments .q4 .q:last-child{border-right:0}
+.mq-equipments .q4 button.q{cursor:pointer}
+.mq-equipments .q4 button.q:hover{background:#F8FBFF}
+.mq-equipments .q4 .q span{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#475569;font-weight:600}
+.mq-equipments .q4 .q b{font-family:'IBM Plex Mono',monospace;font-size:20px}
+.mq-equipments .q4 .q small{font-size:11.5px;color:#475569}
+.mq-equipments .q4.box{border:1px solid #E2E8F0;border-radius:10px;overflow:hidden;margin:12px 0}
+.mq-equipments .pbig{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.mq-equipments .pbig b{font-family:'IBM Plex Mono',monospace;font-size:36px;line-height:1}
+.mq-equipments .pbig span{font-size:14px;color:#334155}
+.mq-equipments .rvg > summary{background:#F8FAFC}
+.mq-equipments .rvg .rvb{padding:8px 8px 0}
+.mq-equipments .sh{position:sticky;top:0;z-index:1;background:#fff;padding:8px 14px 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;border-bottom:1px solid #F1F5F9}
+.mq-equipments .hb2{display:grid;grid-template-columns:190px 1fr 64px;gap:10px;align-items:center;font:inherit;font-size:13px;border:0;background:none;width:100%;text-align:left;padding:6px;border-radius:6px;cursor:pointer;color:#0F172A}
+.mq-equipments .hb2:hover{background:#F8FBFF}
+.mq-equipments .hb2.on{background:#EFF6FF;box-shadow:inset 3px 0 0 #2563EB}
+.mq-equipments .hb2.rv{font-weight:600}
+.mq-equipments .hb2.rv:not(:first-child){margin-top:6px}
+.mq-equipments .hb2.cl{font-size:12.5px}
+.mq-equipments .hb2.cl .nm{padding-left:22px;color:#334155}
+.mq-equipments .hb2 .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+.mq-equipments .hb2 .chev{display:inline-block;width:12px;color:#64748B;transition:transform .15s}
+.mq-equipments .hb2 .bx{display:flex;height:20px;gap:2px;border-radius:4px;overflow:hidden}
+.mq-equipments .hb2.cl .bx{height:15px}
+.mq-equipments .hb2 .bx i{display:grid;place-items:center;font-style:normal;font-size:10.5px;font-weight:600;color:#fff;font-family:'IBM Plex Mono',monospace;min-width:0;overflow:hidden}
+.mq-equipments .hb2 .c{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#334155}
+.mq-equipments .hb.t5{grid-template-columns:150px 1fr 100px;padding:8px 6px}
+.mq-equipments .hb.t5 .nm{display:flex;align-items:center;gap:8px;font-weight:600}
+.mq-equipments .rk{width:22px;height:22px;border-radius:50%;background:#EFF6FF;color:#1D4ED8;font-size:12px;font-weight:700;display:grid;place-items:center;flex:none}
+.mq-equipments .hb.t5 .bx{height:18px}
+.mq-equipments .t5n{font-size:12px;color:#475569;margin:12px 6px 0}
+.mq-equipments .who-sel{width:100%;margin-top:4px;font:inherit;font-size:13px;font-weight:600;padding:5px 6px;border:1px solid #334155;border-radius:6px;background:#0F172A;color:#FFFFFF;cursor:pointer}
+.mq-equipments.as-rev .adm-only{display:none!important}
+.mq-equipments .etabs{display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:8px;padding:6px 18px 14px}
+.mq-equipments .etabs button{font:inherit;text-align:left;border:1px solid #E2E8F0;border-left:4px solid var(--c);border-radius:10px;background:#fff;padding:8px 12px;cursor:pointer;display:flex;flex-direction:column;gap:1px;color:#0F172A}
+.mq-equipments .etabs button:hover{background:#F8FBFF}
+.mq-equipments .etabs button.on{background:var(--bg);border-color:var(--c)}
+.mq-equipments .etabs span{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#475569;font-weight:600}
+.mq-equipments .etabs b{font-family:'IBM Plex Mono',monospace;font-size:19px}
+.mq-equipments .etabs b small{font-size:13px;font-weight:600;color:var(--c);margin-left:6px}
+.mq-equipments .etabs em{font-style:normal;font-size:11.5px;color:#475569}
+.mq-equipments #eqMore{display:flex;gap:10px;justify-content:center;padding:12px}
+.mq-equipments #eqMore button{font:inherit;font-size:13px;font-weight:600;padding:7px 14px;border:1px solid #CBD5E1;border-radius:8px;background:#fff;color:#334155;cursor:pointer}
+.mq-equipments #eqMore button:hover{border-color:#93C5FD;color:#1D4ED8}
+@media (max-width:1100px){.mq-equipments .k4,.mq-equipments .k5{grid-template-columns:1fr 1fr}
+.mq-equipments .split{grid-template-columns:1fr}}
+@media (max-width:900px){.mq-equipments .etabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.mq-equipments .etabs{grid-template-columns:1fr 1fr}
+.mq-equipments .k4,.mq-equipments .k5{grid-template-columns:1fr}
+.mq-equipments .q4{grid-template-columns:1fr 1fr}
+.mq-equipments .hb2{grid-template-columns:120px 1fr 44px}
+.mq-equipments .ft{grid-template-columns:1fr 1fr}
+.mq-equipments .hb{grid-template-columns:110px 1fr 44px}}
+

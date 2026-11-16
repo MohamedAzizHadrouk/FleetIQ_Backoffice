@@ -82,21 +82,21 @@ export function Sidebar({
     <aside
       id="menu-principal"
       data-collapsed={rail ? 'true' : 'false'}
-      className={`fixed inset-y-0 left-0 z-topbar flex flex-col bg-surface text-text border-r border-border overflow-y-auto overflow-x-hidden transition-[width,transform] duration-slow ease-standard
+      className={`fixed inset-y-0 left-0 z-topbar flex flex-col bg-surface-inverse text-text-inverse-muted overflow-y-auto overflow-x-hidden transition-[width,transform] duration-slow ease-standard
         ${rail ? 'md:w-rail' : 'md:w-sidebar'} w-sidebar
         md:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
       {/* Bande marque Bleu Royal (logo blanc) + bascule */}
       <div
-        className={`relative flex items-center gap-2 border-b border-primary-active bg-primary text-text-inverse ${
-          rail ? 'md:flex-col md:px-1 md:py-3 px-4 py-3' : 'px-4 py-3'
+        className={`relative flex items-center gap-2 text-text-inverse ${
+          rail ? 'md:flex-col md:px-1 md:py-4 px-4 pt-5 pb-2' : 'px-4 pt-5 pb-2'
         }`}
       >
         <button
           type="button"
           onClick={onCloseMobile}
           aria-label="Fermer le menu"
-          className={`absolute right-2 top-2 inline-flex h-control-touch w-control-touch items-center justify-center rounded-control text-text-inverse hover:bg-primary-hover md:hidden ${FOCUS}`}
+          className={`absolute right-2 top-2 inline-flex h-control-touch w-control-touch items-center justify-center rounded-control text-text-inverse hover:bg-surface-inverse-hover md:hidden ${FOCUS}`}
         >
           <X size={20} aria-hidden="true" />
         </button>
@@ -113,9 +113,9 @@ export function Sidebar({
           <img
             src="/brand/tunav-logo-horizontal-sans-signature-blanc-ui.svg"
             alt="TUNAV"
-            className="h-9 w-auto max-w-full"
+            className="h-8 w-auto max-w-full self-start"
           />
-          <span className="text-small font-semibold text-text-inverse/90">FleetIQ Back-office</span>
+          <span className="text-[17px] font-bold leading-tight text-text-inverse">FleetIQ Back-office</span>
         </div>
 
         {onToggleCollapsed && (
@@ -126,7 +126,7 @@ export function Sidebar({
             aria-expanded={!rail}
             aria-controls="menu-principal"
             title={rail ? 'Agrandir le menu' : 'Réduire le menu'}
-            className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-control text-text-inverse hover:bg-primary-hover md:inline-flex ${FOCUS}`}
+            className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-control text-text-inverse-muted hover:bg-surface-inverse-hover hover:text-text-inverse md:inline-flex ${FOCUS}`}
           >
             {rail ? <PanelLeftOpen size={18} aria-hidden="true" /> : <PanelLeftClose size={18} aria-hidden="true" />}
           </button>
@@ -134,25 +134,18 @@ export function Sidebar({
       </div>
 
       {/* Bloc de rôle – masqué en rail */}
-      <div className={`m-3 ${rail ? 'md:hidden' : ''}`}>
-        <div className="flex items-center gap-2.5 rounded-control border border-border bg-surface-muted px-3 py-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-primary text-text-inverse">
-            <RoleIcon size={16} />
-          </div>
-          <div className="min-w-0">
-            <div className="text-overline uppercase text-text-muted">Connecté</div>
-            <div className="truncate text-small font-medium text-text">{roleMeta.label}</div>
-            {isReseller && (
-              <div className="truncate text-mention font-medium text-text-muted">{subtitle}</div>
-            )}
-          </div>
+      <div className={`mx-4 my-3 ${rail ? 'md:hidden' : ''}`}>
+        <div className="rounded-[10px] border border-surface-inverse-hover bg-[#111C33] px-3 py-2.5">
+          <div className="text-[10px] tracking-[0.08em] text-[#94A3B8]">CONNECTÉ</div>
+          <div className="mt-1 truncate text-small font-semibold text-text-inverse">{roleMeta.label}</div>
+          {isReseller && <div className="truncate text-mention font-medium text-text-inverse-muted">{subtitle}</div>}
         </div>
       </div>
 
       {/* Rail : pastille rôle seule */}
       {rail && (
         <div className="hidden md:flex justify-center py-2" title={roleMeta.label}>
-          <div className="flex h-9 w-9 items-center justify-center rounded-control bg-primary-50 text-primary">
+          <div className="flex h-9 w-9 items-center justify-center rounded-control bg-[#172554] text-[#BFDBFE]">
             <RoleIcon size={18} aria-hidden="true" />
           </div>
         </div>
@@ -160,10 +153,10 @@ export function Sidebar({
 
       <nav
         aria-label="Menu principal"
-        className={`flex flex-1 flex-col gap-0.5 py-2 ${rail ? 'md:px-1.5' : 'px-3'}`}
+        className={`flex flex-1 flex-col gap-1 py-2 ${rail ? 'md:px-1.5' : 'px-4'}`}
       >
-        <div className={`mb-2 px-3 text-overline uppercase text-text-muted ${rail ? 'md:hidden' : ''}`}>
-          Menu
+        <div className={`mb-2 text-[10px] tracking-[0.08em] text-[#94A3B8] ${rail ? 'md:hidden' : ''}`}>
+          MENU
         </div>
         {navItems.map((item) => (
           <NavLink
@@ -172,28 +165,28 @@ export function Sidebar({
             title={item.label}
             aria-label={item.label}
             className={({ isActive }) =>
-              `relative flex items-center gap-3 rounded-control text-label ${TRANSITION} ${FOCUS} ${
-                rail ? 'md:h-11 md:justify-center md:px-0' : 'h-10 px-3'
-              } h-11 px-3 md:h-10 ${
+              `relative flex items-center gap-3 rounded-control text-body ${TRANSITION} ${FOCUS} ${
+                rail ? 'md:h-11 md:justify-center md:px-0' : 'px-3 py-2.5'
+              } px-3 py-2.5 ${
                 isActive
-                  ? 'bg-primary-50 font-medium text-primary before:absolute before:inset-y-1 before:left-0 before:w-[3px] before:rounded-r before:bg-accent'
-                  : 'text-text-muted hover:bg-surface-muted hover:text-text'
+                  ? 'bg-[#172554] font-semibold text-[#BFDBFE]'
+                  : 'text-text-inverse-muted hover:bg-surface-inverse-hover hover:text-text-inverse'
               }`
             }
           >
-            <item.icon size={20} aria-hidden="true" className="shrink-0" />
+            <item.icon size={20} aria-hidden="true" className={`shrink-0 ${rail ? 'hidden md:block' : 'hidden'}`} />
             <span className={`truncate ${rail ? 'md:hidden' : ''}`}>{item.label}</span>
           </NavLink>
         ))}
       </nav>
 
-      <div className={`border-t border-border ${rail ? 'md:p-1.5' : 'p-3'} p-3`}>
+      <div className={`border-t border-surface-inverse-hover ${rail ? 'md:p-1.5' : 'p-4'} p-4`}>
         <button
           type="button"
           onClick={onLogout}
           title="Déconnexion"
           aria-label="Déconnexion"
-          className={`flex w-full items-center gap-3 rounded-control text-label text-text-muted hover:bg-danger-50 hover:text-danger ${TRANSITION} ${FOCUS} ${
+          className={`flex w-full items-center gap-3 rounded-control text-body text-text-inverse-muted hover:bg-surface-inverse-hover hover:text-text-inverse ${TRANSITION} ${FOCUS} ${
             rail ? 'md:h-11 md:justify-center md:px-0' : 'h-10 px-3'
           } h-11 px-3`}
         >

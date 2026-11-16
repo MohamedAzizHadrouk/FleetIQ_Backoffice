@@ -50,7 +50,7 @@ export function Layout({ role, onLogout }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-surface-muted md:flex">
+    <div className="min-h-screen bg-surface-page md:flex">
       {/* Barre mobile claire */}
       <div className="sticky top-0 z-topbar flex h-topbar-mobile items-center justify-between gap-3 border-b border-border bg-surface px-4 md:hidden">
         <div className="flex items-center gap-2 min-w-0">

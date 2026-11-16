@@ -9,7 +9,8 @@ import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { CalendarDays, GitCompareArrows, Settings } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { TableExportButtons } from '../components/TableExportButtons';
-import { BarChart, Sparkline } from '../components/charts';
+import { BarChart } from '../components/charts';
+import { KpiTrend, objectiveKey, readObjectives } from '../components/dashboard/KpiTrend';
 import { BellMenu, UrgentBand } from '../components/dashboard/BellMenu';
 import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModal';
 import { GoalKpiCard, type CompareInfo } from '../components/dashboard/GoalKpiCard';
@@ -18,16 +19,14 @@ import { ParkHealthRings, SimOverCard, TopPacksCard } from '../components/dashbo
 import { PageChrome, PageShell, SectionRule } from '../components/shell/PageShell';
 import { Button } from '../components/ui/Button';
 import { useFleetStore } from '../state/FleetStore';
-import { addDays, parseDate, startOfDay, toIsoDate } from '../state/mock/dates';
+import { buildMaquetteDashboard } from '../state/mock/maquetteDashboard';
+import { parseDate, startOfDay, toIsoDate } from '../state/mock/dates';
 import { useBackofficePermissions, useBackofficeRole } from '../hooks/useBackofficePermissions';
 import { canAccessRoute, type BackofficeRouteKey } from '../utils/backofficePermissions';
 import {
-  computeDashboard,
   fmt,
   pct,
   PRIORITY_LABELS,
-  snapshotSeries,
-  snapshotValue,
   volume,
   type DashboardScope,
   type GoalKpi,
@@ -49,7 +48,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
 
 export function DashboardPage() {
   const store = useFleetStore();
-  const { disconnectThresholdHours, setDisconnectThresholdHours, currentUserName, kpiSnapshots } = store;
+  const { disconnectThresholdHours, setDisconnectThresholdHours, currentUserName } = store;
   const permissions = useBackofficePermissions();
   const role = useBackofficeRole();
   const isReseller = role === 'revendeur';
@@ -70,77 +69,85 @@ export function DashboardPage() {
     () => (isReseller ? { kind: 'reseller', name: currentUserName } : { kind: 'network' }),
     [isReseller, currentUserName]
   );
-  const scopeKey = scope.kind === 'network' ? 'network' : scope.name;
 
+  // Données de la maquette validée Main-v3 (mêmes chiffres que la maquette)
   const data = useMemo(
-    () =>
-      computeDashboard({
-        scope,
-        asOf,
-        now: new Date(),
-        connThresholdHours: disconnectThresholdHours,
-        settings: store.dashboardSettings,
-        clients: store.clients,
-        equipments: store.equipments,
-        simCards: store.simCards,
-        simOffers: store.simOffers,
-        simConsumption: store.simConsumption,
-        userConnections: store.userConnections,
-        packs: store.packs
-      }),
+    () => buildMaquetteDashboard(scope, asOf),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [scope, asOfIso, disconnectThresholdHours, store.clients, store.equipments, store.simCards, store.simOffers]
+    [scope, asOfIso]
   );
 
-  const visibleKpis = data.kpis;
-  const compareDate = compareMode === 'm30' ? addDays(asOf, -30) : addDays(asOf, -365);
-  const compareFor = (k: GoalKpi): CompareInfo =>
-    compareOn
-      ? { label: COMPARE_LABELS[compareMode], previous: snapshotValue(kpiSnapshots, scopeKey, k.snapshotKey, compareDate) }
-      : null;
+  // objectif de l'année saisi dans la fenêtre de détail (« Objectif <année> ») : repris par la carte
+  const year = asOf.getFullYear();
+  const [objectives, setObjectives] = useState<Record<string, number>>(() => readObjectives());
+  const onObjective = useCallback((key: string, value: number | null) => {
+    setObjectives((cur) => {
+      const next = { ...cur };
+      if (value == null) delete next[key];
+      else next[key] = value;
+      return next;
+    });
+  }, []);
+  const visibleKpis = useMemo(
+    () =>
+      data.kpis.map((k) => {
+        const saved = objectives[objectiveKey(k.id, year)];
+        return saved != null && k.of != null ? { ...k, goal: saved } : k;
+      }),
+    [data.kpis, objectives, year]
+  );
+  const [kpiDetailId, setKpiDetailId] = useState<string | null>(null);
+  const compareFor = (k: GoalKpi): CompareInfo => {
+    if (!compareOn) return null;
+    const pv = k.prev?.[compareMode];
+    const previous = pv ? (k.of != null && pv[1] ? pct(pv[0], pv[1]) : pv[0]) : null;
+    return { label: COMPARE_LABELS[compareMode], previous };
+  };
 
   /* ---------- fenêtres de détail ---------- */
-  const openKpi = (k: GoalKpi) => {
+  const kpiSpec = (k: GoalKpi): DetailSpec => {
     const rate = k.of != null ? pct(k.value, k.of) : null;
-    const series = snapshotSeries(kpiSnapshots, scopeKey, k.snapshotKey);
-    const current = rate ?? k.value;
-    setDetail({
+    const trend = k.trend ?? [];
+    const savedGoal = objectives[objectiveKey(k.id, year)];
+    const goalTxt = savedGoal ?? k.goal;
+    return {
       title: k.label,
       kpiId: k.id,
       big: rate != null ? `${rate} %` : fmt(k.value),
       caption:
         rate != null
-          ? `${fmt(k.value)} / ${fmt(k.of ?? 0)} ${k.unit}${k.goal != null ? ` · objectif ${k.goal} %` : ''}`
-          : k.unit,
+          ? `${fmt(k.value)} sur ${fmt(k.of ?? 0)} ${k.unit}${goalTxt != null ? ` · objectif ${goalTxt} %` : ''}`
+          : `${k.unit} · ${k.context}${savedGoal != null ? ` · objectif ${year} : ${fmt(savedGoal)} ${k.unit}` : ''}`,
       table: k.table,
       chart: k.monthly ? (
         <div className="space-y-1">
           <p className="text-small font-medium text-text">Packs affectés par mois (6 derniers mois)</p>
           <BarChart data={k.monthly} ariaLabel="Packs affectés par mois" />
         </div>
-      ) : series.length > 1 ? (
-        <div className="flex flex-wrap items-center gap-4 rounded-control border border-border-subtle p-3">
-          <Sparkline
-            values={[...series, current]}
-            min={rate != null ? Math.max(0, Math.min(...series, current) - 5) : undefined}
-            ariaLabel={`Évolution sur 12 mois, valeur actuelle ${rate != null ? `${rate} %` : fmt(k.value)}`}
-          />
-        </div>
+      ) : trend.length > 1 ? (
+        <KpiTrend kpi={k} year={year} initial={savedGoal ?? null} onChange={onObjective} />
       ) : undefined,
       route: k.route,
       routeLabel: k.routeLabel,
       routeQuery: k.routeQuery
-    });
+    };
   };
+  const openKpi = (k: GoalKpi) => {
+    setDetail(null);
+    setKpiDetailId(k.id);
+  };
+  const kpiDetailKpi = kpiDetailId ? visibleKpis.find((k) => k.id === kpiDetailId) ?? null : null;
   const openTodo = (t: TodoItem) =>
     setDetail({
       title: t.title,
       big: fmt(t.count),
       caption: `${t.unit} · ${PRIORITY_LABELS[t.priority]}`,
       table: t.table && t.table.rows.length ? t.table : undefined,
+      note: <p className="text-small text-text-muted">{t.detail}</p>,
       route: t.route,
       routeLabel: t.routeLabel,
-      routeQuery: t.routeQuery
+      routeQuery: t.routeQuery,
+      goLabel: t.goLabel
     });
 
   /* ---------- exports Excel / PDF (chiffres de la page, sans prix) ---------- */
@@ -245,7 +252,7 @@ export function DashboardPage() {
               <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
               <Button
                 type="button"
-                variant={compareOn ? 'primary' : 'secondary'}
+                variant="secondary" className={compareOn ? '!border-solid !border-primary !bg-primary-50 !text-primary-hover font-semibold' : 'border-dashed font-semibold !text-text-muted'}
                 aria-pressed={compareOn}
                 onClick={() => setCompareOn((v) => !v)}
               >
@@ -292,11 +299,11 @@ export function DashboardPage() {
         <div className="col-span-12">
           <UrgentBand items={data.todo} onOpenItem={openTodo} onOpenBell={() => setBellOpen(true)} />
         </div>
-        <div className={showSimsParts ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
+        <div className={showSimsParts ? 'col-span-12 xl:col-span-8' : 'col-span-12'}>
           <EquipmentPartsCard data={data} onOpenDetail={setDetail} />
         </div>
         {showSimsParts && (
-          <div className="col-span-12 xl:col-span-6">
+          <div className="col-span-12 xl:col-span-4">
             <SimPartsCard data={data} onOpenDetail={setDetail} />
           </div>
         )}
@@ -306,17 +313,24 @@ export function DashboardPage() {
         <div className="col-span-12">
           <ParkHealthRings key={ringsKey} data={data} storageKey={ringsKey} onOpenDetail={setDetail} />
         </div>
-        <div className={!isReseller ? 'col-span-12 xl:col-span-6' : 'col-span-12'}>
+        <div className="col-span-12">
           <TopPacksCard data={data} onOpenDetail={setDetail} />
         </div>
         {!isReseller && (
-          <div className="col-span-12 xl:col-span-6">
+          <div className="col-span-12">
             <SimOverCard data={data} onOpenDetail={setDetail} canOpen={canOpen} />
           </div>
         )}
       </Section>
 
-      <DetailModal detail={detail} onClose={() => setDetail(null)} canOpen={canOpen} />
+      <DetailModal
+        detail={detail ?? (kpiDetailKpi ? kpiSpec(kpiDetailKpi) : null)}
+        onClose={() => {
+          setDetail(null);
+          setKpiDetailId(null);
+        }}
+        canOpen={canOpen}
+      />
 
       {/* Seuil global « connecté » (réglage BO existant, 7 j par défaut) – Admin TUNAV */}
       <Modal isOpen={thresholdOpen} onClose={() => setThresholdOpen(false)} title="Seuil « connecté »" size="md">

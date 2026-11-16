@@ -80,7 +80,6 @@ export function EquipmentPartsCard({
         kpiId,
         big: fmt(data.stock),
         caption: `équipements · ${pct(data.stock, total)} % du total`,
-        table: { headers: ['Stock', 'Équipements'], rows: data.stockByNetwork.map((s) => [s.label, s.count]) },
         route: 'equipments',
         routeLabel: 'Équipements',
         routeQuery: '?etat=stock'
@@ -118,8 +117,8 @@ export function EquipmentPartsCard({
       hint={`état au ${data.asOf.toLocaleDateString('fr-FR')}`}
       bodyClassName="p-4 space-y-4"
     >
-      <div role="group" aria-label={`Filtrer par ${by.toLowerCase()}`} className="inline-flex flex-wrap rounded-control border border-border-strong overflow-hidden">
-        {[data.parkAll, ...rows].map((r, i) => {
+      <div role="group" aria-label={`Filtrer par ${by.toLowerCase()}`} className="flex flex-wrap gap-1.5">
+        {[data.parkAll, ...rows].map((r) => {
           const on = r.key === sel;
           return (
             <button
@@ -127,9 +126,9 @@ export function EquipmentPartsCard({
               type="button"
               aria-pressed={on}
               onClick={() => setSel(r.key)}
-              className={`h-[34px] px-3 text-button-sm transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                i > 0 ? 'border-l border-border' : ''
-              } ${on ? 'bg-primary text-text-inverse' : 'bg-surface text-text hover:bg-surface-muted'}`}
+              className={`rounded-pill border px-2.5 py-1 text-mention transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                on ? 'bg-primary-50 text-primary-hover border-accent font-semibold' : 'bg-surface text-[#334155] border-border-strong hover:border-accent'
+              }`}
             >
               {r.label}
             </button>
@@ -158,7 +157,7 @@ export function EquipmentPartsCard({
       <div>
         <TreeLine level={0} label={stock ? 'Total' : 'Total vendus'} value={total} share="100 %" onClick={() => open('total')} />
         {stock > 0 && (
-          <TreeLine level={1} branch="├─" tone="neutral" label="En stock" sub="Tunav et revendeurs, pas encore vendus" value={stock} share={`${pct(stock, total)} % du total`} onClick={() => open('stock')} />
+          <TreeLine level={1} branch="├─" tone="neutral" label="En stock chez Tunav" sub="pas encore vendus" value={stock} share={`${pct(stock, total)} % du total`} onClick={() => open('stock')} />
         )}
         <TreeLine level={1} branch="├─" tone="warning" label="Vendus, non installés" sub="pas encore posés dans un véhicule" value={x.notInstalled} share={`${pct(x.notInstalled, total)} % du total`} onClick={() => open('wait')} />
         <TreeLine level={1} branch="└─" label="Installés" sub="posés dans un véhicule" value={x.installed} share={`${pct(x.installed, total)} % du total`} onClick={() => open('inst')} />

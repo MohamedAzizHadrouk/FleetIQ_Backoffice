@@ -1,0 +1,37 @@
+<main style="flex: 1 1 640px; min-width: 0; padding: 28px 32px 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 26px">
+<header>
+  <div class="tx-row1">
+    <div class="hl"><h1 id="pTitle">Interventions SAV</h1><a hidden href="Documentation-SAV-v3.html" class="doc-link" id="docLink"></a></div>
+    <div class="tx-right">
+      <div class="tx-actions">
+        <button class="hbtn" id="bXls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>Excel</button>
+        <button class="hbtn" id="bPdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>PDF</button>
+      </div>
+      <span class="today-chip"><i></i>Aujourd'hui <b id="todayTxt"></b></span>
+      <button class="bell" id="bell" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="cnt" id="bellCnt">0</span></button>
+      <div class="bpanel hidden" id="bpanel"></div>
+    </div>
+  </div>
+  <p class="hsub" id="pSub" hidden></p>
+  <div class="toolbar">
+    <div class="tb-group">
+      <label class="tb-field"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>État au</span><input type="date" id="pAu"></label>
+      <button class="hbtn" id="pAuToday" style="padding:6px 10px;font-size:12px">Aujourd'hui</button>
+    </div>
+  </div>
+  <div class="tb-info" id="pVs"></div>
+</header>
+<div id="view"></div>
+</main><div id="md"></div><div hidden><nav aria-label="Menu principal" style="flex: 0 0 232px; background: #0F172A; padding: 20px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: center; gap: 10px"><div style="width: 32px; height: 32px; border-radius: 8px; background: #2563EB"></div><span style="font-weight: 700; font-size: 17px; color: #FFFFFF">FleetAdmin</span></div>
+<div style="border: 1px solid #1E293B; border-radius: 10px; padding: 10px 12px; background: #111C33"><div style="font-size: 10px; letter-spacing: .08em; color: #94A3B8">CONNECTÉ</div><select id="who" class="who-sel" aria-label="Compte connecté"><option value="">Admin TUNAV</option><option value="MyCom">Revendeur</option><option value="@RespSAV">Responsable SAV</option><option value="@TechSAV">Technicien SAV</option></select></div>
+<div style="font-size: 10px; letter-spacing: .08em; color: #94A3B8">MENU</div>
+<div style="display: flex; flex-direction: column; gap: 4px" id="menu">
+<a href="Main-v3.html" class="nav" data-r="admin">Tableau de bord</a>
+<a href="Clients-v3.html" class="nav" data-r="admin resp">Gestion Clients</a>
+<a href="Packs-v3.html" class="nav" data-r="admin">Packs</a>
+<a href="Puces-v3.html" class="nav" data-r="admin">Gestion des puces</a>
+<a href="Equipements-v3.html" class="nav" data-r="admin resp">Équipements</a>
+<a href="SAV-v3.html" class="nav nav-on" data-r="admin resp tech" id="navSav">Interventions SAV</a>
+</div>
+</nav></div>

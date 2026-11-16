@@ -1,183 +1,170 @@
 /**
- * TUNAV – FleetIQ Back-office – thème Tailwind 3.4 (theme.extend) – « Industrial Tech »
- * Appliqué T-002 (2026-11-15) depuis assets/redesign/tailwind-theme.proposed.js (R1 validé).
- * Écarts : assets/redesign/tokens-update.md · règles : assets/redesign/design-language.md.
- *
- * Légende des commentaires :
- *   [Marque]    valeur du BRAND.md / Brand Book validé le 2026-11-11 – INCHANGÉE
- *   [Dérivé]    teinte ou ombre calculée à partir d'une couleur de marque (formule indiquée)
- *   [R1]        jeton nouveau ou modifié par R1 – « à ajouter au Brand Book » (interface produit)
- *
- * Couleurs et polices de la marque : aucune valeur modifiée. Le « Ciel logo » du symbole reste absent de ce thème.
+ * FleetIQ Back-office – thème Tailwind 3.4 (theme.extend) – style de la maquette v3 (FleetAdmin-maquettes, pages-navigateur).
+ * Valeurs reprises du CSS des maquettes Main-v3, Clients-v3, Packs-v3, Puces-v3, Equipements-v3, SAV-v3 :
+ * palette Slate / Blue, IBM Plex Sans + IBM Plex Mono (chiffres), cartes 12 px, contrôles 8 px, fenêtres 14 px.
+ * Les noms des jetons sont inchangés : tous les composants suivent sans modification.
  */
 
 const tunavTheme = {
   colors: {
-    /* ---- Couleurs de marque brutes (à éviter dans les composants : préférer les noms sémantiques) ---- */
+    /* ---- Couleurs brutes (anciens noms gardés pour compatibilité) ---- */
     tunav: {
-      'bleu-royal': '#0848FE', // [Marque] primaire
-      'bleu-ciel': '#0099FF', // [Marque] accent – jamais pour du petit texte (3,00:1 sur blanc)
-      anthracite: '#3F3F3F', // [Marque] texte, fond sombre
-      'gris-texte': '#6E6E6E', // [Marque] texte secondaire
-      gris: '#777777', // [Marque] neutre graphique – jamais pour du petit texte (4,48:1)
-      'fond-clair': '#F2F6FF', // [Marque] fond alterné
-      blanc: '#FFFFFF', // [Marque]
+      'bleu-royal': '#2563EB',
+      'bleu-ciel': '#60A5FA',
+      anthracite: '#0F172A',
+      'gris-texte': '#475569',
+      gris: '#64748B',
+      'fond-clair': '#F1F5F9',
+      blanc: '#FFFFFF',
     },
 
     /* ---- Sémantique ---- */
     primary: {
-      DEFAULT: '#0848FE', // [Marque] Bleu Royal – boutons, liens, élément actif
-      hover: '#063ACB', // [Dérivé] Bleu Royal × 80 % (ombré) – blanc dessus 8,48:1
-      active: '#052FA5', // [Dérivé] Bleu Royal × 65 % (ombré) – blanc dessus 10,73:1
-      50: '#F2F6FF', // [Marque] = Fond clair (≈ 5 % de Bleu Royal) – survol de ligne, bouton secondaire au survol
-      100: '#E1E9FF', // [Dérivé] 12 % de Bleu Royal sur blanc – ligne sélectionnée, fond d'icône KPI
-      200: '#C1D1FF', // [Dérivé] 25 % de Bleu Royal sur blanc – bordure d'élément sélectionné (décoratif)
+      DEFAULT: '#2563EB', // boutons, liens, élément actif
+      hover: '#1D4ED8',
+      active: '#1E3A8A',
+      50: '#EFF6FF', // survol de ligne, puce sélectionnée
+      100: '#DBEAFE',
+      200: '#BFDBFE',
     },
     accent: {
-      DEFAULT: '#0099FF', // [Marque] Bleu Ciel – filets, pictos ≥ 24 px, série 2 des graphiques, grand texte ≥ 24 px
+      DEFAULT: '#93C5FD', // bordure au survol
     },
     surface: {
-      DEFAULT: '#FFFFFF', // [Marque] Blanc – cartes, tableaux, modales, champs
-      muted: '#F2F6FF', // [Marque] Fond clair – fond de l'application, en-têtes de tableau
-      inverse: '#3F3F3F', // [Marque] Anthracite – barre latérale (fond sombre)
-      'inverse-hover': '#525252', // [Dérivé] Blanc 10 % sur Anthracite – survol dans la barre latérale
+      DEFAULT: '#FFFFFF', // cartes, tableaux, fenêtres, champs
+      muted: '#F8FAFC', // en-têtes de tableau, survol
+      page: '#F1F5F9', // fond de l'application
+      inverse: '#0F172A', // barre latérale
+      'inverse-hover': '#1E293B',
     },
     text: {
-      DEFAULT: '#3F3F3F', // [Marque] Anthracite – texte courant, titres
-      muted: '#6E6E6E', // [Marque] Gris texte – légendes, placeholders, en-têtes secondaires
-      inverse: '#FFFFFF', // [Marque] Blanc – texte sur Bleu Royal / Anthracite / états
-      'inverse-muted': '#D9D9D9', // [Dérivé] Blanc 80 % sur Anthracite – menu inactif (7,46:1 sur Anthracite)
-      link: '#0848FE', // [Marque] Bleu Royal – liens (soulignés dans un paragraphe)
+      DEFAULT: '#0F172A',
+      muted: '#475569',
+      inverse: '#FFFFFF',
+      'inverse-muted': '#CBD5E1',
+      link: '#1D4ED8',
     },
     border: {
-      DEFAULT: '#DDDDDD', // [Dérivé] 25 % de Gris sur blanc – séparateurs, contours de cartes (décoratif)
-      subtle: '#EFEFEF', // [Dérivé] 12 % de Gris sur blanc – séparateurs de lignes, fond de pastille neutre
-      strong: '#777777', // [Marque] Gris – contour des champs de formulaire (4,48:1 ≥ 3:1 requis)
+      DEFAULT: '#E2E8F0',
+      subtle: '#F1F5F9',
+      strong: '#CBD5E1',
     },
 
-    /* ---- États d'interface : palette.md §2.3 (couleurs de base) + teintes dérivées ---- */
+    /* ---- États (pastilles .badge de la maquette) ---- */
     success: {
-      DEFAULT: '#1B7F3B', // [Marque – état web] Succès
-      hover: '#176C32', // [Dérivé] Succès × 85 %
-      50: '#EDF5EF', // [Dérivé] 8 % sur blanc – fond de pastille / bandeau
-      200: '#BBD9C4', // [Dérivé] 30 % sur blanc – bordure de pastille (décoratif)
-      700: '#176C32', // [Dérivé] texte sur fond 50 (5,86:1)
+      DEFAULT: '#059669',
+      hover: '#047857',
+      50: '#D1FAE5',
+      200: '#A7F3D0',
+      700: '#065F46',
     },
     warning: {
-      DEFAULT: '#B45309', // [Marque – état web] Avertissement
-      hover: '#994708', // [Dérivé] Avertissement × 85 %
-      50: '#F9F1EB', // [Dérivé] 8 % sur blanc
-      200: '#E9CBB5', // [Dérivé] 30 % sur blanc
-      700: '#994708', // [Dérivé] texte sur fond 50 (5,77:1) – #B45309 sur 50 = 4,498:1, échoue
+      DEFAULT: '#D97706',
+      hover: '#B45309',
+      50: '#FEF3C7',
+      200: '#FDE68A',
+      700: '#92400E',
     },
     danger: {
-      DEFAULT: '#C62828', // [Marque – état web] Erreur
-      hover: '#A82222', // [Dérivé] Erreur × 85 %
-      50: '#FAEEEE', // [Dérivé] 8 % sur blanc
-      200: '#EEBFBF', // [Dérivé] 30 % sur blanc
-      700: '#A82222', // [Dérivé] texte sur fond 50 (6,35:1)
+      DEFAULT: '#DC2626',
+      hover: '#B91C1C',
+      50: '#FEE2E2',
+      200: '#FECACA',
+      700: '#991B1B',
     },
     info: {
-      DEFAULT: '#0848FE', // [Marque – état web] Info = Bleu Royal
-      50: '#F2F6FF', // [Marque] Fond clair
-      200: '#C1D1FF', // [Dérivé]
-      700: '#0848FE', // texte sur fond 50 (5,76:1)
+      DEFAULT: '#2563EB',
+      50: '#E0E7FF',
+      200: '#C7D2FE',
+      700: '#3730A3',
     },
     neutral: {
-      // [R1] famille d'état « Neutre » (En stock, Planifiée, bientôt) – mêmes valeurs que border.subtle / border / text,
-      // nommées comme les autres familles pour écrire bg-{famille}-50 text-{famille}-700 border-{famille}-200.
-      // Attention : ces 3 clés remplacent celles de la palette « neutral » par défaut de Tailwind (non utilisée dans l'application).
-      50: '#EFEFEF', // [Dérivé] Gris 12 % sur blanc (= border.subtle)
-      200: '#DDDDDD', // [Dérivé] Gris 25 % sur blanc (= border.DEFAULT)
-      700: '#3F3F3F', // [Marque] Anthracite – 9,16:1 sur neutral.50
+      50: '#F1F5F9',
+      200: '#E2E8F0',
+      700: '#475569',
     },
 
-    /* ---- Graphiques : 4 séries maximum (images-icones.md §5) ---- */
+    /* ---- Graphiques ---- */
     chart: {
-      1: '#0848FE', // [Marque] Bleu Royal
-      2: '#0099FF', // [Marque] Bleu Ciel – toujours avec étiquette directe (2,9998:1 sur blanc)
-      3: '#3F3F3F', // [Marque] Anthracite
-      4: '#777777', // [Marque] Gris – sert aussi pour « Autres »
-      grid: '#EFEFEF', // [Dérivé] = border.subtle – lignes de grille 1 px
+      1: '#2563EB',
+      2: '#60A5FA',
+      3: '#64748B', // stock / autres
+      4: '#94A3B8',
+      grid: '#F1F5F9',
     },
 
     /* ---- Focus clavier ---- */
     focus: {
-      DEFAULT: '#0848FE', // [Proposition] Bleu Royal (6,23:1) au lieu du Bleu Ciel de palette.md (2,9998:1) – voir tokens.md §8
-      inverse: '#FFFFFF', // [Marque] contour Blanc sur fond sombre / Bleu Royal (palette.md §2.3)
+      DEFAULT: '#2563EB',
+      inverse: '#FFFFFF',
     },
   },
 
   fontFamily: {
-    // [Marque] typographie.md §5.1 et §2.3
-    sans: ['Poppins', '"Segoe UI"', 'system-ui', '-apple-system', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+    sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', '"Segoe UI"', 'Arial', 'sans-serif'],
+    mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
     arabic: ['"IBM Plex Sans Arabic"', '"Segoe UI"', 'Tahoma', '"Geeza Pro"', '"Noto Sans Arabic"', 'Arial', 'sans-serif'],
   },
 
   fontSize: {
-    // [Marque] typographie.md §2 (bureau / mobile, clamp 375 → 1200 px). Graisse incluse quand la marque l'impose.
-    h1: ['clamp(2rem, 1.546rem + 1.94vw, 3rem)', { lineHeight: '1.15', letterSpacing: '-0.015em', fontWeight: '700' }], // 32 → 48
-    h2: ['clamp(1.625rem, 1.341rem + 1.21vw, 2.25rem)', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '600' }], // 26 → 36
-    h3: ['clamp(1.375rem, 1.205rem + 0.73vw, 1.75rem)', { lineHeight: '1.3', letterSpacing: '0', fontWeight: '600' }], // 22 → 28
-    h4: ['clamp(1.125rem, 1.011rem + 0.48vw, 1.375rem)', { lineHeight: '1.35', letterSpacing: '0', fontWeight: '600' }], // 18 → 22
-    lead: ['clamp(1.125rem, 1.068rem + 0.24vw, 1.25rem)', { lineHeight: '1.6' }], // 18 → 20
-    body: ['1rem', { lineHeight: '1.6' }], // 16
-    small: ['0.875rem', { lineHeight: '1.5', letterSpacing: '0.005em' }], // 14 – texte de tableau, légende
-    mention: ['0.75rem', { lineHeight: '1.5', letterSpacing: '0.01em' }], // 12 – minimum absolu
-    label: ['0.875rem', { lineHeight: '1.4', letterSpacing: '0.005em', fontWeight: '500' }], // 14 Medium
-    button: ['1rem', { lineHeight: '1.25', letterSpacing: '0.01em', fontWeight: '500' }], // 16 Medium
-    'button-sm': ['0.875rem', { lineHeight: '1.25', letterSpacing: '0.01em', fontWeight: '500' }], // [Proposition] 14 – boutons compacts de tableau
-    overline: ['0.75rem', { lineHeight: '1.4', letterSpacing: '0.08em', fontWeight: '600' }], // 12 SemiBold CAPITALES
-    kpi: ['1.75rem', { lineHeight: '1.15', letterSpacing: '-0.02em', fontWeight: '700' }], // [R1] 28 Bold (était 36) – valeur des cartes KPI, 5 cartes par rangée sans retour à la ligne
-    title: ['1.25rem', { lineHeight: '1.4', letterSpacing: '0', fontWeight: '600' }], // [R1] 20 SemiBold – titre de page dans la barre du haut
-    section: ['1rem', { lineHeight: '1.5', letterSpacing: '0', fontWeight: '600' }], // [R1] 16 SemiBold – titre de panneau
+    h1: ['1.625rem', { lineHeight: '1.2', fontWeight: '700' }], // 26
+    h2: ['1.375rem', { lineHeight: '1.25', fontWeight: '600' }], // 22
+    h3: ['1.125rem', { lineHeight: '1.3', fontWeight: '600' }], // 18
+    h4: ['1.0625rem', { lineHeight: '1.35', fontWeight: '600' }], // 17 – titre de fenêtre
+    lead: ['1rem', { lineHeight: '1.5' }],
+    body: ['0.875rem', { lineHeight: '1.5' }], // 14
+    small: ['0.8125rem', { lineHeight: '1.45' }], // 13 – tableaux, boutons
+    mention: ['0.75rem', { lineHeight: '1.45' }], // 12
+    label: ['0.8125rem', { lineHeight: '1.4', fontWeight: '500' }], // 13
+    button: ['0.8125rem', { lineHeight: '1.25', fontWeight: '600' }], // 13 SemiBold (.btn)
+    'button-sm': ['0.8125rem', { lineHeight: '1.25', fontWeight: '500' }], // 13 Medium (.hbtn)
+    overline: ['0.6875rem', { lineHeight: '1.4', letterSpacing: '0.06em', fontWeight: '600' }], // 11 CAPITALES (.lbl)
+    kpi: ['1.875rem', { lineHeight: '1.05', fontWeight: '600' }], // 30 – chiffre des cartes (IBM Plex Mono, voir index.css)
+    title: ['1.625rem', { lineHeight: '1.2', fontWeight: '700' }], // 26 – titre de page
+    section: ['1rem', { lineHeight: '1.4', fontWeight: '600' }], // 16 – titre de bloc
   },
 
   borderRadius: {
-    tag: '2px', // [R1] nouveau – étiquette d'état, étiquette de catégorie, nom de pack
-    control: '4px', // [R1] était 8px – boutons, champs, listes, groupes segmentés, entrées de menu
-    card: '6px', // [R1] était 12px – panneaux, cartes KPI, tableaux, menus déroulants, notifications
-    modal: '8px', // [R1] était 16px – modales, carte de connexion. Le cadre 16 px du Brand Book (images-icones.md §6) reste la règle des images du site.
-    pill: '9999px', // inchangé – usage restreint : compteur de la cloche, avatar, interrupteur
+    tag: '9999px', // pastilles d'état
+    control: '8px', // boutons, champs, listes
+    card: '12px', // cartes, panneaux, tableaux
+    modal: '14px', // fenêtres
+    pill: '9999px',
   },
 
   boxShadow: {
-    // [R1] « le filet avant l'ombre » : une ombre seulement pour ce qui flotte au-dessus de la page.
-    card: 'none', // [R1] était 0 1px 2px … – les cartes n'ont plus d'ombre (jeton gardé pour la migration, à retirer ensuite)
-    raised: '0 2px 8px 0 rgba(63, 63, 63, 0.14)', // [R1][Dérivé] Anthracite 14 % – menu déroulant, menu contextuel, cloche, infobulle (était 0 4px 12px -2px)
-    overlay: '0 12px 32px -8px rgba(63, 63, 63, 0.28)', // [R1][Dérivé] Anthracite 28 % – modale, tiroir (était 0 16px 48px -8px)
-    // [R1] filet d'état : trait intérieur de 3 px sur le bord gauche (carte, première cellule d'une ligne, bandeau)
-    'rail-success': 'inset 3px 0 0 0 #1B7F3B', // [Marque – état web] Succès
-    'rail-warning': 'inset 3px 0 0 0 #B45309', // [Marque – état web] Avertissement
-    'rail-danger': 'inset 3px 0 0 0 #C62828', // [Marque – état web] Erreur
-    'rail-info': 'inset 3px 0 0 0 #0848FE', // [Marque] Bleu Royal
-    // [R1] notification flottante = filet d'état + ombre « raised »
-    'toast-success': 'inset 3px 0 0 0 #1B7F3B, 0 2px 8px 0 rgba(63, 63, 63, 0.14)',
-    'toast-warning': 'inset 3px 0 0 0 #B45309, 0 2px 8px 0 rgba(63, 63, 63, 0.14)',
-    'toast-danger': 'inset 3px 0 0 0 #C62828, 0 2px 8px 0 rgba(63, 63, 63, 0.14)',
-    'toast-info': 'inset 3px 0 0 0 #0848FE, 0 2px 8px 0 rgba(63, 63, 63, 0.14)',
+    card: 'none',
+    raised: '0 12px 32px rgba(15, 23, 42, 0.14)', // cloche, menus
+    overlay: '0 20px 50px rgba(15, 23, 42, 0.25)', // fenêtres
+    // bord gauche 3 px (cartes « À traiter » de la maquette)
+    'rail-success': 'inset 3px 0 0 0 #059669',
+    'rail-warning': 'inset 3px 0 0 0 #D97706',
+    'rail-danger': 'inset 3px 0 0 0 #DC2626',
+    'rail-info': 'inset 3px 0 0 0 #2563EB',
+    'toast-success': 'inset 3px 0 0 0 #059669, 0 12px 32px rgba(15, 23, 42, 0.14)',
+    'toast-warning': 'inset 3px 0 0 0 #D97706, 0 12px 32px rgba(15, 23, 42, 0.14)',
+    'toast-danger': 'inset 3px 0 0 0 #DC2626, 0 12px 32px rgba(15, 23, 42, 0.14)',
+    'toast-info': 'inset 3px 0 0 0 #2563EB, 0 12px 32px rgba(15, 23, 42, 0.14)',
   },
 
-  /* ---- [R1] Mesures de la coque et densité (échelle 4 / 8 px) – utilisables en h-*, w-*, min-h-*, top-*, ml-* ---- */
   spacing: {
-    control: '36px', // contrôle par défaut (bouton, champ, liste) – bureau
-    'control-sm': '28px', // contrôle compact (dans un tableau, un pied de panneau) – ≥ 24 px (WCAG 2.5.8)
-    'control-touch': '44px', // contrôle tactile (< 1024 px) – règle maison 44 px
-    row: '48px', // ligne de tableau confortable (2 lignes de texte au plus)
-    'row-compact': '36px', // ligne de tableau compacte (1 ligne)
-    'row-head': '36px', // en-tête de tableau
-    topbar: '48px', // barre du haut (bureau)
-    'topbar-mobile': '56px', // barre du haut (< 768 px)
-    sidebar: '240px', // barre latérale (inchangée)
-    rail: '56px', // barre latérale réduite, 768–1023 px
+    control: '34px',
+    'control-sm': '28px',
+    'control-touch': '44px',
+    row: '40px',
+    'row-compact': '34px',
+    'row-head': '34px',
+    topbar: '48px',
+    'topbar-mobile': '56px',
+    sidebar: '232px', // barre latérale de la maquette
+    rail: '56px',
   },
 
   maxWidth: {
-    content: '1680px', // [R1] largeur maximale de la grille de contenu (12 colonnes, gouttière 16 px)
+    content: '1680px',
   },
 
   zIndex: {
-    // [R1] un seul ordre d'empilement pour toute l'application
     topbar: '30',
     dropdown: '40',
     overlay: '50',
@@ -185,17 +172,17 @@ const tunavTheme = {
   },
 
   transitionDuration: {
-    fast: '120ms', // [R1] survol, pression, focus
-    base: '160ms', // [R1] menu, infobulle, modale (opacité)
-    slow: '240ms', // [R1] tiroir mobile, notification
+    fast: '120ms',
+    base: '160ms',
+    slow: '240ms',
   },
 
   transitionTimingFunction: {
-    standard: 'cubic-bezier(0.2, 0, 0, 1)', // [R1] courbe unique
+    standard: 'cubic-bezier(0.2, 0, 0, 1)',
   },
 
   ringWidth: {
-    3: '3px', // [Marque] contour de focus 3 px (palette.md §2.3)
+    3: '3px',
   },
 };
 

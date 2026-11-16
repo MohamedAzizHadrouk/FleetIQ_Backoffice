@@ -73,13 +73,13 @@ function TopCard({
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className={`group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 pt-3 hover:border-border-strong transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${rail ?? ''}`}
+      className={`group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 hover:border-accent transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${rail ?? ''}`}
     >
       <span className="text-overline uppercase text-text-muted">{title}</span>
       {children}
-      <span className="mt-auto inline-flex items-center gap-1 pt-2 border-t border-border-subtle text-mention font-medium text-primary">
+      <span className="mt-auto inline-flex items-center gap-1 self-end text-[11.5px] text-text-muted group-hover:text-primary-hover">
         Voir le détail
-        <ArrowRight size={14} aria-hidden="true" />
+        <ArrowRight size={12} aria-hidden="true" />
       </span>
     </button>
   );

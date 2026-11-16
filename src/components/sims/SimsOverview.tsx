@@ -24,26 +24,28 @@ function TopCard({
   onOpen: () => void;
 }) {
   const TONE = {
-    primary: 'text-text-muted',
-    success: 'text-success-700',
-    warning: 'text-warning-700',
-    danger: 'text-danger-700'
+    primary: 'bg-primary-50 text-primary',
+    success: 'bg-success-50 text-success',
+    warning: 'bg-warning-50 text-warning',
+    danger: 'bg-danger-50 text-danger'
   } as const;
   return (
     <button
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className="group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 pt-3 hover:border-border-strong transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className="group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 hover:border-accent transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
     >
       <span className="flex items-start justify-between gap-2">
         <span className="text-overline uppercase text-text-muted">{title}</span>
-        <Icon size={16} className={`shrink-0 ${TONE[tone]}`} aria-hidden="true" />
+        <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-control ${TONE[tone]}`} aria-hidden="true">
+          <Icon size={16} />
+        </span>
       </span>
       {children}
-      <span className="mt-auto inline-flex items-center gap-1 pt-2 border-t border-border-subtle text-mention font-medium text-primary">
+      <span className="mt-auto inline-flex items-center gap-1 self-end text-[11.5px] text-text-muted group-hover:text-primary-hover">
         Voir le détail
-        <ArrowRight size={14} aria-hidden="true" />
+        <ArrowRight size={12} aria-hidden="true" />
       </span>
     </button>
   );

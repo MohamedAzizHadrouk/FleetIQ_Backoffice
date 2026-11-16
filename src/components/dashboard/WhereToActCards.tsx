@@ -43,7 +43,7 @@ export function ParkHealthRings({
   onOpenDetail: (d: DetailSpec) => void;
 }) {
   const isNetwork = data.scope.kind === 'network';
-  const rows = data.parkRows;
+  const rows = data.ringRows ?? data.parkRows;
   const DEF_COUNT = 6;
   const byPct = (a: ParkRow, b: ParkRow) => ratio(a) - ratio(b) || b.installed - a.installed;
   const defaults = useMemo(() => {

@@ -27,6 +27,9 @@ import {
   type StateCounts
 } from '../utils/equipmentsKpis';
 
+/** Date AAAA-MM-JJ du jeu de données → Date (vide = null) */
+const isoDate = (s: string | null | undefined) => (s ? new Date(`${s.slice(0, 10)}T12:00:00`) : null);
+
 export type EquipmentRowStatus = 'installed' | 'not_installed' | 'stock';
 
 type Props = {
@@ -277,14 +280,16 @@ export function EquipmentsUnifiedTable({
         <table className="w-full min-w-[1180px] text-left">
           <thead>
             <tr className="border-b border-border-subtle text-text-muted text-overline uppercase bg-surface-muted">
-              <th className="px-4 py-3 font-medium">Propriétaire</th>
+              <th className="px-4 py-3 font-medium">Propriétaire (client)</th>
               <th className="px-4 py-3 font-medium">Type · IMEI</th>
-              <th className="px-4 py-3 font-medium">SIM · offre</th>
               <th className="px-4 py-3 font-medium">Pack</th>
               <th className="px-4 py-3 font-medium">Affectation</th>
               <th className="px-4 py-3 font-medium">Dernière comm.</th>
               <th className="px-4 py-3 font-medium">Connexion</th>
               <th className="px-4 py-3 font-medium">Statut</th>
+              <th className="px-4 py-3 font-medium">SIM · offre</th>
+              <th className="px-4 py-3 font-medium">Vente</th>
+              <th className="px-4 py-3 font-medium">Installation</th>
               {hasActions && <th className="px-4 py-3 font-medium text-right">Actions</th>}
             </tr>
           </thead>
@@ -312,10 +317,6 @@ export function EquipmentsUnifiedTable({
                   <td className="px-4 py-3">
                     <span className="block font-medium text-text">{r.type}</span>
                     <span className="block whitespace-nowrap font-mono text-mention text-text">{eq.serial}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="block whitespace-nowrap text-mention text-text">{r.phone || <i className="text-text-muted">Pas de numéro</i>}</span>
-                    <span className="block whitespace-nowrap text-mention text-text-muted">{r.offer || 'Aucune offre'}</span>
                   </td>
                   <td className="px-4 py-3">
                     {r.packId != null ? (
@@ -361,6 +362,12 @@ export function EquipmentsUnifiedTable({
                       </>
                     )}
                   </td>
+                  <td className="px-4 py-3">
+                    <span className="block whitespace-nowrap text-mention text-text">{r.phone || <i className="text-text-muted">Pas de numéro</i>}</span>
+                    <span className="block whitespace-nowrap text-mention text-text-muted">{r.offer || 'Aucune offre'}</span>
+                  </td>
+                  <td className="px-4 py-3 tabular-nums whitespace-nowrap">{inStock ? '—' : frDate(isoDate(eq.contractDate))}</td>
+                  <td className="px-4 py-3 tabular-nums whitespace-nowrap">{installed ? frDate(isoDate(eq.installDate ?? eq.firstSendDate)) : '—'}</td>
                   {hasActions && (
                     <td className="px-4 py-3 text-right" onClick={stop}>
                       <div className="flex items-center justify-end gap-1">
@@ -416,7 +423,7 @@ export function EquipmentsUnifiedTable({
             })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={hasActions ? 9 : 8} className="p-8 text-center text-text-muted">
+                <td colSpan={hasActions ? 11 : 10} className="p-8 text-center text-text-muted">
                   Aucun équipement trouvé.
                 </td>
               </tr>

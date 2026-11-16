@@ -38,7 +38,7 @@ export function PageShell({
           {toolbar}
         </>
       )}
-      <div className="w-full min-w-0 flex-1 space-y-6 p-4 md:p-6">{children}</div>
+      <div className="w-full min-w-0 flex-1 space-y-[26px] px-4 pb-12 pt-6 md:px-8">{children}</div>
     </div>
   );
 }
@@ -70,23 +70,24 @@ export function PageChrome({
   tools
 }: PageChromeProps) {
   return (
-    <header className="sticky top-0 z-topbar border-b border-border bg-surface/95 backdrop-blur-sm">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3.5 md:px-6">
-        <h1 className="text-title text-text truncate min-w-0">{title}</h1>
-        {titleExtra}
-        <div className="flex-1 min-w-[0.5rem]" />
-        <div className="flex flex-wrap items-center gap-2 ml-auto">
-          <span className="inline-flex items-center gap-2 rounded-control bg-surface-muted px-2.5 py-1 text-small text-text-muted">
-            <span className="h-2 w-2 shrink-0 rounded-[1px] bg-success" aria-hidden="true" />
-            {dateLabel} <b className="text-text font-semibold tabular-nums">{date}</b>
-          </span>
+    <header className="px-4 pt-7 md:px-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
+          <h1 className="text-title text-text truncate min-w-0">{title}</h1>
+          {titleExtra}
+        </div>
+        <div className="relative flex flex-wrap items-center gap-2.5">
           {meta}
           {actions}
+          <span className="ml-1 inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface px-3 py-1.5 text-mention text-text-muted">
+            <span className="h-[7px] w-[7px] shrink-0 rounded-pill bg-[#10B981] shadow-[0_0_0_3px_#D1FAE5]" aria-hidden="true" />
+            {dateLabel} <b className="font-semibold text-text tabular-nums">{date}</b>
+          </span>
           {bell}
         </div>
       </div>
       {tools != null && (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border-subtle bg-surface-muted/70 px-4 py-2 md:px-6">
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface px-2.5 py-2 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
           {tools}
         </div>
       )}
@@ -160,11 +161,11 @@ export function SectionRule({
   right?: ReactNode;
 }) {
   return (
-    <div className="col-span-12 flex items-baseline gap-3 mt-2 pb-1.5 border-b border-text">
-      <h2 id={id} className="text-overline uppercase text-text">
+    <div className="col-span-12 flex flex-wrap items-baseline gap-2.5">
+      <h2 id={id} className="text-section text-text">
         {title}
       </h2>
-      {hint && <span className="text-mention text-text-muted">{hint}</span>}
+      {hint && <span className="text-[12.5px] text-text-muted">{hint}</span>}
       {right && <div className="ml-auto">{right}</div>}
     </div>
   );
@@ -195,8 +196,8 @@ export function Panel({
   return (
     <Tag className={`bg-surface border border-border rounded-card min-w-0 ${className}`}>
       {hasHead && (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 border-b border-border">
-          {title != null && (typeof title === 'string' ? <h3 className="text-section text-text">{title}</h3> : title)}
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 px-[18px] pt-4 pb-1">
+          {title != null && (typeof title === 'string' ? <h3 className="text-sm font-semibold text-text">{title}</h3> : title)}
           {hint != null && <span className="text-mention text-text-muted">{hint}</span>}
           {actions != null && <div className="ml-auto flex flex-wrap items-center gap-2">{actions}</div>}
         </div>

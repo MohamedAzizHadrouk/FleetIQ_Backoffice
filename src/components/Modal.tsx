@@ -20,7 +20,7 @@ const FOCUSABLE =
 
 /** En-tête / pied : Fond clair TUNAV (#F2F6FF) – sépare clairement du corps blanc. */
 const CHROME =
-  'bg-surface-muted border-border shrink-0';
+  'bg-surface border-border-subtle shrink-0';
 
 /** Modale Industrial Tech – header + footer colorés (design system TUNAV). */
 export function Modal({ isOpen, onClose, title, children, size = 'md', footer }: ModalProps) {
@@ -102,7 +102,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
             exit={{ opacity: 0 }}
             transition={{ duration: 0.16, ease: [0.2, 0, 0, 1] }}
             onClick={onClose}
-            className="absolute inset-0 bg-tunav-anthracite/60"
+            className="absolute inset-0 bg-[rgba(15,23,42,0.45)]"
             aria-hidden="true"
           />
           <motion.div
@@ -120,7 +120,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
           >
             {/* Header – Fond clair */}
             <div
-              className={`flex h-12 items-center justify-between gap-4 border-b px-4 ${CHROME} md:rounded-t-modal`}
+              className={`flex items-center justify-between gap-4 border-b px-5 py-4 ${CHROME} md:rounded-t-modal`}
             >
               <h2 id={titleId} className="truncate text-h4 text-text">
                 {title}
@@ -136,12 +136,12 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
             </div>
 
             {/* Corps – Blanc */}
-            <div className="min-h-0 flex-1 overflow-y-auto bg-surface p-4">{children}</div>
+            <div className="min-h-0 flex-1 overflow-y-auto bg-surface px-5 py-4">{children}</div>
 
             {/* Footer – Fond clair */}
             {showFooter && (
               <div
-                className={`flex flex-wrap items-center justify-end gap-3 border-t px-4 py-3 ${CHROME} md:rounded-b-modal`}
+                className={`flex flex-wrap items-center justify-between gap-2.5 border-t px-5 py-3 ${CHROME} md:rounded-b-modal [&>:only-child]:ml-auto`}
               >
                 {footerContent}
               </div>

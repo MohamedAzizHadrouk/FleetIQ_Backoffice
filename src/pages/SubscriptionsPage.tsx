@@ -14,7 +14,6 @@ import { useSearchParams } from 'react-router-dom';
 import {
   Search,
   Edit2,
-  AlertCircle,
   AlertTriangle,
   CheckCircle2,
   Package,
@@ -36,6 +35,7 @@ import { BellMenu } from '../components/dashboard/BellMenu';
 import { DetailModal, type DetailSpec } from '../components/dashboard/DetailModal';
 import { SectionTitle } from '../components/clients/ClientsOverview';
 import { CriticalBanner, PacksOverview } from '../components/packs/PacksOverview';
+import { ResellerPacksSection } from '../components/packs/PacksResellers';
 import { PageChrome, PageShell } from '../components/shell/PageShell';
 import { Button } from '../components/ui/Button';
 import { ALERT_META, alertDetail } from '../components/packs/packsAlerts';
@@ -75,6 +75,10 @@ import {
   exportPacksListToExcel,
   exportPacksListToPdf
 } from '../utils/packTableExport';
+import { MaquettePage } from '../components/shell/MaquettePage';
+import packsMarkup from '../components/packs/maquette/markup.html?raw';
+import { mount as mountPacksMaquette } from '../components/packs/maquette/script';
+import '../components/packs/maquette/style.css';
 
 /** Pack de la page : le nom est libre à la création (« Nouveau pack ») */
 type Pack = Omit<StorePack, 'name'> & { name: string };
@@ -517,446 +521,18 @@ export function SubscriptionsPage() {
     />
   );
 
+  // Maquette validée packs (FleetAdmin-maquettes v3) : même page, mêmes données, mêmes fenêtres (Documentation et grands paragraphes retirés)
   return (
-    <PageShell
-      header={
-        <PageChrome
-          title="Gestion des Packs"
-          date={dateFr}
-          actions={
-            <>
-              <TableExportButtons
-                size="compact"
-                onExportExcel={exportPackClientsExcel}
-                onExportPdf={exportPackClientsPdf}
-                disabled={filteredClients.length === 0}
-              />
-              {canCreateEditPacks && (
-                <Button type="button" variant="primary" onClick={openCreatePackModal}>
-                  <Plus size={16} aria-hidden="true" />
-                  Nouveau pack
-                </Button>
-              )}
-            </>
-          }
-          bell={bell}
-          tools={
-            <>
-              {/* Période (≤ 1 an), « Au » = aujourd'hui, comparaison optionnelle */}
-              <div className="inline-flex flex-wrap items-center gap-0.5 rounded-control border border-border p-0.5" role="group" aria-label="Période">
-                <CalendarDays size={16} aria-hidden="true" className="mx-1.5 text-text-muted" />
-                {PERIOD_OPTIONS.map((p) => (
-                  <button
-                    key={p.key}
-                    type="button"
-                    aria-pressed={periodKind === p.key}
-                    onClick={() => {
-                      setPeriodKind(p.key);
-                      if (p.key === 'custom' && !customFrom) setCustomFrom(toIsoDate(period.from));
-                    }}
-                    className={`h-8 px-3 text-button-sm rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                      periodKind === p.key ? 'bg-primary text-text-inverse' : 'text-text hover:bg-surface-muted'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-              {periodKind === 'custom' ? (
-                <span className="inline-flex flex-wrap items-center gap-2 text-small text-text">
-                  Du
-                  <input type="date" aria-label="Début de la période" value={customFrom} max={todayIso} onChange={(e) => setCustomFrom(e.target.value)} className={dateInput} />
-                  au
-                  <input type="date" aria-label="Fin de la période" value={customTo} max={todayIso} onChange={(e) => setCustomTo(e.target.value)} className={dateInput} />
-                </span>
-              ) : (
-                <label className="inline-flex items-center gap-2 text-small text-text">
-                  <span className="font-medium">Au</span>
-                  <input type="date" value={auIso} max={todayIso} onChange={(e) => setAuIso(e.target.value || todayIso)} className={dateInput} />
-                </label>
-              )}
-              <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-              <Button type="button" variant={compareOn ? 'primary' : 'secondary'} aria-pressed={compareOn} onClick={() => setCompareOn((v) => !v)}>
-                <GitCompareArrows size={16} aria-hidden="true" />
-                Comparer
-              </Button>
-              {compareOn && (
-                <>
-                  <label className="inline-flex items-center gap-2 text-small text-text">
-                    à
-                    <select value={compareKind} onChange={(e) => setCompareKind(e.target.value as CompareKind)} aria-label="Période de comparaison" className={dateInput}>
-                      <option value="prev">Période précédente</option>
-                      <option value="year">Même période l’an dernier</option>
-                      <option value="custom">Personnalisée</option>
-                    </select>
-                  </label>
-                  {compareKind === 'custom' && (
-                    <span className="inline-flex flex-wrap items-center gap-2 text-small text-text">
-                      Du
-                      <input type="date" aria-label="Début de la comparaison" value={cmpFrom} max={todayIso} onChange={(e) => setCmpFrom(e.target.value)} className={dateInput} />
-                      au
-                      <input type="date" aria-label="Fin de la comparaison" value={cmpTo} max={todayIso} onChange={(e) => setCmpTo(e.target.value)} className={dateInput} />
-                    </span>
-                  )}
-                </>
-              )}
-              {(periodRes.error || compareRes.error) && (
-                <p className="basis-full text-mention text-text-muted" role="alert">
-                  <span className="font-medium text-danger-700">
-                    {periodRes.error || compareRes.error}
-                    {periodRes.error ? ' (30 derniers jours affichés)' : ''}
-                  </span>
-                </p>
-              )}
-            </>
-          }
-        />
-      }
-    >
-      {!bannerClosed && (
-        <CriticalBanner
-          data={data}
-          onClose={() => setBannerClosed(true)}
-          onShow={() => {
-            setAlertFilter('critique');
-            setVisibleCount(PAGE_SIZE);
-            catalogRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }}
-        />
-      )}
+    <>
+      <MaquettePage
+        slug="packs"
+        markup={packsMarkup}
+        mount={mountPacksMaquette}
+        view={''}
+        role={''}
+        actions={canCreateEditPacks ? { 'Nouveau pack': () => openCreatePackModal() } : undefined}
+      />
 
-      <PacksOverview data={data} periodLabel={periodLabel} compareLabel={compareLabel} alertFilter={alertFilter} onOpenDetail={setDetail} />
-
-      {/* Packs les plus choisis : PK-P-03 + PK-P-06 */}
-      <section aria-labelledby="pk-chosen" className="space-y-3">
-        <SectionTitle id="pk-chosen" title="Packs les plus choisis" />
-        <PacksChosenSection data={data} packs={allPacksSorted as unknown as StorePack[]} periodLabel={periodLabel} onOpenDetail={setDetail} />
-      </section>
-
-      {/* Catalogue et affectations (écran existant : packs, clients, Modifier, Paiement) */}
-      <section aria-labelledby="pk-catalog" className="space-y-3 scroll-mt-4" ref={catalogRef}>
-        <SectionTitle id="pk-catalog" title="Catalogue et affectations" />
-        <div className="space-y-4">
-          {/* Packs */}
-          <div className="bg-surface rounded-card border border-border overflow-hidden">
-            <div className="p-4 border-b border-border-subtle bg-surface-muted flex items-center justify-between gap-3 flex-wrap">
-              <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
-                <input
-                  type="text"
-                  placeholder="Rechercher un pack..."
-                  value={packSearch}
-                  onChange={(e) => setPackSearch(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-surface border border-border-strong rounded-card focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small transition-shadow"
-                />
-              </div>
-              <TableExportButtons size="compact" onExportExcel={exportPacksExcel} onExportPdf={exportPacksPdf} disabled={filteredPacks.length === 0} />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 divide-y sm:divide-y-0 divide-border-subtle">
-              {filteredPacks.map((pack) => {
-                const on = packFilter === String(pack.id);
-                const allTypes = pack.supportedEquipments.length >= equipmentTypes.length;
-                return (
-                  <div key={pack.id} className={`p-4 transition-colors duration-fast ease-standard xl:border-r last:border-r-0 border-border-subtle ${on ? 'bg-primary-50' : 'hover:bg-surface-muted'}`}>
-                    <div className="flex items-start justify-between gap-3">
-                      <button
-                        type="button"
-                        aria-pressed={on}
-                        onClick={() => {
-                          setPackFilter(on ? '' : String(pack.id));
-                          setVisibleCount(PAGE_SIZE);
-                        }}
-                        className="min-w-0 flex-1 text-left rounded-control focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-                        title="Filtrer la liste des clients sur ce pack"
-                      >
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className={`px-2.5 py-1 rounded-control text-mention font-medium ${PACK_BADGE}`}>{pack.name}</span>
-                          <span className="text-mention text-text-muted flex items-center gap-1">
-                            <ListChecks size={12} />
-                            {pack.features.length} fonctionnalité(s)
-                          </span>
-                          <span className="text-mention text-text-muted">· {fmt(clientsPerPack.get(pack.id) ?? 0)} client(s)</span>
-                        </div>
-                        <p className="text-small text-text mt-2 line-clamp-2">{pack.description || '—'}</p>
-                        <p className="text-mention text-text-muted mt-1">
-                          Équipements : {allTypes ? 'tous les types' : pack.supportedEquipments.join(', ') || 'aucun type coché'}
-                        </p>
-                      </button>
-
-                      <div className="flex items-center gap-1 shrink-0">
-                        {canCreateEditPacks && (
-                          <button
-                            onClick={() => openEditPackModal(pack)}
-                            className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
-                            title="Modifier le pack"
-                            aria-label={`Modifier le pack ${pack.name}`}
-                          >
-                            <Edit2 size={16} />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {filteredPacks.length === 0 && <div className="p-8 text-center text-text-muted text-small">Aucun pack trouvé.</div>}
-            </div>
-          </div>
-
-          {/* Clients */}
-          <div className="bg-surface rounded-card border border-border overflow-hidden min-w-0">
-            <div className="p-4 border-b border-border-subtle bg-surface-muted flex items-center gap-3 flex-wrap">
-              <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
-                <input
-                  type="text"
-                  placeholder="Rechercher un client..."
-                  value={clientSearch}
-                  onChange={(e) => {
-                    setClientSearch(e.target.value);
-                    setVisibleCount(PAGE_SIZE);
-                  }}
-                  className="w-full pl-9 pr-4 py-2 bg-surface border border-border-strong rounded-card focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small transition-shadow"
-                />
-              </div>
-              <select
-                value={packFilter}
-                onChange={(e) => {
-                  setPackFilter(e.target.value);
-                  setVisibleCount(PAGE_SIZE);
-                }}
-                aria-label="Filtrer par pack"
-                className={dateInput}
-              >
-                <option value="">Tous les packs</option>
-                {allPacksSorted.map((p) => (
-                  <option key={p.id} value={String(p.id)}>
-                    {p.name}
-                  </option>
-                ))}
-                <option value="none">Sans pack</option>
-              </select>
-            </div>
-            <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b border-border-subtle">
-              <span className="text-small text-text">
-                <b className="tabular-nums">{fmt(listClients.length)}</b> client(s)
-              </span>
-              {alertFilter && (
-                <span className="inline-flex items-center gap-1 rounded-tag border border-primary-200 bg-primary-50 px-3 py-1 text-mention text-text">
-                  À traiter : {ALERT_META[alertFilter].title(data)} ({ALERT_META[alertFilter].mockup})
-                  <button type="button" aria-label="Retirer le filtre À traiter" onClick={() => setAlertFilter(null)} className="rounded-pill p-0.5 hover:bg-primary-100">
-                    <X size={12} aria-hidden="true" />
-                  </button>
-                </span>
-              )}
-              {packFilterLabel && (
-                <span className="inline-flex items-center gap-1 rounded-tag border border-primary-200 bg-primary-50 px-3 py-1 text-mention text-text">
-                  Pack : {packFilterLabel}
-                  <button type="button" aria-label="Retirer le filtre pack" onClick={() => setPackFilter('')} className="rounded-pill p-0.5 hover:bg-primary-100">
-                    <X size={12} aria-hidden="true" />
-                  </button>
-                </span>
-              )}
-              {filterActive && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAlertFilter(null);
-                    setPackFilter('');
-                    setClientSearch('');
-                  }}
-                  className="ml-auto text-mention font-medium text-primary hover:underline"
-                >
-                  Tout afficher
-                </button>
-              )}
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-border-subtle text-text text-overline uppercase bg-surface-muted">
-                    <th className="p-3 font-medium">Client</th>
-                    <th className="p-3 font-medium">Pack</th>
-                    <th className="p-3 font-medium">Parc</th>
-                    <th className="p-3 font-medium">Expiration</th>
-                    <th className="p-3 font-medium">Statut</th>
-                    <th className="p-3 font-medium text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="text-small divide-y divide-border-subtle">
-                  {shownClients.map((pc) => {
-                    const client = pc.client;
-                    const open = expanded.has(client.id);
-                    const d = pc.daysToExpiry;
-                    return (
-                      <React.Fragment key={client.id}>
-                        <tr className="hover:bg-surface-muted transition-colors duration-fast ease-standard align-top">
-                          <td className="p-3">
-                            <div className="font-medium text-text">
-                              {client.name}{' '}
-                              <span className="text-mention font-normal text-text-muted">{pc.network === 'Tunav' ? '· Tunav' : `· via ${pc.network}`}</span>
-                            </div>
-                            <div className="text-text-muted text-mention truncate max-w-[260px]" title={client.email}>{client.email}</div>
-                          </td>
-                          <td className="p-3">
-                            {pc.packs.length > 0 ? (
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                {pc.packs.map((p) => (
-                                  <span key={p.id} className={`px-2 py-0.5 rounded-control text-mention font-medium ${PACK_BADGE}`}>
-                                    {p.name}
-                                  </span>
-                                ))}
-                              </div>
-                            ) : (
-                              <span className="text-text-muted italic text-mention">Non affecté</span>
-                            )}
-                          </td>
-                          <td className="p-3 whitespace-nowrap">
-                            <button
-                              type="button"
-                              aria-expanded={open}
-                              disabled={pc.equipments.length === 0}
-                              onClick={() =>
-                                setExpanded((prev) => {
-                                  const next = new Set(prev);
-                                  if (next.has(client.id)) next.delete(client.id);
-                                  else next.add(client.id);
-                                  return next;
-                                })
-                              }
-                              className="inline-flex items-center gap-1 rounded-control px-1.5 py-0.5 text-small text-primary hover:bg-primary-50 disabled:text-text-muted disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-                            >
-                              {fmt(pc.equipments.length)} équip. {pc.equipments.length > 0 && (open ? <ChevronDown size={14} /> : <ChevronRight size={14} />)}
-                            </button>
-                            {pc.outOfPack.length > 0 && (
-                              <span className="mt-1 flex items-center gap-1 text-mention font-medium text-warning-700" title="Type d’équipement non supporté par les packs du client (A-12)">
-                                <AlertTriangle size={12} aria-hidden="true" />
-                                {fmt(pc.outOfPack.length)} hors pack
-                              </span>
-                            )}
-                          </td>
-                          <td className="p-3 whitespace-nowrap text-text">
-                            {frDate(pc.expiry)}
-                            {pc.level === 'critique' && d != null && (
-                              <span className="ml-1.5 rounded-tag border border-danger-200 bg-danger-50 px-2 py-0.5 text-mention font-semibold text-danger-700">J-{d}</span>
-                            )}
-                            {pc.level === 'anticiper' && d != null && (
-                              <span className="ml-1.5 rounded-tag border border-warning-200 bg-warning-50 px-2 py-0.5 text-mention font-semibold text-warning-700">J-{d}</span>
-                            )}
-                            {pc.active && d != null && d < 0 && (
-                              <span className="ml-1.5 rounded-pill border border-border bg-border-subtle px-2 py-0.5 text-mention font-semibold text-text">expiré</span>
-                            )}
-                          </td>
-                          <td className="p-3">
-                            <span className={`flex items-center gap-1.5 text-mention font-medium ${pc.active ? 'text-success-700' : 'text-danger-700'}`}>
-                              <span className={`w-1.5 h-1.5 rounded-pill ${pc.active ? 'bg-success' : 'bg-danger'}`} />
-                              {pc.active ? 'Actif' : 'Bloqué'}
-                            </span>
-                          </td>
-                          <td className="p-3 text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              {canAssignPacks && (
-                                <button
-                                  onClick={() => openAssignModal(client)}
-                                  className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
-                                  title="Modifier les packs du client"
-                                  aria-label={`Modifier les packs de ${client.name}`}
-                                >
-                                  <Edit2 size={16} />
-                                </button>
-                              )}
-                              {canManagePayment && (
-                                <button
-                                  onClick={() => openPaymentModal(client)}
-                                  className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors duration-fast ease-standard"
-                                  title="Paiement : valider / bloquer"
-                                  aria-label={`Paiement de ${client.name}`}
-                                >
-                                  <CreditCard size={16} />
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                        {open && (
-                          <tr className="bg-surface-muted">
-                            <td colSpan={6} className="px-3 pb-3 pt-1">
-                              <table className="w-full text-mention text-text">
-                                <thead>
-                                  <tr className="text-left text-text-muted">
-                                    <th className="py-1 pr-3 font-medium">N° de série</th>
-                                    <th className="py-1 pr-3 font-medium">Type</th>
-                                    <th className="py-1 pr-3 font-medium">Pack</th>
-                                    <th className="py-1 pr-3 font-medium">Affecté le</th>
-                                    <th className="py-1 font-medium">Connexion</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {pc.equipments.map((e) => (
-                                    <tr key={e.eq.id} className="border-t border-border-subtle">
-                                      <td className="py-1 pr-3 font-mono">{e.eq.serial}</td>
-                                      <td className="py-1 pr-3">
-                                        {e.type}
-                                        {!e.covered && <span className="ml-1 font-medium text-warning-700">· hors pack</span>}
-                                      </td>
-                                      <td className="py-1 pr-3">{e.packId != null ? packById.get(e.packId)?.name ?? '—' : '—'}</td>
-                                      <td className="py-1 pr-3">{frDate(parseDate(e.eq.assignedAt ?? null))}</td>
-                                      <td className={`py-1 font-medium ${e.connected ? 'text-success-700' : 'text-danger-700'}`}>{lastCommLabel(e)}</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                  {listClients.length === 0 && (
-                    <tr>
-                      <td colSpan={6} className="p-8 text-center text-text-muted">
-                        Aucun client trouvé.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            {listClients.length > visibleCount && (
-              <div className="flex flex-wrap items-center justify-center gap-3 border-t border-border-subtle p-3 text-small">
-                <span className="text-text-muted">
-                  {fmt(visibleCount)} sur {fmt(listClients.length)}
-                </span>
-                <button type="button" onClick={() => setVisibleCount((n) => n + PAGE_SIZE)} className="font-medium text-primary hover:underline">
-                  Afficher 25 de plus
-                </button>
-                <button type="button" onClick={() => setVisibleCount(listClients.length)} className="font-medium text-primary hover:underline">
-                  Tout afficher
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Fonctionnalités par pack : PK-P-04 */}
-      <section aria-labelledby="pk-features" className="space-y-3">
-        <SectionTitle id="pk-features" title="Fonctionnalités par pack" />
-        <FeaturesSection data={data} packs={allPacksSorted as unknown as StorePack[]} />
-      </section>
-
-      {/* Usage et renouvellement : PK-P-05, PK-A-10 / PK-A-11 */}
-      <section aria-labelledby="pk-usage" className="space-y-3">
-        <SectionTitle id="pk-usage" title="Usage et renouvellement" />
-        <UsageSection data={data} today={today} />
-      </section>
-
-      <DetailModal detail={detail} onClose={() => setDetail(null)} canOpen={(r) => !!permissions?.routes[r]} />
-
-      {/* --- PACK CREATE/EDIT MODAL --- */}
       <Modal
         isOpen={isPackModalOpen}
         onClose={() => setIsPackModalOpen(false)}
@@ -993,9 +569,6 @@ export function SubscriptionsPage() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="text-small font-medium text-text">Types d’équipements supportés</div>
-                  <div className="text-mention text-text-muted mt-0.5">
-                    Cochez les types supportés. Les quotas seront définis dans la modale d’affectation client.
-                  </div>
                 </div>
                 <button
                   type="button"
@@ -1166,14 +739,6 @@ export function SubscriptionsPage() {
               </div>
             );
           })()}
-
-          <div className="bg-warning-50 text-warning-700 p-3 rounded-control text-small flex items-start gap-3">
-            <AlertCircle className="shrink-0 mt-0.5 text-warning-700" size={16} />
-            <p>
-              La validation du paiement met à jour l’expiration et réactive le client. Le blocage empêche l’accès
-              jusqu’à régularisation.
-            </p>
-          </div>
 
           <div>
             <label className="block text-label font-medium text-text mb-1">Nouvelle date d'expiration</label>
@@ -1409,6 +974,6 @@ export function SubscriptionsPage() {
         </div>
       </Modal>
 
-    </PageShell>
+    </>
   );
 }

@@ -22,11 +22,11 @@ export function TableExportButtons({
     <div className="flex items-center gap-2 flex-wrap shrink-0">
       <Button type="button" variant="neutral" size={btnSize} onClick={onExportExcel} disabled={disabled}>
         <FileSpreadsheet size={iconSize} aria-hidden="true" />
-        Exporter Excel
+        Excel
       </Button>
       <Button type="button" variant="neutral" size={btnSize} onClick={onExportPdf} disabled={disabled}>
         <FileText size={iconSize} aria-hidden="true" />
-        Exporter PDF
+        PDF
       </Button>
     </div>
   );
