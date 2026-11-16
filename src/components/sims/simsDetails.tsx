@@ -30,8 +30,15 @@ export type DetailCtx = {
   openFiche: (r: SimRow) => void;
 };
 
-const list = (ctx: DetailCtx, rows: SimRow[], columns?: MiniColumn[]) => (
-  <SimMiniList rows={rows} onOpen={ctx.openFiche} showPrices={ctx.showPrices} columns={columns} />
+const list = (ctx: DetailCtx, rows: SimRow[], columns?: MiniColumn[], hideOffer = false) => (
+  <SimMiniList
+    rows={rows}
+    onOpen={ctx.openFiche}
+    showPrices={ctx.showPrices}
+    columns={columns}
+    hideOffer={hideOffer}
+    initialSize={5}
+  />
 );
 
 /** PU-P-01 – Total puces */
@@ -152,7 +159,7 @@ export function offerDetail(ctx: DetailCtx, o: OfferSummary, kpiId = 'PU-P-05'):
       : 'Puces de l’offre, les non installées en premier.',
     definition: 'Par offre : installées (équipement posé) / puces de l’offre.',
     formula: showPrices ? 'Coût mensuel = puces × prix fixe par puce et par mois' : 'Non installées = puces − installées',
-    note: list(ctx, rows, showPrices ? ['price', 'status'] : ['status'])
+    note: list(ctx, rows, showPrices ? ['price', 'status'] : ['status'], true)
   };
 }
 

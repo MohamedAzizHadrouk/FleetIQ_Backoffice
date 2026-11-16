@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Plus,
   Search,
@@ -2795,7 +2795,9 @@ export function ClientsPage() {
         isOpen={isViewEquipmentModalOpen}
         onClose={() => setIsViewEquipmentModalOpen(false)}
         title="Détails de l'équipement"
-        size="lg">
+        size="lg"
+        footer={null}
+      >
         
         {equipmentToView ?
         <div className="space-y-6">
@@ -3064,11 +3066,11 @@ export function ClientsPage() {
               </div>
           }
 
-            <div className="pt-4 border-t border-border-subtle flex justify-end gap-3">
+            <div className="flex flex-wrap justify-end gap-3 -mx-4 -mb-4 mt-4 border-t border-border bg-surface-muted px-4 py-3">
               {equipmentToView.isInstalled && (
               <button
               onClick={() => setShowPositionMap(!showPositionMap)}
-              className={`px-4 py-2 text-small font-medium rounded-control transition-colors duration-fast ease-standard flex items-center gap-2 ${showPositionMap ? 'bg-primary-50 text-primary border border-primary-200' : 'bg-surface text-text border border-border hover:bg-surface-muted'}`}>
+              className={`px-4 py-2 text-small font-medium rounded-control transition-colors duration-fast ease-standard flex items-center gap-2 ${showPositionMap ? 'bg-primary-50 text-primary border border-primary-200' : 'bg-surface text-text border border-border hover:bg-white'}`}>
               
                 <MapPin size={16} />
                 {showPositionMap ? 'Masquer la position' : 'Voir position'}
@@ -3076,7 +3078,7 @@ export function ClientsPage() {
               )}
               <button
               onClick={() => setIsViewEquipmentModalOpen(false)}
-              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard">
+              className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-white transition-colors duration-fast ease-standard">
               
                 Fermer
               </button>

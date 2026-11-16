@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Interventions SAV v3 – carte FleetIQ 10 (maquette SAV-v3 · Documentation-SAV-v3 · analyse § 5.7, § 7-10).
  * - Admin TUNAV et Responsable SAV : vue équipe (SAV-S-01 … S-11, cloche S-10).
  * - Technicien SAV : une seule page utilisable sur téléphone (SAV-T-01 … T-07), sa zone et ses interventions seulement.
@@ -286,7 +286,13 @@ export function SavPage() {
         />
       )}
 
-      <Modal isOpen={!!selected} onClose={() => setSelectedId(null)} title={selected ? `${selected.id} · ${selected.type}` : ''} size="lg">
+      <Modal
+        isOpen={!!selected}
+        onClose={() => setSelectedId(null)}
+        title={selected ? `${selected.id} · ${selected.type}` : ''}
+        size="lg"
+        footer={null}
+      >
         {selected && (
           <InterventionFiche
             key={selected.id}

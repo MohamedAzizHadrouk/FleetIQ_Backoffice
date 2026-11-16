@@ -264,7 +264,7 @@ export function InterventionFiche(p: Props) {
         </div>
       )}
 
-      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2 border-t border-border-subtle">
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 -mx-4 -mb-4 mt-4 border-t border-border bg-surface-muted px-4 py-3">
         <button type="button" className={BTN_GHOST} onClick={p.onDismiss}>
           Fermer
         </button>

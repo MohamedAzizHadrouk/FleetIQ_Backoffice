@@ -143,7 +143,7 @@ export function ClientFiche({
 
   return (
     <Modal isOpen={!!info} onClose={onClose} title="Détails du client" size="xl">
-      <div className="space-y-5">
+      <div className="space-y-5 pb-1">
         {/* En-tête : type, statut, revendeur, pack, priorité */}
         <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-border">
           <div className="flex items-center gap-4">
@@ -505,15 +505,6 @@ export function ClientFiche({
           </div>
         )}
 
-        <div className="pt-4 border-t border-border-subtle flex justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex items-center h-control px-3 text-button-sm rounded-control bg-surface text-text border border-border hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-          >
-            Fermer
-          </button>
-        </div>
       </div>
     </Modal>
   );

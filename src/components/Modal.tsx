@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { FOCUS, TRANSITION } from './ui/focus';
+import { Button } from './ui/Button';
 
 interface ModalProps {
   isOpen: boolean;
@@ -10,13 +11,19 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   size?: 'md' | 'lg' | 'xl';
+  /** Pied personnalisé (boutons). Défaut : bouton Fermer. `null` = pas de pied. */
+  footer?: React.ReactNode | null;
 }
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
-/** Modale Industrial Tech – shadow-overlay, z-overlay, rounded-modal 8 px (DL § 9.17). */
-export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+/** En-tête / pied : Fond clair TUNAV (#F2F6FF) – sépare clairement du corps blanc. */
+const CHROME =
+  'bg-surface-muted border-border shrink-0';
+
+/** Modale Industrial Tech – header + footer colorés (design system TUNAV). */
+export function Modal({ isOpen, onClose, title, children, size = 'md', footer }: ModalProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
@@ -25,6 +32,15 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
     lg: 'max-w-2xl',
     xl: 'max-w-4xl'
   };
+  const showFooter = footer !== null;
+  const footerContent =
+    footer === undefined ? (
+      <Button type="button" variant="secondary" onClick={onClose}>
+        Fermer
+      </Button>
+    ) : (
+      footer
+    );
 
   useEffect(() => {
     if (!isOpen) return;
@@ -100,22 +116,36 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className={`relative w-full h-full md:h-auto md:w-[calc(100%-2rem)] ${sizeClasses[size]} max-h-[calc(100vh-2rem)] flex flex-col bg-surface rounded-none md:rounded-modal shadow-overlay outline-none`}
+            className={`relative flex h-full w-full max-h-[calc(100vh-2rem)] flex-col overflow-hidden bg-surface outline-none shadow-overlay rounded-none md:h-auto md:w-[calc(100%-2rem)] md:rounded-modal ${sizeClasses[size]}`}
           >
-            <div className="flex items-center justify-between gap-4 h-12 px-4 border-b border-border shrink-0">
-              <h2 id={titleId} className="text-h4 text-text truncate">
+            {/* Header – Fond clair */}
+            <div
+              className={`flex h-12 items-center justify-between gap-4 border-b px-4 ${CHROME} md:rounded-t-modal`}
+            >
+              <h2 id={titleId} className="truncate text-h4 text-text">
                 {title}
               </h2>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Fermer"
-                className={`flex h-control w-control items-center justify-center text-text-muted hover:text-text hover:bg-surface-muted rounded-control ${TRANSITION} ${FOCUS}`}
+                className={`flex h-control w-control items-center justify-center rounded-control text-text-muted hover:bg-surface hover:text-text ${TRANSITION} ${FOCUS}`}
               >
                 <X size={20} aria-hidden="true" />
               </button>
             </div>
-            <div className="p-4 flex-1 overflow-y-auto min-h-0">{children}</div>
+
+            {/* Corps – Blanc */}
+            <div className="min-h-0 flex-1 overflow-y-auto bg-surface p-4">{children}</div>
+
+            {/* Footer – Fond clair */}
+            {showFooter && (
+              <div
+                className={`flex flex-wrap items-center justify-end gap-3 border-t px-4 py-3 ${CHROME} md:rounded-b-modal`}
+              >
+                {footerContent}
+              </div>
+            )}
           </motion.div>
         </div>
       )}

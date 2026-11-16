@@ -13,7 +13,9 @@ import {
   Smartphone,
   HardHat,
   ClipboardList,
-  X
+  X,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
 import type { BackofficeRole, BackofficeRouteKey } from '../utils/backofficePermissions';
 import {
@@ -22,13 +24,16 @@ import {
   getBackofficePermissions
 } from '../utils/backofficePermissions';
 import { useFleetStore } from '../state/FleetStore';
-import { FOCUS_INVERSE, TRANSITION } from './ui/focus';
+import { FOCUS, TRANSITION } from './ui/focus';
 
 interface SidebarProps {
   role: BackofficeRole;
   onLogout: () => void;
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
+  /** Desktop (≥ md) : menu réduit (rail icônes) ou plein. */
+  collapsed?: boolean;
+  onToggleCollapsed?: () => void;
 }
 
 const NAV_ITEMS: { key: BackofficeRouteKey; icon: typeof LayoutDashboard; label: string }[] = [
@@ -52,10 +57,18 @@ const ROLE_META: Record<
 };
 
 /**
- * Zone A – barre latérale Industrial Tech (DL § 9.1).
- * ≥ 1024 : 240 px · 768–1023 : rail 56 px (icônes) · < 768 : tiroir.
+ * Zone A – barre latérale claire (palette TUNAV) + bascule réduire / agrandir.
+ * Fond Blanc + Fond clair, texte Anthracite, action Bleu Royal – plus confortable à l’œil
+ * que l’ancien fond anthracite plein.
  */
-export function Sidebar({ role, onLogout, mobileOpen = false, onCloseMobile }: SidebarProps) {
+export function Sidebar({
+  role,
+  onLogout,
+  mobileOpen = false,
+  onCloseMobile,
+  collapsed = false,
+  onToggleCollapsed
+}: SidebarProps) {
   const { currentUserName } = useFleetStore();
   const roleMeta = ROLE_META[role];
   const RoleIcon = roleMeta.icon;
@@ -63,58 +76,95 @@ export function Sidebar({ role, onLogout, mobileOpen = false, onCloseMobile }: S
   const navItems = NAV_ITEMS.filter((item) => routePermissions[item.key]);
   const isReseller = role === 'revendeur';
   const subtitle = isReseller ? currentUserName : roleMeta.label;
+  const rail = collapsed;
 
   return (
     <aside
       id="menu-principal"
-      className={`fixed inset-y-0 left-0 z-topbar flex flex-col bg-surface-inverse text-text-inverse overflow-y-auto overflow-x-hidden transition-transform duration-slow ease-standard
-        w-sidebar md:w-rail lg:w-sidebar
+      data-collapsed={rail ? 'true' : 'false'}
+      className={`fixed inset-y-0 left-0 z-topbar flex flex-col bg-surface text-text border-r border-border overflow-y-auto overflow-x-hidden transition-[width,transform] duration-slow ease-standard
+        ${rail ? 'md:w-rail' : 'md:w-sidebar'} w-sidebar
         md:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
-      {/* Logo */}
-      <div className="relative px-5 pt-3 pb-3.5 border-b border-white/10 md:px-0 md:flex md:justify-center lg:px-5 lg:block">
+      {/* Bande marque Bleu Royal (logo blanc) + bascule */}
+      <div
+        className={`relative flex items-center gap-2 border-b border-primary-active bg-primary text-text-inverse ${
+          rail ? 'md:flex-col md:px-1 md:py-3 px-4 py-3' : 'px-4 py-3'
+        }`}
+      >
         <button
           type="button"
           onClick={onCloseMobile}
           aria-label="Fermer le menu"
-          className={`md:hidden absolute right-2 top-2 inline-flex h-control-touch w-control-touch items-center justify-center rounded-control text-text-inverse hover:bg-surface-inverse-hover ${FOCUS_INVERSE}`}
+          className={`absolute right-2 top-2 inline-flex h-control-touch w-control-touch items-center justify-center rounded-control text-text-inverse hover:bg-primary-hover md:hidden ${FOCUS}`}
         >
           <X size={20} aria-hidden="true" />
         </button>
-        {/* Rail : symbole seul · pleine largeur : logo horizontal */}
+
+        {/* Rail desktop : symbole seul */}
         <img
           src="/brand/tunav-symbole-blanc.svg"
           alt="TUNAV"
-          className="hidden md:block lg:hidden h-6 w-6 mt-2"
+          className={`h-7 w-7 shrink-0 ${rail ? 'hidden md:block' : 'hidden'}`}
         />
-        <div className="md:hidden lg:flex lg:flex-col lg:items-start gap-1">
+
+        {/* Large : logo + sous-titre (mobile toujours ; desktop si non réduit) */}
+        <div className={`min-w-0 flex-1 flex-col gap-0.5 pr-8 md:pr-0 ${rail ? 'flex md:hidden' : 'flex'}`}>
           <img
             src="/brand/tunav-logo-horizontal-sans-signature-blanc-ui.svg"
             alt="TUNAV"
-            className="h-10 w-auto"
+            className="h-9 w-auto max-w-full"
           />
-          <span className="text-small font-semibold text-text-inverse">FleetIQ Back-office</span>
+          <span className="text-small font-semibold text-text-inverse/90">FleetIQ Back-office</span>
         </div>
+
+        {onToggleCollapsed && (
+          <button
+            type="button"
+            onClick={onToggleCollapsed}
+            aria-label={rail ? 'Agrandir le menu' : 'Réduire le menu'}
+            aria-expanded={!rail}
+            aria-controls="menu-principal"
+            title={rail ? 'Agrandir le menu' : 'Réduire le menu'}
+            className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-control text-text-inverse hover:bg-primary-hover md:inline-flex ${FOCUS}`}
+          >
+            {rail ? <PanelLeftOpen size={18} aria-hidden="true" /> : <PanelLeftClose size={18} aria-hidden="true" />}
+          </button>
+        )}
       </div>
 
       {/* Bloc de rôle – masqué en rail */}
-      <div className="m-3 md:hidden lg:block">
-        <div className="flex items-center gap-2.5 px-3 py-2 rounded-control border border-white/15">
-          <div className="h-8 w-8 rounded-control bg-primary flex items-center justify-center text-text-inverse flex-shrink-0">
+      <div className={`m-3 ${rail ? 'md:hidden' : ''}`}>
+        <div className="flex items-center gap-2.5 rounded-control border border-border bg-surface-muted px-3 py-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-primary text-text-inverse">
             <RoleIcon size={16} />
           </div>
           <div className="min-w-0">
-            <div className="text-overline uppercase text-text-inverse-muted">Connecté</div>
-            <div className="text-small text-text-inverse font-medium truncate">{roleMeta.label}</div>
+            <div className="text-overline uppercase text-text-muted">Connecté</div>
+            <div className="truncate text-small font-medium text-text">{roleMeta.label}</div>
             {isReseller && (
-              <div className="text-mention text-text-inverse-muted font-medium truncate">{subtitle}</div>
+              <div className="truncate text-mention font-medium text-text-muted">{subtitle}</div>
             )}
           </div>
         </div>
       </div>
 
-      <nav aria-label="Menu principal" className="flex-1 py-2 px-3 md:px-1 lg:px-3 flex flex-col gap-0.5">
-        <div className="text-overline uppercase text-text-inverse-muted mb-2 px-3 md:hidden lg:block">Menu</div>
+      {/* Rail : pastille rôle seule */}
+      {rail && (
+        <div className="hidden md:flex justify-center py-2" title={roleMeta.label}>
+          <div className="flex h-9 w-9 items-center justify-center rounded-control bg-primary-50 text-primary">
+            <RoleIcon size={18} aria-hidden="true" />
+          </div>
+        </div>
+      )}
+
+      <nav
+        aria-label="Menu principal"
+        className={`flex flex-1 flex-col gap-0.5 py-2 ${rail ? 'md:px-1.5' : 'px-3'}`}
+      >
+        <div className={`mb-2 px-3 text-overline uppercase text-text-muted ${rail ? 'md:hidden' : ''}`}>
+          Menu
+        </div>
         {navItems.map((item) => (
           <NavLink
             key={item.key}
@@ -122,29 +172,33 @@ export function Sidebar({ role, onLogout, mobileOpen = false, onCloseMobile }: S
             title={item.label}
             aria-label={item.label}
             className={({ isActive }) =>
-              `relative flex items-center gap-3 h-11 md:h-11 md:justify-center lg:justify-start lg:h-10 px-3 md:px-0 lg:px-3 rounded-control text-label ${TRANSITION} ${FOCUS_INVERSE} ${
+              `relative flex items-center gap-3 rounded-control text-label ${TRANSITION} ${FOCUS} ${
+                rail ? 'md:h-11 md:justify-center md:px-0' : 'h-10 px-3'
+              } h-11 px-3 md:h-10 ${
                 isActive
-                  ? 'bg-primary text-text-inverse before:absolute before:-left-3 md:before:left-0 before:inset-y-0 before:w-[3px] before:bg-accent'
-                  : 'text-text-inverse-muted hover:bg-surface-inverse-hover hover:text-text-inverse'
+                  ? 'bg-primary-50 font-medium text-primary before:absolute before:inset-y-1 before:left-0 before:w-[3px] before:rounded-r before:bg-accent'
+                  : 'text-text-muted hover:bg-surface-muted hover:text-text'
               }`
             }
           >
             <item.icon size={20} aria-hidden="true" className="shrink-0" />
-            <span className="md:hidden lg:inline truncate">{item.label}</span>
+            <span className={`truncate ${rail ? 'md:hidden' : ''}`}>{item.label}</span>
           </NavLink>
         ))}
       </nav>
 
-      <div className="p-3 md:p-1 lg:p-3 border-t border-white/10">
+      <div className={`border-t border-border ${rail ? 'md:p-1.5' : 'p-3'} p-3`}>
         <button
           type="button"
           onClick={onLogout}
           title="Déconnexion"
           aria-label="Déconnexion"
-          className={`flex items-center gap-3 h-11 md:h-11 md:justify-center lg:justify-start lg:h-10 px-3 md:px-0 lg:px-3 rounded-control text-label text-text-inverse-muted hover:bg-surface-inverse-hover hover:text-text-inverse w-full ${TRANSITION} ${FOCUS_INVERSE}`}
+          className={`flex w-full items-center gap-3 rounded-control text-label text-text-muted hover:bg-danger-50 hover:text-danger ${TRANSITION} ${FOCUS} ${
+            rail ? 'md:h-11 md:justify-center md:px-0' : 'h-10 px-3'
+          } h-11 px-3`}
         >
           <LogOut size={20} aria-hidden="true" className="shrink-0" />
-          <span className="md:hidden lg:inline">Déconnexion</span>
+          <span className={rail ? 'md:hidden' : ''}>Déconnexion</span>
         </button>
       </div>
     </aside>

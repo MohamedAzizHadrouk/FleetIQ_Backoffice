@@ -1096,6 +1096,34 @@ export function EquipmentsPage() {
         }}
         title={`Fiche équipement${equipmentToView ? ` · ${equipmentToView.serial}` : ''}`}
         size="lg"
+        footer={
+          <>
+            {equipmentToView?.isInstalled && (
+              <button
+                type="button"
+                onClick={() => setShowPositionMap(!showPositionMap)}
+                className={`inline-flex items-center gap-2 h-control px-3 text-button-sm font-medium rounded-control transition-colors duration-fast ease-standard ${
+                  showPositionMap
+                    ? 'bg-primary-50 text-primary border border-primary-200'
+                    : 'bg-surface text-text border border-border hover:bg-white'
+                }`}
+              >
+                <MapPin size={16} />
+                {showPositionMap ? 'Masquer la position' : 'Voir position'}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                setIsDetailsModalOpen(false);
+                setShowPositionMap(false);
+              }}
+              className="inline-flex items-center h-control px-3 text-button-sm font-medium rounded-control bg-surface text-text border border-border hover:bg-white transition-colors duration-fast ease-standard"
+            >
+              Fermer
+            </button>
+          </>
+        }
       >
         {equipmentToView ? (
           <div className="space-y-6">
@@ -1370,31 +1398,6 @@ export function EquipmentsPage() {
               );
             })()}
 
-            {/* Footer actions */}
-            <div className="pt-4 border-t border-border-subtle flex justify-end gap-3">
-              {equipmentToView.isInstalled && (
-              <button
-                onClick={() => setShowPositionMap(!showPositionMap)}
-                className={`px-4 py-2 text-small font-medium rounded-control transition-colors duration-fast ease-standard flex items-center gap-2 ${
-                  showPositionMap
-                    ? 'bg-primary-50 text-primary border border-primary-200'
-                    : 'bg-surface text-text border border-border hover:bg-surface-muted'
-                }`}
-              >
-                <MapPin size={16} />
-                {showPositionMap ? 'Masquer la position' : 'Voir position'}
-              </button>
-              )}
-              <button
-                onClick={() => {
-                  setIsDetailsModalOpen(false);
-                  setShowPositionMap(false);
-                }}
-                className="px-4 py-2 text-small font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
-              >
-                Fermer
-              </button>
-            </div>
           </div>
         ) : (
           <div className="text-small text-text-muted">—</div>
