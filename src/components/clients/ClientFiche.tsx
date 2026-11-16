@@ -41,6 +41,7 @@ const TABS: Array<{ key: FicheTab; label: string }> = [
   { key: 'informations', label: 'Informations' }
 ];
 
+
 type Props = {
   info: ClientInfo | null;
   profile?: ClientProfile;
@@ -262,8 +263,10 @@ export function ClientFiche({
                   <ul className="space-y-2">
                     {info.reasons.map((r, i) => (
                       <li key={i} className="rounded-control border border-border-subtle p-2.5 text-small">
-                        <span className={`mr-2 inline-flex h-6 px-2 rounded-tag border text-mention font-medium ${PRIORITY_CLS[r.level]}`}>{r.level}</span>
-                        <span className="font-medium text-text">{r.reason}</span>
+                        <span className="mr-2 inline-block align-middle">
+                          <StatusTagFromLabel label={r.level} />
+                        </span>
+                        <span className="font-medium text-text align-middle">{r.reason}</span>
                         <div className="text-mention text-text-muted mt-1">→ {r.action}</div>
                       </li>
                     ))}

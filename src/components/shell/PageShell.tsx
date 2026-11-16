@@ -31,7 +31,7 @@ export function PageShell({
       {topBar}
       {pageHeader}
       {toolbar}
-      <div className="flex-1 min-w-0 p-4 md:p-6 max-w-content w-full space-y-8">{children}</div>
+      <div className="flex-1 min-w-0 p-4 md:p-6 max-w-content w-full space-y-6">{children}</div>
     </div>
   );
 }

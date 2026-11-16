@@ -1,7 +1,7 @@
 ﻿import React from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Calendar, Filter, Search, SlidersHorizontal, X } from 'lucide-react';
 import { PeriodFilter, PeriodKey } from './PeriodFilter';
+import { FOCUS } from './ui/focus';
 
 type Props = {
   searchQuery: string;
@@ -188,9 +188,9 @@ export function ClientsFilterBar({
               type="button"
               onClick={onClearAlert}
               aria-label={`Retirer le filtre ${alertLabel}`}
-              className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-control text-info-700 hover:bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              className={`ml-auto inline-flex h-control-sm w-control-sm items-center justify-center rounded-control text-info-700 hover:bg-surface ${FOCUS}`}
             >
-              <X size={12} aria-hidden="true" />
+              <X size={14} aria-hidden="true" />
             </button>
           )}
         </div>
@@ -225,27 +225,18 @@ export function ClientsFilterBar({
             </span>
           )}
         </div>
-        <AnimatePresence>
-          {expiryFilterEnabled && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden">
-              <div className="mt-3 pt-3 border-t border-border-subtle">
-                <PeriodFilter
-                  value={periodFilter}
-                  onChange={onPeriodChange}
-                  startDate={periodStart}
-                  endDate={periodEnd}
-                  onStartDateChange={onPeriodStartChange}
-                  onEndDateChange={onPeriodEndChange}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {expiryFilterEnabled && (
+          <div className="mt-3 pt-3 border-t border-border-subtle">
+            <PeriodFilter
+              value={periodFilter}
+              onChange={onPeriodChange}
+              startDate={periodStart}
+              endDate={periodEnd}
+              onStartDateChange={onPeriodStartChange}
+              onEndDateChange={onPeriodEndChange}
+            />
+          </div>
+        )}
         {!expiryFilterEnabled && (
           <p className="mt-2 text-mention text-text-muted">
             Toutes les dates d&apos;expiration sont affichées. Activez le filtre pour restreindre la liste.

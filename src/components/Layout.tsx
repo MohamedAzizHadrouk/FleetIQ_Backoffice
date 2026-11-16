@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { Sidebar } from './Sidebar';
-import { motion } from 'framer-motion';
 import type { BackofficeRole } from '../utils/backofficePermissions';
 
 interface LayoutProps {
@@ -14,6 +13,7 @@ interface LayoutProps {
  * Coque Industrial Tech – zone A (sidebar / rail / tiroir) + colonne contenu (B–E via PageShell).
  * < 768 px : barre anthracite (logo + menu) = topbar mobile (DL § 9.2).
  * 768–1023 : rail 56 px · ≥ 1024 : sidebar 240 px.
+ * Pas d’animation d’entrée de page (DL § 11).
  */
 export function Layout({ role, onLogout }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -56,13 +56,7 @@ export function Layout({ role, onLogout }: LayoutProps) {
       {/* Padding de page : les pages migrées (PageShell) gèrent B–E en pleine largeur ;
           les autres gardent la marge via .fiq-page (appliquée dans chaque page ou ici en secours). */}
       <main className="flex-1 min-w-0 md:ml-rail lg:ml-sidebar [&:has(.fiq-shell)]:p-0 p-4 md:p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.16, ease: [0.2, 0, 0, 1] }}
-        >
-          <Outlet />
-        </motion.div>
+        <Outlet />
       </main>
     </div>
   );

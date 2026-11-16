@@ -69,7 +69,7 @@ const ROLES: RoleDefinition[] = [
 const FOCUS =
   'focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface';
 const FIELD =
-  'block w-full h-11 rounded-control bg-surface border border-border-strong text-body md:text-small text-text placeholder:text-text-muted hover:border-text transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25';
+  'block w-full h-control-touch rounded-control bg-surface border border-border-strong text-body md:text-small text-text placeholder:text-text-muted hover:border-text transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25';
 
 export interface LoginContext {
   role: BackofficeRole;

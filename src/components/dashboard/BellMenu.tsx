@@ -58,7 +58,7 @@ export function BellMenu({ items, open, onToggle, onOpenItem, canOpen }: Props) 
         aria-label={`À traiter : ${items.length} sujet(s), dont ${urgent} urgent(s)`}
         className={`relative inline-flex h-control w-control items-center justify-center rounded-control border border-border-strong bg-surface text-text hover:bg-surface-muted ${TRANSITION} ${FOCUS}`}
       >
-        <Bell size={18} aria-hidden="true" />
+        <Bell size={16} aria-hidden="true" />
         <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-pill bg-danger text-text-inverse text-mention font-semibold leading-[18px] text-center">
           {items.length}
         </span>

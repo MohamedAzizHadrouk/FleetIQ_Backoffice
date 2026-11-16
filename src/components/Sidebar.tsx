@@ -122,7 +122,7 @@ export function Sidebar({ role, onLogout, mobileOpen = false, onCloseMobile }: S
             title={item.label}
             aria-label={item.label}
             className={({ isActive }) =>
-              `relative flex items-center gap-3 h-10 md:h-11 md:justify-center lg:justify-start lg:h-10 px-3 md:px-0 lg:px-3 rounded-control text-label ${TRANSITION} ${FOCUS_INVERSE} ${
+              `relative flex items-center gap-3 h-11 md:h-11 md:justify-center lg:justify-start lg:h-10 px-3 md:px-0 lg:px-3 rounded-control text-label ${TRANSITION} ${FOCUS_INVERSE} ${
                 isActive
                   ? 'bg-primary text-text-inverse before:absolute before:-left-3 md:before:left-0 before:inset-y-0 before:w-[3px] before:bg-accent'
                   : 'text-text-inverse-muted hover:bg-surface-inverse-hover hover:text-text-inverse'
@@ -141,7 +141,7 @@ export function Sidebar({ role, onLogout, mobileOpen = false, onCloseMobile }: S
           onClick={onLogout}
           title="Déconnexion"
           aria-label="Déconnexion"
-          className={`flex items-center gap-3 h-10 md:h-11 md:justify-center lg:justify-start lg:h-10 px-3 md:px-0 lg:px-3 rounded-control text-label text-text-inverse-muted hover:bg-surface-inverse-hover hover:text-text-inverse w-full ${TRANSITION} ${FOCUS_INVERSE}`}
+          className={`flex items-center gap-3 h-11 md:h-11 md:justify-center lg:justify-start lg:h-10 px-3 md:px-0 lg:px-3 rounded-control text-label text-text-inverse-muted hover:bg-surface-inverse-hover hover:text-text-inverse w-full ${TRANSITION} ${FOCUS_INVERSE}`}
         >
           <LogOut size={20} aria-hidden="true" className="shrink-0" />
           <span className="md:hidden lg:inline">Déconnexion</span>
