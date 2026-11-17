@@ -353,6 +353,7 @@ export function ClientsPage() {
     setInterventions,
     mockToday,
     vehicles: storeVehicles,
+    setVehicles,
     packs,
     userConnections,
     offerChanges,
@@ -656,6 +657,10 @@ export function ClientsPage() {
     const clientName = clientEquipmentToInstall?.client;
     if (!clientName) return [];
     const plates = new Set<string>();
+    const client = storeClients.find((c) => c.name === clientName);
+    for (const vehicle of storeVehicles) {
+      if (vehicle.clientId === client?.id && vehicle.plate.trim()) plates.add(vehicle.plate.trim());
+    }
     for (const e of equipments) {
       if (e.client !== clientName) continue;
       const plate = typeof e.car === 'string' ? e.car.trim() : '';
@@ -663,7 +668,7 @@ export function ClientsPage() {
       plates.add(plate);
     }
     return Array.from(plates).sort((a, b) => a.localeCompare(b));
-  }, [equipments, clientEquipmentToInstall?.client]);
+  }, [equipments, storeVehicles, storeClients, clientEquipmentToInstall?.client]);
 
   const openClientEquipmentInstall = (eq: FleetEquipment) => {
     const c = storeClients.find((x) => x.name === eq.client);
@@ -687,9 +692,56 @@ export function ClientsPage() {
       setClientInstallError('Veuillez saisir une immatriculation.');
       return;
     }
+    const client = storeClients.find((c) => c.name === clientEquipmentToInstall.client);
+    if (!client) {
+      setClientInstallError('Client introuvable pour cet équipement.');
+      return;
+    }
+    const matchingVehicle = storeVehicles.find(
+      (v) => v.plate.trim().toLocaleUpperCase() === plate.toLocaleUpperCase()
+    );
+    if (matchingVehicle && matchingVehicle.clientId !== client.id) {
+      setClientInstallError('Cette immatriculation appartient déjà à un autre client.');
+      return;
+    }
+    if (
+      matchingVehicle?.isInstalled &&
+      matchingVehicle.equipment !== '-' &&
+      matchingVehicle.equipment !== clientEquipmentToInstall.serial
+    ) {
+      setClientInstallError('Ce véhicule possède déjà un autre équipement installé.');
+      return;
+    }
     const eqId = clientEquipmentToInstall.id;
     const selectedSim =
       clientInstallSimId != null ? simCards.find((s) => s.id === clientInstallSimId) : undefined;
+    if (!selectedSim?.iccid?.trim() || !clientInstallAvailableSims.some((s) => s.id === selectedSim.id)) {
+      setClientInstallError('Veuillez sélectionner une carte SIM avec un ICCID valide.');
+      return;
+    }
+    setVehicles((prev) => {
+      const existing = prev.find(
+        (v) => v.clientId === client.id && v.plate.trim().toLocaleUpperCase() === plate.toLocaleUpperCase()
+      );
+      if (existing) {
+        return prev.map((v) =>
+          v.id === existing.id
+            ? { ...v, plate, equipment: clientEquipmentToInstall.serial, isInstalled: true }
+            : v
+        );
+      }
+      return [
+        ...prev,
+        {
+          id: Math.max(0, ...prev.map((v) => v.id)) + 1,
+          clientId: client.id,
+          plate,
+          equipment: clientEquipmentToInstall.serial,
+          isInstalled: true,
+          expiry: client.expiry
+        }
+      ];
+    });
     setEquipments((prev) =>
       prev.map((e) =>
         e.id === eqId
@@ -781,6 +833,13 @@ export function ClientsPage() {
   const uninstallClientEquipment = (eq: FleetEquipment) => {
     setEquipments((prev) =>
       prev.map((e) => (e.id === eq.id ? { ...e, isInstalled: false, car: 'Unassigned' } : e))
+    );
+    setVehicles((prev) =>
+      prev.map((v) =>
+        v.equipment === eq.serial && v.clientId === storeClients.find((c) => c.name === eq.client)?.id
+          ? { ...v, equipment: '-', isInstalled: false }
+          : v
+      )
     );
   };
   const toggleVehicleStatus = (vehicleId: number, status: boolean) => {
@@ -1215,7 +1274,28 @@ export function ClientsPage() {
         mount={mountClientsMaquette}
         view={maquetteView}
         role={maquetteRole}
-        actions={permissions?.clients.canAddEdit ? { 'Ajouter un client': () => openAddEditModal() } : undefined}
+        actions={{
+          ...(permissions?.clients.canAddEdit ? {
+            'Ajouter un client': () => openAddEditModal(),
+            'client-edit': (name?: string) => {
+              const client = visibleClients.find((item) => item.name === name);
+              if (client) openAddEditModal(client);
+              return Boolean(client);
+            }
+          } : {}),
+          'client-equipment': (name?: string) => {
+            const client = visibleClients.find((item) => item.name === name);
+            if (client) openClientEquipmentsModal(client);
+            return Boolean(client);
+          },
+          ...(canManagePayment ? {
+            'client-payment': (name?: string) => {
+              const client = visibleClients.find((item) => item.name === name);
+              if (client) openPaymentModal(client);
+              return Boolean(client);
+            }
+          } : {})
+        }}
       />
 
       {/* --- 1. MULTI-STEP ADD/EDIT MODAL --- */}

@@ -103,6 +103,13 @@ function formatPrice(value: number) {
   return formatTnd(value);
 }
 
+function formatMonthlyData(offer: SimOffer): string | null {
+  if (offer.dataQuotaMB === null) return 'Data illimitée';
+  if (offer.dataQuotaMB === undefined) return null;
+  const gb = offer.dataQuotaMB / 1024;
+  return Number.isInteger(gb) ? `${gb} Go/mois` : `${offer.dataQuotaMB} Mo/mois`;
+}
+
 const PERIOD_PARAM: Record<string, PeriodKind> = { '7j': '7j', '30j': '30j', mois: 'mois', annee: 'annee' };
 
 export function SimsPage() {
@@ -266,11 +273,19 @@ export function SimsPage() {
     description: string;
     operator: string;
     pricePerSim: number;
+    dataQuotaMB: number | null | undefined;
+    monthlySmsQuota: number | null;
+    validityDays: number | null;
+    isActive: boolean;
   }>({
     name: '',
     description: '',
     operator: '',
-    pricePerSim: 0
+    pricePerSim: 0,
+    dataQuotaMB: undefined,
+    monthlySmsQuota: null,
+    validityDays: null,
+    isActive: true
   });
   const [offerError, setOfferError] = useState<string | null>(null);
   const [isOffersListOpen, setIsOffersListOpen] = useState(false);
@@ -372,7 +387,10 @@ export function SimsPage() {
 
   const openCreateOffer = () => {
     setOfferEditingId(null);
-    setOfferForm({ name: '', description: '', operator: '', pricePerSim: 0 });
+    setOfferForm({
+      name: '', description: '', operator: '', pricePerSim: 0,
+      dataQuotaMB: undefined, monthlySmsQuota: null, validityDays: null, isActive: true
+    });
     setOfferError(null);
     setIsOfferModalOpen(true);
   };
@@ -383,7 +401,11 @@ export function SimsPage() {
       name: offer.name,
       description: offer.description,
       operator: offer.operator,
-      pricePerSim: offer.pricePerSim
+      pricePerSim: offer.pricePerSim,
+      dataQuotaMB: offer.dataQuotaMB,
+      monthlySmsQuota: offer.monthlySmsQuota ?? null,
+      validityDays: offer.validityDays ?? null,
+      isActive: offer.isActive !== false
     });
     setOfferError(null);
     setIsOfferModalOpen(true);
@@ -402,6 +424,18 @@ export function SimsPage() {
       setOfferError('Le prix par puce doit être un nombre positif.');
       return;
     }
+    if (typeof offerForm.dataQuotaMB === 'number' && (!Number.isInteger(offerForm.dataQuotaMB) || offerForm.dataQuotaMB < 0)) {
+      setOfferError('Le forfait data mensuel doit être un nombre entier positif.');
+      return;
+    }
+    if (offerForm.monthlySmsQuota != null && (!Number.isInteger(offerForm.monthlySmsQuota) || offerForm.monthlySmsQuota < 0)) {
+      setOfferError('Le nombre de SMS mensuels doit être un entier positif.');
+      return;
+    }
+    if (offerForm.validityDays != null && (!Number.isInteger(offerForm.validityDays) || offerForm.validityDays < 0)) {
+      setOfferError('La validité doit être un nombre entier de jours positif.');
+      return;
+    }
     setSimOffers((prev) => {
       if (offerEditingId === null) {
         const nextId = prev.length ? Math.max(...prev.map((o) => o.id)) + 1 : 1;
@@ -412,7 +446,11 @@ export function SimsPage() {
             name: offerForm.name.trim(),
             description: offerForm.description.trim(),
             operator: offerForm.operator.trim(),
-            pricePerSim: Number(offerForm.pricePerSim)
+            pricePerSim: Number(offerForm.pricePerSim),
+            dataQuotaMB: offerForm.dataQuotaMB,
+            monthlySmsQuota: offerForm.monthlySmsQuota,
+            validityDays: offerForm.validityDays,
+            isActive: offerForm.isActive
           }
         ];
       }
@@ -423,7 +461,11 @@ export function SimsPage() {
               name: offerForm.name.trim(),
               description: offerForm.description.trim(),
               operator: offerForm.operator.trim(),
-              pricePerSim: Number(offerForm.pricePerSim)
+              pricePerSim: Number(offerForm.pricePerSim),
+              dataQuotaMB: offerForm.dataQuotaMB,
+              monthlySmsQuota: offerForm.monthlySmsQuota,
+              validityDays: offerForm.validityDays,
+              isActive: offerForm.isActive
             }
           : o
       );
@@ -791,11 +833,23 @@ export function SimsPage() {
                         {offer.operator}
                       </span>
                       <span className="text-mention font-medium text-text">{formatPrice(offer.pricePerSim)} / puce</span>
+                      {offer.isActive === false && (
+                        <span className="text-mention font-medium text-danger-700">Inactive</span>
+                      )}
                       <span className="text-mention text-text-muted">
                         {usage} puce{usage > 1 ? 's' : ''} associée{usage > 1 ? 's' : ''}
                       </span>
                     </div>
                     <p className="text-small text-text mt-1.5">{offer.description || '—'}</p>
+                    {(formatMonthlyData(offer) || offer.monthlySmsQuota != null || offer.validityDays != null) && (
+                      <p className="text-mention text-text-muted mt-1">
+                        {[
+                          formatMonthlyData(offer),
+                          offer.monthlySmsQuota != null ? `${offer.monthlySmsQuota} SMS/mois` : null,
+                          offer.validityDays != null ? `${offer.validityDays} jours de validité` : null
+                        ].filter(Boolean).join(' · ')}
+                      </p>
+                    )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <button
@@ -873,6 +927,72 @@ export function SimsPage() {
               onChange={(e) => setOfferForm((f) => ({ ...f, pricePerSim: Number(e.target.value) }))}
               className="w-full px-3 py-2 border border-border-strong rounded-card focus-visible:ring-3 focus-visible:ring-focus focus-visible:border-transparent text-small transition-shadow"
             />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label htmlFor="offer-data-quota" className="block text-label font-medium text-text mb-1">Data mensuelle (Mo)</label>
+              <input
+                id="offer-data-quota"
+                type="number"
+                min={0}
+                step={1}
+                value={typeof offerForm.dataQuotaMB === 'number' ? offerForm.dataQuotaMB : ''}
+                disabled={offerForm.dataQuotaMB === null}
+                onChange={(e) => setOfferForm((f) => ({
+                  ...f, dataQuotaMB: e.target.value === '' ? undefined : Number(e.target.value)
+                }))}
+                className="w-full px-3 py-2 border border-border-strong rounded-card focus-visible:ring-3 focus-visible:ring-focus focus-visible:border-transparent text-small disabled:bg-surface-muted"
+              />
+            </div>
+            <div>
+              <label htmlFor="offer-sms-quota" className="block text-label font-medium text-text mb-1">SMS / mois</label>
+              <input
+                id="offer-sms-quota"
+                type="number"
+                min={0}
+                step={1}
+                value={offerForm.monthlySmsQuota ?? ''}
+                onChange={(e) => setOfferForm((f) => ({
+                  ...f, monthlySmsQuota: e.target.value === '' ? null : Number(e.target.value)
+                }))}
+                className="w-full px-3 py-2 border border-border-strong rounded-card focus-visible:ring-3 focus-visible:ring-focus focus-visible:border-transparent text-small"
+              />
+            </div>
+            <div>
+              <label htmlFor="offer-validity" className="block text-label font-medium text-text mb-1">Validité (jours)</label>
+              <input
+                id="offer-validity"
+                type="number"
+                min={0}
+                step={1}
+                value={offerForm.validityDays ?? ''}
+                onChange={(e) => setOfferForm((f) => ({
+                  ...f, validityDays: e.target.value === '' ? null : Number(e.target.value)
+                }))}
+                className="w-full px-3 py-2 border border-border-strong rounded-card focus-visible:ring-3 focus-visible:ring-focus focus-visible:border-transparent text-small"
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <label className="inline-flex items-center gap-2 text-small text-text">
+              <input
+                type="checkbox"
+                checked={offerForm.dataQuotaMB === null}
+                onChange={(e) => setOfferForm((f) => ({ ...f, dataQuotaMB: e.target.checked ? null : undefined }))}
+                className="h-4 w-4 accent-primary"
+              />
+              Data illimitée
+            </label>
+            <label className="inline-flex items-center gap-2 text-small text-text">
+              <input
+                type="checkbox"
+                checked={offerForm.isActive}
+                onChange={(e) => setOfferForm((f) => ({ ...f, isActive: e.target.checked }))}
+                className="h-4 w-4 accent-primary"
+              />
+              Offre active
+            </label>
           </div>
 
           {offerError && (

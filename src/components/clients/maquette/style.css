@@ -73,14 +73,16 @@
 .mq-clients .al .d{font-size:12px;color:var(--muted)}
 .mq-clients .al .who{font-size:12px;color:var(--ink2);margin-top:6px;min-height:18px}
 .mq-clients .al .ref{position:absolute;right:14px;bottom:10px;font-size:10px;color:var(--faint);font-family:var(--mono)}
-.mq-clients .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mq-clients .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
 .mq-clients .panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 20px}
 .mq-clients .panel h3{margin:0;font-size:14px;font-weight:600}
 .mq-clients .panel .sub{font-size:12px;color:var(--muted);margin:2px 0 14px}
-.mq-clients .bars .b{display:grid;grid-template-columns:130px 1fr 112px;align-items:center;gap:10px;margin:9px 0;font-size:13px}
+.mq-clients .bars .b{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px;row-gap:7px;margin:10px 0;font-size:13px;min-width:0}
+.mq-clients .bars .b > span:first-child{min-width:0;overflow-wrap:anywhere}
+.mq-clients .bars .b > .track{grid-column:1/-1;grid-row:2;width:100%;min-width:0}
 .mq-clients .bars .track{height:12px;background:var(--line2);border-radius:4px;overflow:hidden;display:flex}
 .mq-clients .bars .track i{display:block;height:100%}
-.mq-clients .bars .num{font-family:var(--mono);font-size:12px;color:var(--ink2);text-align:right;white-space:nowrap}
+.mq-clients .bars .num{font-family:var(--mono);font-size:12px;color:var(--ink2);text-align:right;white-space:normal;overflow-wrap:anywhere;max-width:100%}
 .mq-clients .dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:middle}
 .mq-clients .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
 .mq-clients .grid4.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -256,7 +258,8 @@
 @media (max-width:900px){.mq-clients .grid4.alerts.g2{grid-template-columns:1fr}}
 .mq-clients .bars .b.clk{cursor:pointer;border-radius:6px;padding:2px 4px;margin:7px -4px}
 .mq-clients .bars .b.clk:hover{background:#F8FBFF}
-.mq-clients #packBars .b{grid-template-columns:140px 1fr 160px}
+.mq-clients .bars .b.clk:focus-visible{outline:2px solid var(--blue);outline-offset:2px;background:#F8FBFF}
+.mq-clients #packBars .b{grid-template-columns:minmax(0,1fr) auto}
 .mq-clients .bars .track.pbar1{height:14px}
 .mq-clients .pks{display:inline-flex;flex-direction:column;gap:4px;align-items:flex-start}
 .mq-clients .pk-n{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--muted);margin-left:6px;padding-left:6px;border-left:1px solid var(--line)}
@@ -352,8 +355,11 @@
 .mq-clients .st.off i{background:var(--red)}
 .mq-clients .st.warn{color:#B45309}
 .mq-clients .st.warn i{background:#D97706}
-.mq-clients .acts{display:flex;gap:4px;justify-content:flex-end;color:var(--faint)}
-.mq-clients .acts svg{width:16px;height:16px;margin:0 4px}
+.mq-clients .acts{display:flex;gap:4px;justify-content:flex-end;color:var(--ink2)}
+.mq-clients .acts button{display:grid;place-items:center;min-width:32px;min-height:32px;padding:5px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink2);cursor:pointer}
+.mq-clients .acts button:hover{color:var(--blue);border-color:var(--line);background:var(--blue-bg)}
+.mq-clients .acts button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.mq-clients .acts svg{width:16px;height:16px}
 .mq-clients tr.det td{background:#f8fafc;padding:0 16px 16px}
 .mq-clients .det-in{background:#fff;border:1px solid var(--line);border-radius:8px;margin-top:4px;overflow:hidden}
 .mq-clients .det-in .h{padding:10px 14px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line2);display:flex;gap:16px;flex-wrap:wrap}
@@ -425,7 +431,7 @@
 .mq-clients .grid4,.mq-clients .grid2,.mq-clients .schema{grid-template-columns:1fr}
 .mq-clients .fgrid{grid-template-columns:1fr}
 .mq-clients .kpi .kb{grid-template-columns:1fr}
-.mq-clients .bars .b{grid-template-columns:90px 1fr 80px}
+.mq-clients .bars .b{grid-template-columns:minmax(0,1fr) auto}
 .mq-clients .asof{display:none}}
 .mq-clients{
   --page:#F1F5F9; --line:#E2E8F0; --line2:#F1F5F9;

@@ -6,7 +6,8 @@
  * - Aucun prix sur cette page.
  */
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { CalendarDays, GitCompareArrows, Settings } from 'lucide-react';
+import { Building2, CalendarDays, GitCompareArrows, Server, Settings, UserX, Users, WifiOff } from 'lucide-react';
+import { StatCard } from '../components/StatCard';
 import { Modal } from '../components/Modal';
 import { TableExportButtons } from '../components/TableExportButtons';
 import { BarChart } from '../components/charts';
@@ -64,6 +65,44 @@ export function DashboardPage() {
   const [detail, setDetail] = useState<DetailSpec | null>(null);
   const [thresholdOpen, setThresholdOpen] = useState(false);
   const [thresholdDraft, setThresholdDraft] = useState('');
+  const [selectedReseller, setSelectedReseller] = useState('');
+
+  const resellerOptions = useMemo(
+    () => Array.from(new Set(store.clients.filter((c) => c.type === 'Revendeur').map((c) => c.name))).sort((a, b) => a.localeCompare(b, 'fr')),
+    [store.clients]
+  );
+  const diagnosticNow = useMemo(() => {
+    const end = new Date(asOf);
+    end.setHours(23, 59, 59, 999);
+    return Math.min(end.getTime(), Date.now());
+  }, [asOfIso, asOf]);
+  const diagnostic = useMemo(() => {
+    const cutoff = diagnosticNow - disconnectThresholdHours * 60 * 60 * 1000;
+    const buildScope = (reseller: string | null) => {
+      const clients = store.clients.filter((c) => c.type === 'Simple' && !c.name.endsWith('_Stock') && (!reseller || c.reseller === reseller));
+      const equipment = store.equipments.filter((e) => e.isInstalled && !e.client.endsWith('_Stock') && (!reseller || e.reseller === reseller));
+      const disconnectedClients = clients.filter((c) => {
+        const last = Math.max(0, ...store.userConnections.filter((u) => u.clientId === c.id && Date.parse(u.date) <= diagnosticNow).map((u) => Date.parse(u.date)));
+        const created = c.createdAt ? Date.parse(c.createdAt) : 0;
+        return (last || created) <= cutoff;
+      });
+      const disconnectedEquipment = equipment.filter((e) => !e.lastCommunication || Date.parse(e.lastCommunication) <= cutoff);
+      return { clients, equipment, disconnectedClients, disconnectedEquipment };
+    };
+    return { network: buildScope(null), reseller: buildScope(isReseller ? currentUserName : selectedReseller) };
+  }, [store.clients, store.equipments, store.userConnections, disconnectThresholdHours, diagnosticNow, isReseller, currentUserName, selectedReseller]);
+
+  const openDisconnectedClients = (reseller: string | null) => {
+    const rows = (reseller ? diagnostic.reseller : diagnostic.network).disconnectedClients.map((c) => {
+      const last = store.userConnections.filter((u) => u.clientId === c.id && Date.parse(u.date) <= diagnosticNow).sort((a, b) => b.date.localeCompare(a.date))[0];
+      return [c.name, c.reseller, last ? new Date(last.date).toLocaleString('fr-FR') : 'Jamais'];
+    });
+    setDetail({ title: `Clients déconnectés${reseller ? ` · ${reseller}` : ' · réseau'}`, big: fmt(rows.length), caption: `Sans connexion depuis plus de ${fmt(disconnectThresholdHours / 24)} j · données de démonstration`, table: { headers: ['Client', 'Revendeur', 'Dernière connexion'], rows }, route: 'clients', routeLabel: 'Gestion Clients' });
+  };
+  const openDisconnectedEquipment = (reseller: string | null) => {
+    const rows = (reseller ? diagnostic.reseller : diagnostic.network).disconnectedEquipment.map((e) => [e.serial, e.client, e.lastCommunication ? new Date(e.lastCommunication).toLocaleString('fr-FR') : 'Jamais']);
+    setDetail({ title: `Équipements déconnectés${reseller ? ` · ${reseller}` : ' · réseau'}`, big: fmt(rows.length), caption: `Sans communication depuis plus de ${fmt(disconnectThresholdHours / 24)} j · données de démonstration`, table: { headers: ['N° de série', 'Client', 'Dernière communication'], rows }, route: 'equipments', routeLabel: 'Équipements' });
+  };
 
   const scope: DashboardScope = useMemo(
     () => (isReseller ? { kind: 'reseller', name: currentUserName } : { kind: 'network' }),
@@ -291,6 +330,47 @@ export function DashboardPage() {
               <GoalKpiCard key={k.id} kpi={k} compare={compareFor(k)} onOpen={() => openKpi(k)} />
             ))}
           </div>
+        </Section>
+      )}
+
+      <Section id="tdb-deconnexion" title={isReseller ? 'Connexions · mon parc' : 'Connexions · réseau'}>
+        <p className="col-span-12 text-small text-text-muted">
+          État au {new Date(diagnosticNow).toLocaleString('fr-FR')} · seuil de {fmt(disconnectThresholdHours / 24)} j · données de démonstration
+        </p>
+        <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard title="Clients du périmètre" value={fmt(isReseller ? diagnostic.reseller.clients.length : diagnostic.network.clients.length)} subtitle="Comptes clients" icon={Users} />
+          <StatCard title="Équipements installés" value={fmt(isReseller ? diagnostic.reseller.equipment.length : diagnostic.network.equipment.length)} subtitle="Parc installé" icon={Server} />
+          <StatCard title="Clients déconnectés" value={fmt(isReseller ? diagnostic.reseller.disconnectedClients.length : diagnostic.network.disconnectedClients.length)} subtitle="Voir les dernières connexions" icon={UserX} color="warning" onClick={() => openDisconnectedClients(isReseller ? currentUserName : null)} />
+          <StatCard title="Équipements déconnectés" value={fmt(isReseller ? diagnostic.reseller.disconnectedEquipment.length : diagnostic.network.disconnectedEquipment.length)} subtitle="Voir les dernières communications" icon={WifiOff} color="red" onClick={() => openDisconnectedEquipment(isReseller ? currentUserName : null)} />
+        </div>
+      </Section>
+
+      {role === 'admin_tunav' && (
+        <Section id="tdb-revendeur" title="Vue revendeur">
+          <div className="col-span-12 flex flex-wrap items-center gap-3">
+            <Building2 size={18} aria-hidden="true" className="text-primary" />
+            <label htmlFor="tdb-reseller" className="text-label font-medium text-text">Revendeur</label>
+            <select
+              id="tdb-reseller"
+              value={selectedReseller}
+              onChange={(e) => setSelectedReseller(e.target.value)}
+              className="h-control min-w-[200px] max-w-full px-2.5 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
+            >
+              <option value="">Choisir un revendeur</option>
+              {resellerOptions.map((name) => <option key={name} value={name}>{name}</option>)}
+            </select>
+          </div>
+          {selectedReseller ? (
+            <>
+              <p className="col-span-12 text-small text-text-muted">{selectedReseller} · données de démonstration · seuil de {fmt(disconnectThresholdHours / 24)} j</p>
+              <div className="col-span-12 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard title="Clients du revendeur" value={fmt(diagnostic.reseller.clients.length)} subtitle="Comptes clients" icon={Users} />
+                <StatCard title="Équipements installés" value={fmt(diagnostic.reseller.equipment.length)} subtitle="Parc du revendeur" icon={Server} />
+                <StatCard title="Clients déconnectés" value={fmt(diagnostic.reseller.disconnectedClients.length)} subtitle="Voir les dernières connexions" icon={UserX} color="warning" onClick={() => openDisconnectedClients(selectedReseller)} />
+                <StatCard title="Équipements déconnectés" value={fmt(diagnostic.reseller.disconnectedEquipment.length)} subtitle="Voir les dernières communications" icon={WifiOff} color="red" onClick={() => openDisconnectedEquipment(selectedReseller)} />
+              </div>
+            </>
+          ) : <p className="col-span-12 text-small text-text-muted">Sélectionnez un revendeur pour afficher son périmètre.</p>}
         </Section>
       )}
 

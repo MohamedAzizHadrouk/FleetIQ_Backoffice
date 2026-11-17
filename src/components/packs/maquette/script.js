@@ -668,6 +668,7 @@ function renderPacks(){
 }
 
 const openRows = new Set();
+let clientPage = 0;
 function renderClients(){
   const a = ALERTS.find(x=>x.id===F.alert);
   const list = CLIENTS.filter(c=>{
@@ -676,8 +677,11 @@ function renderClients(){
     if (a && !a.test(c)) return false;
     return true;
   }).sort((x,y)=>(isActive(y)-isActive(x)) || daysUntil(x.exp)-daysUntil(y.exp));
+  const pageSize = 10, pageCount = Math.max(1, Math.ceil(list.length / pageSize));
+  clientPage = Math.min(clientPage, pageCount - 1);
+  const pageList = list.slice(clientPage * pageSize, (clientPage + 1) * pageSize);
   $('#clist').innerHTML = `<thead><tr><th>Client</th><th>Pack</th><th>Parc</th><th>Expiration</th><th>Statut</th><th style="text-align:right">Actions</th></tr></thead><tbody>` +
-    list.map(c=>{
+    pageList.map(c=>{
       const du = daysUntil(c.exp), inc = incoherent(c);
       const tag = !isActive(c) ? '' : du<=P.crit ? `<span class="ago bad">J-${du}</span>` : du<=P.renew ? `<span class="ago warn">J-${du}</span>` : '';
       let h = `<tr class="r"><td><div class="cname">${esc(c.name)}${ownTag(c)}</div><div class="cmail">${esc(c.mail)}</div></td>
@@ -702,6 +706,8 @@ function renderClients(){
   $$('#clist [data-pay]').forEach(b=>b.onclick=()=>openPay(+b.dataset.pay));
   $('#chips').innerHTML = `<span>${list.length} client(s)</span>` + (a ? `<span class="chip">${a.ref} · ${a.title()} <button data-clr>×</button></span>` : '');
   const clr = $('[data-clr]'); if (clr) clr.onclick = ()=>{ F.alert=''; renderAlerts(); renderClients(); };
+  $('#clientPager').innerHTML = pageCount > 1 ? `<span>${clientPage * pageSize + 1}–${Math.min(list.length, (clientPage + 1) * pageSize)} sur ${list.length} clients</span><button data-client-page="${clientPage - 1}" ${clientPage === 0 ? 'disabled' : ''} aria-label="Page précédente">‹</button>${Array.from({length:pageCount}, (_,i)=>`<button data-client-page="${i}" ${i === clientPage ? 'aria-current="page"' : ''} aria-label="Page ${i + 1}">${i + 1}</button>`).join('')}<button data-client-page="${clientPage + 1}" ${clientPage === pageCount - 1 ? 'disabled' : ''} aria-label="Page suivante">›</button>` : '';
+  $$('#clientPager [data-client-page]').forEach(b=>b.onclick=()=>{ clientPage = +b.dataset.clientPage; renderClients(); });
 }
 
 function renderAll(){
@@ -831,8 +837,8 @@ $('#cmpMode').onchange = e=>{ CMP.mode = e.target.value; $('#cmpCustW').classLis
 $('#cFrom').onchange = e=>{ CMP.from = e.target.value; renderAll(); };
 $('#cTo').onchange = e=>{ CMP.to = e.target.value; renderAll(); };
 $('#qPack').oninput = renderPacks;
-$('#qClient').oninput = e=>{ F.search = e.target.value.trim().toLowerCase(); renderClients(); };
-$('#fPack').onchange = e=>{ F.pack = e.target.value; renderClients(); };
+$('#qClient').oninput = e=>{ F.search = e.target.value.trim().toLowerCase(); clientPage = 0; renderClients(); };
+$('#fPack').onchange = e=>{ F.pack = e.target.value; clientPage = 0; renderClients(); };
 $('#newPack').onclick = ()=>openPack(null);
 // compte connecté : super admin = tout le réseau, revendeur = ses clients uniquement (le catalogue reste géré par Tunav)
 const setView = v => { VIEW = v; __root.classList.toggle('as-rev', !!v);

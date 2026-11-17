@@ -94,6 +94,7 @@ type FleetStore = {
   userConnections: UserConnection[];
   offerChanges: OfferChange[];
   vehicles: Vehicle[];
+  setVehicles: React.Dispatch<React.SetStateAction<Vehicle[]>>;
   zones: SavZone[];
   technicians: Technician[];
   /** Interventions SAV (carte 10) : modifiables dans le mock (planifier, démarrer, clôturer, type, création) */
@@ -164,6 +165,7 @@ export function FleetStoreProvider({ children }: { children: React.ReactNode }) 
   const [equipments, setEquipments] = useState<FleetEquipment[]>(mock.equipments);
   const [simOffers, setSimOffers] = useState<SimOffer[]>(mock.simOffers);
   const [simCards, setSimCards] = useState<SimCard[]>(mock.simCards);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(mock.vehicles);
   const [interventions, setInterventions] = useState<Intervention[]>(mock.interventions);
 
   const value = useMemo<FleetStore>(
@@ -192,7 +194,8 @@ export function FleetStoreProvider({ children }: { children: React.ReactNode }) 
       simConsumption: mock.simConsumption,
       userConnections: mock.userConnections,
       offerChanges: mock.offerChanges,
-      vehicles: mock.vehicles,
+      vehicles,
+      setVehicles,
       zones: mock.zones,
       technicians: mock.technicians,
       interventions,
@@ -200,7 +203,7 @@ export function FleetStoreProvider({ children }: { children: React.ReactNode }) 
       kpiSnapshots: mock.kpiSnapshots
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentUserRole, currentUserName, backofficeRole, disconnectThresholdHours, mock, clients, clientProfiles, equipments, simOffers, simCards, interventions]
+    [currentUserRole, currentUserName, backofficeRole, disconnectThresholdHours, mock, clients, clientProfiles, equipments, simOffers, simCards, vehicles, interventions]
   );
 
   return <FleetStoreContext.Provider value={value}>{children}</FleetStoreContext.Provider>;

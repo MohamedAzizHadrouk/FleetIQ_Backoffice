@@ -170,7 +170,7 @@ function renderKpis(){
     r.cls.sort((a,b)=>n(b)-n(a)||a.name.localeCompare(b.name)); r.cl = r.cls.length; r.eq = r.cls.reduce((t,c)=>t+n(c),0); });
   const maxEq = Math.max(1,...rows.map(r=>r.eq)), plur = (n,s) => `${n} ${s}${n>1?'s':''}`;
   $('#packBars').innerHTML = rows.sort((a,b)=>b.eq-a.eq||b.cl-a.cl).map(r=>`
-    <div class="b clk" data-pk="${r.id||'none'}" title="Cliquer pour voir les clients du pack"><span><i class="dot" style="background:${r.color}"></i>${r.name}</span>
+    <div class="b clk" role="button" tabindex="0" data-pk="${r.id||'none'}" aria-label="Voir les clients du pack ${r.name}"><span><i class="dot" style="background:${r.color}"></i>${r.name}</span>
       <div class="track pbar1"><i style="width:${r.eq/maxEq*100}%;background:${r.color}"></i></div>
       <span class="num">${fmtN(r.cl)} client${r.cl>1?'s':''} · ${fmtN(r.eq)} équip.</span></div>`).join('');
   $('#packLeg').innerHTML = '';   // le détail (clients, équipements) s'ouvre au clic sur la ligne
@@ -185,12 +185,13 @@ function renderKpis(){
   if (byOwner) withEq.sort(srt);
   $('#connT').textContent = byOwner ? 'Équipements hors ligne par propriétaire' : 'Équipements connectés / non connectés : 10 clients les plus touchés';
   $('#connSub').innerHTML = byOwner ? 'Un propriétaire par ligne · cliquez pour voir ses clients' : `Trié par nombre de non connectés · <button class="lnk" data-eqall style="border:0;background:none;padding:0;font:inherit;color:var(--blue);cursor:pointer">voir tous les clients →</button>`;
-  const maxEqC = Math.max(1,...withEq.map(r=>r.on+r.off));
+  const maxEqC = Math.max(1,...withEq.map(r=>byOwner ? r.off : r.on+r.off));
   $('#connBars').innerHTML = withEq.map(r=>`
-    <div class="b clk" ${r.own ? `data-cbo="${r.own}"` : `data-cb="${r.id}"`} title="${r.own ? 'Cliquer pour voir les clients de ce propriétaire' : 'Cliquer pour voir les équipements du client'}"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</span>
-      <div class="track" style="width:${pct(r.on+r.off,maxEqC)}%">${shown('conn','on')?`<i style="width:${pct(r.on,r.on+r.off)}%;background:var(--green)"></i>`:''}${shown('conn','off')?`<i style="width:${pct(r.off,r.on+r.off)}%;background:#fca5a5"></i>`:''}</div>
+    <div class="b clk" role="button" tabindex="0" ${r.own ? `data-cbo="${r.own}"` : `data-cb="${r.id}"`} aria-label="${r.own ? 'Voir les clients de' : 'Voir les équipements de'} ${r.name}"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</span>
+      <div class="track">${byOwner ? `<i style="width:${pct(r.off,maxEqC)}%;background:var(--red)"></i>` : `${shown('conn','on')?`<i style="width:${pct(r.on,maxEqC)}%;background:var(--green)"></i>`:''}${shown('conn','off')?`<i style="width:${pct(r.off,maxEqC)}%;background:#fca5a5"></i>`:''}`}</div>
       <span class="num">${sc==='off' ? `${fmtN(r.off)} non conn. / ${fmtN(r.on+r.off)}` : byOwner ? `${fmtN(r.off)} hors ligne / ${fmtN(r.on+r.off)}` : `${r.on} / ${r.on+r.off}`}</span></div>`).join('');
-  legend('#connLeg', 'conn', [{k:'on',l:'Connectés',c:'var(--green)'},{k:'off',l:'Non connectés',c:'#fca5a5'}]);
+  if (byOwner) $('#connLeg').innerHTML = '<span><i class="dot" style="background:var(--red)"></i>Hors ligne · longueur relative au propriétaire le plus touché</span>';
+  else legend('#connLeg', 'conn', [{k:'on',l:'Connectés',c:'var(--green)'},{k:'off',l:'Non connectés',c:'#fca5a5'}]);
   // chaque ligne ouvre son détail : pack → clients du pack, client → onglet Équipements de sa fiche
   $$('#packBars [data-pk]').forEach(b=>b.onclick=e=>{ if (!e.target.closest('[data-oc]')) openPack(b.dataset.pk); });
   $$('#connBars [data-cb]').forEach(b=>b.onclick=()=>{ FICHE_TAB = 'eq'; openClient(+b.dataset.cb); });
@@ -411,7 +412,12 @@ function matchF(c, sub){
     return true;
   }
 }
-const ICONS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>`;
+const ACTION_ICONS = {
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>',
+  view: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>',
+  equipment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>',
+  payment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>'
+};
 
 // Pagination : 5 lignes par page dans la maquette (9 clients) pour la montrer ; 10 / 25 / 50 au choix
 const PG = { page:1, size:10 };
@@ -486,7 +492,12 @@ function renderTable(){
       <td>${fmtDT(c.last)}${ds===null?'<span class="ago bad">jamais</span>':`<span class="ago ${lastCls}">${ds} j</span>`}</td>
       <td>${fmtD(c.exp)} ${expTag}</td>
       <td>${isActive(c)?'<span class="st on"><i></i>Actif</span>':'<span class="st off"><i></i>Bloqué</span>'}</td>
-      <td><div class="acts">${ICONS.replace(`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`, `<button class="eye-b" data-eye="${c.id}" title="Détails du client"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>`)}</div></td></tr>`;
+      <td><div class="acts">
+        ${opts.actions?.edit ? `<button type="button" data-mq-action="client-edit" data-client-id="${c.id}" title="Modifier le client" aria-label="Modifier ${c.name}">${ACTION_ICONS.edit}</button>` : ''}
+        <button type="button" data-eye="${c.id}" title="Détails du client" aria-label="Voir ${c.name}">${ACTION_ICONS.view}</button>
+        <button type="button" data-mq-action="client-equipment" data-client-id="${c.id}" title="Équipements du client" aria-label="Équipements de ${c.name}">${ACTION_ICONS.equipment}</button>
+        ${opts.actions?.payment ? `<button type="button" data-mq-action="client-payment" data-client-id="${c.id}" title="Paiement du client" aria-label="Paiement de ${c.name}">${ACTION_ICONS.payment}</button>` : ''}
+      </div></td></tr>`;
     if (!c.rev && open.has(c.id) && n){
       html += `<tr class="det"><td colspan="9"><div class="det-in">
         <div class="h"><span><b>${c.name}</b> · détail du parc</span><span>${on} connecté(s) · ${n-on} non connecté(s) · seuil ${P.hours} h</span></div>
@@ -502,6 +513,29 @@ function renderTable(){
     return html;
   }).join('') || `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:30px">Aucun client</td></tr>`;
   document.querySelectorAll('#rows [data-eye]').forEach(b=>b.onclick=()=>{ FICHE_TAB = 'syn'; openClient(+b.dataset.eye); });
+  $$('#rows [data-mq-action]').forEach(b=>b.onclick=()=>{
+    const c = CLIENTS.find(x=>x.id===+b.dataset.clientId); if (!c) return;
+    const action = b.dataset.mqAction;
+    if (opts.onClientAction?.(action, c.name)) return;
+    if (action==='client-equipment'){ FICHE_TAB='eq'; openClient(c.id); return; }
+    if (action==='client-edit'){
+      modal(`Modifier ${c.name}`, `<div class="fgrid"><div><label for="editClientName">Nom du client</label><input id="editClientName" value="${c.name}"></div><div><label for="editClientExpiry">Échéance</label><input id="editClientExpiry" type="date" value="${c.exp||''}"></div></div><p id="editClientError" class="note" role="alert"></p><button type="button" class="btn primary" id="saveClientEdit">Enregistrer</button>`);
+      $('#saveClientEdit').onclick=()=>{
+        const name=$('#editClientName').value.trim();
+        if (!name){ $('#editClientError').textContent='Le nom du client est obligatoire.'; return; }
+        c.name=name; c.exp=$('#editClientExpiry').value;
+        $('#modal').innerHTML=''; renderAll();
+      };
+    }
+    if (action==='client-payment'){
+      modal(`Valider le paiement · ${c.name}`, `<p class="note">Échéance actuelle : ${fmtD(c.exp)} · ${isActive(c)?'actif':'bloqué'}</p><label for="paymentExpiry">Nouvelle échéance</label><input id="paymentExpiry" type="date" value="${c.exp||isoC(REAL_TODAY)}"><p id="paymentError" class="note" role="alert"></p><button type="button" class="btn primary" id="savePayment">Valider le paiement</button>`);
+      $('#savePayment').onclick=()=>{
+        const expiry=$('#paymentExpiry').value;
+        if (!expiry || expiry<isoC(REAL_TODAY)){ $('#paymentError').textContent='Choisissez une date à partir d’aujourd’hui.'; return; }
+        c.exp=expiry; c.blocked=false; $('#modal').innerHTML=''; renderAll();
+      };
+    }
+  });
   document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{ const id=+b.dataset.open; open.has(id)?open.delete(id):open.add(id); renderTable(); });
   $$('#rows [data-rvx]').forEach(b=>b.onclick=()=>{ const k = b.dataset.rvx; RVX.has(k) ? RVX.delete(k) : RVX.set(k, 0); renderTable(); });
   $$('#rows [data-rvxp]').forEach(b=>b.onclick=()=>{ const [k,i] = b.dataset.rvxp.split(':'); RVX.set(k, +i); renderTable(); });
@@ -1035,6 +1069,12 @@ $('#kStatus').onclick = openStatus;
 $('#kTotal').onclick = () => VIEW ? openTotalRev() : openTotal();
 $('#kParc').onclick = () => openEq('off');
 __on('keydown', e=>{ if (e.key==='Escape') $('#modal').innerHTML = ''; });
+__on('keydown', e=>{
+  if (e.key!=='Enter' && e.key!==' ') return;
+  const row=e.target.closest?.('#packBars [data-pk], #connBars [data-cb], #connBars [data-cbo]');
+  if (!row || !__root.contains(row)) return;
+  e.preventDefault(); row.click();
+});
 
 function renderAll(){
   $('#todayTxt').textContent = fmtD(REAL_TODAY);

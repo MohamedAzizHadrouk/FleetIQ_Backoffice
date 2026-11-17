@@ -138,6 +138,12 @@ export type SimOffer = {
   operator: string;
   /** Forfait data mensuel en Mo ; null = illimité – à confirmer back-end (SIMPack.DataQuotaMB) */
   dataQuotaMB?: number | null;
+  /** Nombre de SMS inclus par mois ; absent = non renseigné dans la maquette. */
+  monthlySmsQuota?: number | null;
+  /** Durée de validité de l'offre en jours ; absent = non renseignée. */
+  validityDays?: number | null;
+  /** Une offre existante sans ce champ reste considérée active. */
+  isActive?: boolean;
 };
 
 export type SimCard = {

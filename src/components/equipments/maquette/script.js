@@ -364,7 +364,7 @@ $$('#eq-list tbody tr').forEach((tr, i) => tr.onclick = () => openEq(EQ[i]));
 $('#fOwner').innerHTML = '<option>Tous les clients</option>' + RES.map(r => `<optgroup label="${resName(r)}">${[...new Set(EQ.filter(e => e.reseller === r && isClient(e)).map(e => e.client))].sort((a, b) => a.localeCompare(b, 'fr')).map(c => `<option>${esc(c)}</option>`).join('')}</optgroup>`).join('') + (FA_VIEW ? '' : '<option>Stock Tunav</option>');
 { const t = stat(EQ), n = by(); $('#eqSub').textContent = `${EQ.length} équipements · ${t.on} connectés · ${t.off} non connectés · ${t.wait} non installés · ${n.stock} en stock — ${FA_VIEW ? `clients de ${FA_VIEW}` : 'Tunav en premier, puis MyCom, FleetPro Sfax et NavSud'}`; }
 if (FA_VIEW) $('#pSub').textContent = `Boîtiers GPS de vos clients (${FA_VIEW}) : installés ou non, connectés ou non, quoi faire.`;
-let LIMIT = 25, ETAT = 'all';
+let PAGE = 0, ETAT = 'all';
 const ETABS = [
   { k:'all',  l:'Tous',          c:'#334155', bg:'#F1F5F9', test:() => true },
   { k:'inst', l:'Installés',     test:KS.inst.test, base:'a' },
@@ -384,10 +384,10 @@ function renderTabs(l){
 const FI = $$('#eq-filters input, #eq-filters select');   // recherche, type, revendeur, propriétaire, statut, pack, connexion, du, au
 const DEF = FI.map(f => f.value);
 function applyFilters(keep){
-  if (keep !== true) LIMIT = 25;
+  if (keep !== true) PAGE = 0;
   const [q, type, res, owner, stat, pack, conn, from, to] = FI.map(f => f.value), changedDates = from !== DEF[7] || to !== DEF[8];
   const f0 = from ? new Date(from + 'T00:00:00') : null, t0 = to ? new Date(to + 'T23:59:59') : null;
-  let n = 0; const pass = [];
+  const pass = [], matched = [];
   EQ.forEach(e => {
     const ok0 = (!q || e.tr.textContent.toLowerCase().includes(q.toLowerCase()))
       && (type.startsWith('Tous') || e.type === type)
@@ -399,12 +399,16 @@ function applyFilters(keep){
       && (!changedDates || (e.aff && (!f0 || e.aff >= f0) && (!t0 || e.aff <= t0)));
     if (ok0) pass.push(e);
     const ok = ok0 && ETABS.find(x => x.k === ETAT).test(e);
-    e.tr.style.display = ok && n < LIMIT ? '' : 'none'; n += ok;
+    if (ok) matched.push(e);
   });
+  const pageSize = 25, pages = Math.max(1, Math.ceil(matched.length / pageSize));
+  PAGE = Math.min(PAGE, pages - 1);
+  const shown = new Set(matched.slice(PAGE * pageSize, (PAGE + 1) * pageSize));
+  EQ.forEach(e => { e.tr.style.display = shown.has(e) ? '' : 'none'; });
   renderTabs(pass);
-  $('#eqCount').textContent = `${n} / ${EQ.length} équipement(s)${n > LIMIT ? ` · ${LIMIT} affichés` : ''}`;
-  $('#eqMore').innerHTML = n > LIMIT ? `<button data-more="25">Afficher 25 de plus</button><button data-more="all">Tout afficher (${n})</button>` : '';
-  $$('#eqMore [data-more]').forEach(b => b.onclick = () => { LIMIT = b.dataset.more === 'all' ? 1e9 : LIMIT + 25; applyFilters(true); });
+  $('#eqCount').textContent = `${matched.length} / ${EQ.length} équipement(s)`;
+  $('#eqMore').innerHTML = pages > 1 ? `<span>${PAGE * pageSize + 1}–${Math.min(matched.length, (PAGE + 1) * pageSize)} sur ${matched.length}</span><button data-page="${PAGE - 1}" ${PAGE === 0 ? 'disabled' : ''} aria-label="Page précédente">‹</button>${Array.from({length:pages}, (_,i)=>`<button data-page="${i}" ${i === PAGE ? 'aria-current="page"' : ''} aria-label="Page ${i + 1}">${i + 1}</button>`).join('')}<button data-page="${PAGE + 1}" ${PAGE === pages - 1 ? 'disabled' : ''} aria-label="Page suivante">›</button>` : '';
+  $$('#eqMore [data-page]').forEach(b => b.onclick = () => { PAGE = +b.dataset.page; applyFilters(true); });
 }
 FI.forEach(f => f.addEventListener(f.tagName === 'SELECT' ? 'change' : 'input', () => applyFilters()));
 $('#eqReset').onclick = () => { FI.forEach((f, i) => f.value = DEF[i]); ETAT = 'all'; applyFilters(); };

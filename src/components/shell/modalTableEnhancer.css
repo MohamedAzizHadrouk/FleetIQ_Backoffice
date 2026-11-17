@@ -1,0 +1,18 @@
+[role="dialog"] .mq-modal-table{width:100%!important;min-width:0!important;max-width:100%;table-layout:fixed;border-collapse:collapse}
+[role="dialog"] .mq-modal-table th,[role="dialog"] .mq-modal-table td{max-width:100%;white-space:normal!important;overflow-wrap:anywhere;word-break:normal;vertical-align:top}
+[role="dialog"] .mq-modal-table tr[hidden]{display:none!important}
+[role="dialog"] .mq-modal-cards,[role="dialog"] .mq-modal-cards tbody{display:block;width:100%}
+[role="dialog"] .mq-modal-cards thead{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+[role="dialog"] .mq-modal-cards tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;padding:8px 12px;margin:0 0 10px;border:1px solid #E2E8F0;border-radius:10px;background:#fff}
+[role="dialog"] .mq-modal-cards tbody td{display:block;min-width:0;padding:8px 2px!important;border:0!important;text-align:left!important;white-space:normal!important;overflow-wrap:anywhere}
+[role="dialog"] .mq-modal-cards tbody td::before{content:attr(data-label);display:block;margin-bottom:3px;color:#475569;font-size:11px;font-weight:600;letter-spacing:.02em}
+[role="dialog"] .mq-modal-pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;padding:10px 0;border-top:1px solid #E2E8F0;color:#475569;font-size:12px}
+[role="dialog"] .mq-modal-pager-controls{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+[role="dialog"] .mq-modal-pager button{min-width:32px;height:32px;padding:0 7px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;color:#0F172A;cursor:pointer}
+[role="dialog"] .mq-modal-pager button[aria-current="page"]{background:#0848FE;border-color:#0848FE;color:#fff}
+[role="dialog"] .mq-modal-pager button:disabled{opacity:.4;cursor:not-allowed}
+[role="dialog"] .mq-modal-pager button:focus-visible{outline:2px solid #0848FE;outline-offset:2px}
+.mq-root [role="dialog"] .tw,.mq-root [role="dialog"] .wrap,.mq-root [role="dialog"] .cd-t,.mq-root [role="dialog"] .fdet{overflow-x:visible!important;max-width:100%}
+[role="dialog"] .overflow-x-auto:has(.mq-modal-table){overflow-x:visible!important;max-width:100%}
+.mq-root [role="dialog"] .mb,.mq-root [role="dialog"] .md-b,.mq-root [role="dialog"] .md3-b{overflow-x:hidden!important;min-width:0}
+@media (max-width:600px){[role="dialog"] .mq-modal-cards tbody tr{grid-template-columns:1fr}}

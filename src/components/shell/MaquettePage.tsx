@@ -7,6 +7,7 @@
  */
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { enhanceModalTables } from './modalTableEnhancer';
 
 type MountFn = (
   root: HTMLElement,
@@ -15,6 +16,8 @@ type MountFn = (
     role?: string;
     search?: string;
     navigate?: (href: string) => void;
+    actions?: { edit: boolean; payment: boolean };
+    onClientAction?: (action: string, name: string) => boolean;
     after?: (api: { setView: ((v: string) => void) | null }) => void;
   }
 ) => () => void;
@@ -46,7 +49,7 @@ type Props = {
   /** profil SAV vu par la maquette : 'RespSAV' | 'TechSAV' | '' */
   role?: string;
   /** clic sur un bouton de la maquette repéré par son texte (ex. « Ajouter un client ») */
-  actions?: Record<string, () => void>;
+  actions?: Record<string, (name?: string) => boolean | void>;
 };
 
 export function MaquettePage({ slug, markup, mount, view = '', role = '', actions }: Props) {
@@ -83,12 +86,18 @@ export function MaquettePage({ slug, markup, mount, view = '', role = '', action
     root.addEventListener('click', onClick);
     let cleanup: (() => void) | undefined;
     try {
-      cleanup = mount(root, { view, role, search: location.search, navigate: go });
+      cleanup = mount(root, {
+        view, role, search: location.search, navigate: go,
+        actions: { edit: Boolean(actionsRef.current?.['client-edit']), payment: Boolean(actionsRef.current?.['client-payment']) },
+        onClientAction: (action, name) => Boolean(actionsRef.current?.[action]?.(name))
+      });
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`Maquette ${slug} :`, err);
     }
+    const cleanupTables = enhanceModalTables(root);
     return () => {
+      cleanupTables();
       root.removeEventListener('click', onClick);
       cleanup?.();
       root.innerHTML = '';

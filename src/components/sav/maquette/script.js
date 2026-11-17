@@ -223,10 +223,11 @@ function renderTeam(){
       + '<td>' + techSel(x, 'ts-' + x.id) + '</td><td><input type="date" id="td-' + x.id + '" value="' + dPlus(1).toISOString().slice(0, 10) + '"></td><td><button class="btn2" data-plan="' + x.id + '">Planifier</button></td></tr>').join('')
     + (todo.length ? '' : '<tr><td colspan="6" style="color:#475569">Tout est planifié.</td></tr>') + '</tbody></table></div></section>'
     + '<section><div class="sh"><h2>Toutes les interventions</h2><span id="allCnt"></span></div><div class="card"><div class="flt">'
+    + '<input type="search" id="fQ" placeholder="Client, ville, IMEI, n° d’intervention" aria-label="Rechercher">'
     + '<select id="fTech" aria-label="Technicien"><option value="">Tous les techniciens</option>' + TECHS.map(t => '<option value="' + t.id + '">' + esc(t.nm) + '</option>').join('') + '<option value="-">Sans technicien</option></select>'
     + '<select id="fSt" aria-label="Statut"><option value="">Tous les statuts</option><option value="late">En retard</option>' + Object.entries(STS).map(([k, v]) => '<option value="' + k + '">' + v + '</option>').join('') + '</select>'
     + '<select id="fTy" aria-label="Type"><option value="">Tous les types</option>' + Object.entries(TYPES).map(([k, v]) => '<option value="' + k + '">' + v + '</option>').join('') + '</select>'
-    + '<input type="search" id="fQ" placeholder="Client, ville, IMEI, n° d’intervention" aria-label="Rechercher"></div><div class="wrap"><table class="tbl"><thead><tr><th>N°</th><th>Type</th><th>Client · ville</th><th>Technicien</th><th>Rendez-vous</th><th>Statut</th><th>Résultat</th></tr></thead><tbody id="allRows"></tbody></table></div><div class="pg" id="allPg"></div></div></section>';
+    + '</div><div class="wrap"><table class="tbl"><thead><tr><th>N°</th><th>Type</th><th>Client · ville</th><th>Technicien</th><th>Rendez-vous</th><th>Statut</th><th>Résultat</th></tr></thead><tbody id="allRows"></tbody></table></div><div class="pg" id="allPg"></div></div></section>';
   $('#fTech').value = F.tech; $('#fSt').value = F.st; $('#fTy').value = F.type; $('#fQ').value = F.q;
   [['fTech', 'tech'], ['fSt', 'st'], ['fTy', 'type']].forEach(([id, k]) => $('#' + id).onchange = e => { F[k] = e.target.value; F.page = 0; drawAll(); });
   $('#fQ').oninput = e => { F.q = e.target.value; F.page = 0; drawAll(); };

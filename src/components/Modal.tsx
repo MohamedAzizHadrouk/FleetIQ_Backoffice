@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { FOCUS, TRANSITION } from './ui/focus';
 import { Button } from './ui/Button';
+import { enhanceModalTables } from './shell/modalTableEnhancer';
 
 interface ModalProps {
   isOpen: boolean;
@@ -46,6 +47,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
     if (!isOpen) return;
     previouslyFocused.current = document.activeElement as HTMLElement | null;
     const panel = panelRef.current;
+    const cleanupTables = panel ? enhanceModalTables(panel) : undefined;
     const focusFirst = () => {
       if (!panel) return;
       const targets = panel.querySelectorAll<HTMLElement>(FOCUSABLE);
@@ -85,6 +87,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
 
     return () => {
       window.clearTimeout(t);
+      cleanupTables?.();
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
       previouslyFocused.current?.focus?.();
