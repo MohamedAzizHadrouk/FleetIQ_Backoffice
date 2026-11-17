@@ -34,8 +34,8 @@ const packTone = (packs: Pack[], id: number): ChartTone => SERIES[Math.max(0, pa
 
 const panelCls = 'bg-surface rounded-card border border-border p-5';
 const tabBtn = (on: boolean) =>
-  `h-8 px-3 text-button-sm rounded-control border transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-    on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-surface-muted'
+  `px-2.5 py-1 text-mention rounded-pill border transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+    on ? 'bg-primary-50 text-primary-hover border-accent font-semibold' : 'bg-surface text-[#334155] border-border-strong hover:border-accent'
   }`;
 
 function clientsOfPackDetail(r: PkPackRow, periodLabel: string): DetailSpec {

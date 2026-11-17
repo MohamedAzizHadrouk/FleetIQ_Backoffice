@@ -149,7 +149,6 @@ export function LiveAlertToast({
             {alert.owner} · {alert.network === 'Tunav' ? 'Tunav · clients directs' : alert.network} · aucune donnée depuis{' '}
             {fmt(Math.floor(alert.daysSince ?? 0))} j · {fmt(others)} autre(s) cette semaine
           </p>
-          <p className="mt-1 text-mention text-text-muted">Notification simulée (maquette) – en production : job planifié.</p>
           <div className="mt-2 flex gap-2">
             <button
               type="button"

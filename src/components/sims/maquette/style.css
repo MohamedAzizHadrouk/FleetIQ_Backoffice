@@ -1,0 +1,331 @@
+.mq-sims{min-height:100%;}
+.mq-sims{
+    --page:#F1F5F9; --line:#E2E8F0; --line2:#F1F5F9;
+    --ink:#0F172A; --ink2:#334155; --muted:#475569; --faint:#94A3B8;
+    --blue:#2563EB; --blue-bg:#EFF6FF; --green:#059669; --green-bg:#ECFDF5;
+    --red:#DC2626; --red-bg:#FEF2F2; --amber:#D97706; --amber-bg:#FFFBEB;
+    --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  }
+.mq-sims *{box-sizing:border-box}
+.mq-sims,.mq-sims{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 'IBM Plex Sans',system-ui,sans-serif}
+.mq-sims button{font:inherit;cursor:pointer}
+.mq-sims .hidden{display:none!important}
+.mq-sims .wrap{max-width:none}
+.mq-sims .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;font-weight:500;color:var(--ink2);text-decoration:none}
+.mq-sims .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.mq-sims .btn.sm{padding:5px 10px;font-size:12px}
+.mq-sims .btn svg{width:16px;height:16px}
+.mq-sims .mono{font-family:var(--mono);font-size:12px}
+.mq-sims .note{font-size:12px;color:var(--muted)}
+.mq-sims .dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.mq-sims .bell{position:relative;border:1px solid var(--line);background:#fff;border-radius:9px;width:38px;height:38px;display:grid;place-items:center;color:var(--ink2)}
+.mq-sims .bell svg{width:18px;height:18px}
+.mq-sims .bell .cnt{position:absolute;top:-6px;right:-6px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--red);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;border:2px solid #fff}
+.mq-sims .bpanel{position:absolute;width:400px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.14);overflow:hidden;z-index:40}
+.mq-sims .bpanel .bh{padding:12px 16px;border-bottom:1px solid var(--line2);display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.mq-sims .bpanel .bh b{font-size:14px;color:var(--ink)}
+.mq-sims .bpanel ul{list-style:none;margin:0;padding:6px 0;max-height:420px;overflow:auto}
+.mq-sims .bpanel li{padding:10px 16px;display:grid;grid-template-columns:10px 1fr auto;gap:10px;cursor:pointer;font-size:13px}
+.mq-sims .bpanel li:hover{background:#F8FAFC}
+.mq-sims .bpanel li i{width:8px;height:8px;border-radius:50%;margin-top:6px}
+.mq-sims .bpanel li small{display:block;color:var(--muted);font-size:12px}
+.mq-sims .bpanel li .go{font-size:12px;color:var(--blue)}
+.mq-sims .sec{display:flex;align-items:center;gap:10px;margin:28px 0 10px;flex-wrap:wrap}
+.mq-sims .sec h2{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:600}
+.mq-sims .sec .hint{font-size:12px;color:var(--muted)}
+.mq-sims .panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0}
+.mq-sims .panel h3{margin:0;font-size:14px;font-weight:600}
+.mq-sims .panel .sub{font-size:12px;color:var(--muted);margin:2px 0 14px}
+.mq-sims .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mq-sims .split{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:start}
+.mq-sims .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.mq-sims .kc{position:relative;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-height:112px;color:inherit;transition:border-color .15s,box-shadow .15s}
+.mq-sims .kc:hover{border-color:#93C5FD;box-shadow:0 2px 8px rgba(15,23,42,.06)}
+.mq-sims .kc .t{padding-right:44px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.mq-sims .kc .ic{position:absolute;right:16px;top:14px;width:34px;height:34px;border-radius:8px;background:var(--blue-bg);color:var(--blue);display:grid;place-items:center}
+.mq-sims .kc .ic svg{width:18px;height:18px}
+.mq-sims .kc .v{font-family:var(--mono);font-size:28px;font-weight:600;margin-top:18px}
+.mq-sims .kc .v small{font-size:13px;color:var(--muted);font-weight:500}
+.mq-sims .kc .more{position:absolute;right:16px;bottom:10px;font-size:11px;color:var(--faint)}
+.mq-sims .kc:hover .more{color:var(--blue)}
+.mq-sims .kc .split-bar{display:flex;height:6px;border-radius:999px;overflow:hidden;gap:2px;margin:8px 90px 0 0}
+.mq-sims .offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.mq-sims .oc{text-align:left;background:#fff;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:12px;padding:16px 18px;color:inherit;display:flex;flex-direction:column;gap:8px}
+.mq-sims .oc:hover{border-color:#93C5FD;border-left-color:var(--blue)}
+.mq-sims .oc.none{border-left-color:var(--faint)}
+.mq-sims .oc .on{font-weight:600}
+.mq-sims .oc .op{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:2px 8px;border-radius:6px;background:var(--line2);color:var(--ink2);width:max-content}
+.mq-sims .oc .n{font-family:var(--mono);font-size:24px;font-weight:600}
+.mq-sims .oc .n small{white-space:nowrap;font-size:13px;color:var(--muted);font-weight:500;font-family:'IBM Plex Sans',sans-serif}
+.mq-sims .oc .meter{height:6px;background:var(--line2);border-radius:999px;overflow:hidden}
+.mq-sims .oc .meter i{display:block;height:100%;background:var(--blue);border-radius:999px}
+.mq-sims .oc .foot{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.mq-sims .oc .foot b{color:var(--blue);font-weight:500}
+.mq-sims .box{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.mq-sims .filters{display:grid;grid-template-columns:2fr repeat(6,1fr);gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.mq-sims .filters label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
+.mq-sims .filters input,.mq-sims .filters select{font:inherit;font-size:13px;border:1px solid #CBD5E1;border-radius:8px;padding:8px 10px;background:#fff;color:var(--ink)}
+.mq-sims .chips{padding:10px 18px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--line2);background:#F8FAFC}
+.mq-sims .tw{overflow-x:auto}
+.mq-sims table{width:100%;border-collapse:collapse}
+.mq-sims th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:11px 14px;font-weight:600;border-bottom:1px solid var(--line);background:#F8FAFC;white-space:nowrap}
+.mq-sims td{padding:11px 14px;border-bottom:1px solid var(--line2);vertical-align:middle;font-size:13px}
+.mq-sims td small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.mq-sims tr.click{cursor:pointer}
+.mq-sims tr.click:hover td{background:#F8FBFF}
+.mq-sims tr.alert-r td{background:#FFFBFB}
+.mq-sims .num{font-family:var(--mono);font-size:12.5px}
+.mq-sims .st{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;white-space:nowrap}
+.mq-sims .st.ins{background:#D1FAE5;color:#065F46}
+.mq-sims .st.non{background:#FEF3C7;color:#92400E}
+.mq-sims .warn-t{color:#B45309;font-weight:600}
+.mq-sims .bad-t{color:var(--red);font-weight:600}
+.mq-sims .ok-t{color:var(--green);font-weight:600}
+.mq-sims .seg{display:inline-flex;background:var(--line2);border-radius:8px;padding:3px}
+.mq-sims .seg button{border:0;background:none;padding:5px 12px;border-radius:6px;color:var(--muted);font-weight:500;font-size:13px}
+.mq-sims .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(15,23,42,.08)}
+.mq-sims .ubar{height:8px;background:var(--line2);border-radius:999px;overflow:hidden;min-width:110px}
+.mq-sims .ubar i{display:block;height:100%;border-radius:999px}
+.mq-sims .dlt{font-family:var(--mono);font-size:11.5px;font-weight:600;padding:1px 6px;border-radius:6px}
+.mq-sims .dlt.up{background:#DBEAFE;color:#1E40AF}
+.mq-sims .dlt.down{background:#F1F5F9;color:var(--muted)}
+.mq-sims .rules{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;background:#F8FAFC}
+.mq-sims .rules label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.mq-sims .rules input,.mq-sims .rules select{font:inherit;font-size:13px;border:1px solid #CBD5E1;border-radius:8px;padding:7px 9px;background:#fff}
+.mq-sims .cols{display:flex;align-items:flex-end;gap:10px;height:170px;border-bottom:1px solid var(--line);padding-top:18px;background-image:linear-gradient(#F1F5F9 1px,transparent 1px);background-size:100% 42px}
+.mq-sims .cols .c{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;border:0;background:none;padding:0 3px;border-radius:6px 6px 0 0;position:relative}
+.mq-sims .cols .c:hover{background:#F8FBFF}
+.mq-sims .cols .c.sel{background:#EFF6FF;box-shadow:inset 0 -3px 0 var(--blue)}
+.mq-sims .cols .c.fut{cursor:default}
+.mq-sims .cols .c.fut:hover{background:none}
+.mq-sims .cols .c .bar{width:100%;max-width:44px;border-radius:4px 4px 0 0;min-height:0}
+.mq-sims .cols .c .v{font-family:var(--mono);font-size:11px;color:var(--ink2)}
+.mq-sims .xl{display:flex;gap:10px;margin-top:6px}
+.mq-sims .xl span{flex:1;text-align:center;font-size:11px;color:var(--muted)}
+.mq-sims .xl span.fut{color:#CBD5E1}
+.mq-sims .xl span.sel{color:var(--blue);font-weight:600}
+.mq-sims .plan-line{position:absolute;left:0;right:0;border-top:2px dashed #475569;pointer-events:none}
+.mq-sims .gauge{position:relative;height:10px;background:#F1F5F9;border-radius:999px;min-width:140px}
+.mq-sims .gauge .ok{position:absolute;top:0;bottom:0;background:#D1FAE5;border:1px solid #059669;border-radius:999px}
+.mq-sims .gauge .mk{position:absolute;top:-3px;width:4px;height:16px;background:#0F172A;border-radius:2px;transform:translateX(-2px)}
+.mq-sims .ev{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.mq-sims .ev .d{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.mq-sims .tag{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:5px;white-space:nowrap}
+.mq-sims .tag.red{background:#FEE2E2;color:#991B1B}
+.mq-sims .tag.amber{background:#FFEDD5;color:#9A3412}
+.mq-sims .tag.gray{background:#F1F5F9;color:var(--muted)}
+.mq-sims .tag.blue{background:#DBEAFE;color:#1E40AF}
+.mq-sims .stbar{display:flex;gap:2px;height:30px;border-radius:6px;overflow:hidden}
+.mq-sims .stbar button{border:0;color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center;padding:0}
+.mq-sims .stbar button:hover{filter:brightness(1.1)}
+.mq-sims .hrow{display:grid;grid-template-columns:170px 1fr 70px;gap:10px;align-items:center;font-size:13px;width:100%;border:0;background:none;padding:4px;border-radius:6px;text-align:left;color:inherit}
+.mq-sims .hrow:hover{background:#F8FBFF}
+.mq-sims .hrow .tr{display:flex;height:14px;gap:2px;border-radius:4px;overflow:hidden;background:var(--line2)}
+.mq-sims .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.mq-sims .decide{background:var(--blue-bg);border-radius:8px;padding:10px 12px;font-size:13px;color:#1E3A8A;margin-top:12px}
+.mq-sims .ugauge{display:flex;align-items:center;gap:8px}
+.mq-sims #mRows td.num,.mq-sims #mRows td .num,.mq-sims #mRows td small{white-space:nowrap}
+.mq-sims #mRows td:first-child{min-width:140px}
+.mq-sims .ugauge .gauge{flex:1;min-width:70px}
+.mq-sims .panel:has(#mRows) th,.mq-sims #mRows td{padding-left:9px;padding-right:9px}
+.mq-sims .part{flex:1;min-width:70px;height:8px;border-radius:999px;background:var(--line2,#EEF1F6);overflow:hidden}
+.mq-sims .part i{display:block;height:100%;background:#2563EB;border-radius:999px}
+.mq-sims .ugauge small.of{display:inline;margin:0;color:var(--muted);white-space:nowrap}
+.mq-sims #mRows tr.lvl1 td{background:#F8FAFC}
+.mq-sims .ovch{border-top:1px solid var(--line);margin-top:16px;padding-top:16px}
+.mq-sims .ovch .hrow{grid-template-columns:200px 1fr 120px;padding:6px 4px}
+.mq-sims .ovch .hrow small{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.mq-sims .ovch .hrow .tr{height:16px}
+.mq-sims .ovch .hrow em{font-size:12px;color:var(--muted);font-style:normal}
+.mq-sims .evsvg{width:100%;height:auto;display:block}
+.mq-sims .evsvg .evt{font-size:10px;fill:#64748B;font-family:var(--mono)}
+.mq-sims .evsvg .evt.fut{fill:#CBD5E1}
+.mq-sims .evsvg .evhit{fill:transparent;cursor:pointer}
+.mq-sims .evsvg .evo{font-size:10px;font-weight:700;fill:#B91C1C;font-family:var(--mono);paint-order:stroke;stroke:#fff;stroke-width:3px}
+.mq-sims #evLeg .ring{display:inline-block;width:10px;height:10px;border:2px solid #DC2626;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.mq-sims #evLeg .tri{display:inline-block;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #DC2626;margin-right:6px}
+.mq-sims .evsvg .evhit:hover{fill:rgba(37,99,235,.06)}
+.mq-sims .evk{border:0;background:none;padding:2px 4px;border-radius:6px;font:inherit;font-size:12px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.mq-sims .evk:hover{background:#F1F5F9;color:var(--ink,#0F172A)}
+.mq-sims .nb{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#1E3A8A;color:#fff;font-size:11px;font-weight:700;margin-right:8px;vertical-align:1px}
+.mq-sims .rl{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.mq-sims .rl select,.mq-sims .rl input{font:inherit;font-size:13px;border:1px solid #CBD5E1;border-radius:8px;padding:6px 9px;background:#fff;min-width:190px}
+.mq-sims .toast{position:fixed;right:24px;bottom:24px;z-index:60;display:flex;align-items:center;gap:12px;max-width:520px;background:#fff;border:1px solid #FCA5A5;border-left:4px solid #DC2626;border-radius:10px;padding:12px 14px;box-shadow:0 12px 32px rgba(15,23,42,.18);font-size:13px;animation:tin .25s ease-out}
+.mq-sims .toast b{display:block}
+.mq-sims .toast small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.mq-sims .toast .live{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:#DC2626;border-radius:999px;padding:3px 8px;white-space:nowrap}
+.mq-sims .toast .x{border:0;background:none;font-size:18px;color:var(--muted);cursor:pointer}
+@keyframes tin{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.mq-sims .toast{animation:none}}
+.mq-sims #mRows tr.sim td{font-size:12px;color:var(--muted);background:#fff}
+.mq-sims #mRows tr.sim td:first-child{padding-left:44px}
+.mq-sims #mRows tr.sim.deep td:first-child{padding-left:60px}
+.mq-sims #mRows tr.sim .num:not(.ov-t){color:var(--ink,#0F172A)}
+.mq-sims #mRows tr.more td{color:#2563EB;cursor:pointer;font-weight:600}
+.mq-sims #mQ{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit;font-size:12.5px;width:190px;background:#fff}
+.mq-sims .gauge.over .mk{background:#DC2626}
+.mq-sims .ov-t{color:#B91C1C;font-weight:600}
+.mq-sims .ovp{display:inline-block;font-family:var(--mono);font-size:12.5px;font-weight:700;color:#fff;background:#DC2626;padding:1px 7px;border-radius:6px}
+.mq-sims tr.sub td{background:#FAFBFF}
+.mq-sims tr.sub td:first-child{padding-left:30px}
+.mq-sims .caret{display:inline-block;width:14px;color:var(--faint)}
+.mq-sims .pager{display:flex;align-items:center;gap:6px;justify-content:flex-end;padding:10px 14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.mq-sims .pager button{border:1px solid var(--line);background:#fff;border-radius:6px;min-width:30px;height:28px;font-size:12px;color:var(--ink2)}
+.mq-sims .pager button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.mq-sims .pager button:disabled{opacity:.4;cursor:default}
+.mq-sims .pager select{font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;margin-right:auto}
+.mq-sims .price{display:inline-block;font-size:11.5px;font-family:var(--mono);color:var(--ink2);background:#F8FAFC;border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-top:3px;white-space:nowrap}
+.mq-sims .ov{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:60;display:grid;place-items:center;padding:16px}
+.mq-sims .modal{background:#fff;border-radius:14px;box-shadow:0 20px 50px rgba(15,23,42,.25);width:100%;max-width:720px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden}
+.mq-sims .mh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line2)}
+.mq-sims .mh h3{margin:0;font-size:17px}
+.mq-sims .mh .x{border:0;background:none;font-size:22px;color:var(--faint)}
+.mq-sims .mb{padding:16px 20px;overflow:auto}
+.mq-sims .mf{display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid var(--line2)}
+.mq-sims .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mq-sims .tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.mq-sims .tile span{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.mq-sims .tile b{display:block;font-size:17px;font-family:var(--mono);margin-top:2px}
+.mq-sims .tile small{font-size:11.5px;color:var(--muted)}
+.mq-sims .tile.bad{border-color:#FECACA;background:#FFFBFB}
+.mq-sims .tile.bad b{color:var(--red)}
+.mq-sims .tile.warn{border-color:#FDE68A;background:#FFFDF5}
+.mq-sims .tile.warn b{color:#B45309}
+.mq-sims .dh{margin:16px 0 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.mq-sims .modal table td{font-size:12.5px}
+@media (max-width:1100px){.mq-sims .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mq-sims .filters{grid-template-columns:1fr 1fr 1fr}
+.mq-sims .grid2,.mq-sims .split{grid-template-columns:1fr}}
+@media (max-width:700px){.mq-sims .cards,.mq-sims .tiles{grid-template-columns:1fr}
+.mq-sims .filters{grid-template-columns:1fr}}
+.mq-sims{
+  --page:#F1F5F9; --line:#E2E8F0; --line2:#F1F5F9;
+  --ink:#0F172A; --ink2:#334155; --muted:#475569; --faint:#94A3B8;
+  --blue:#2563EB; --blue-bg:#EFF6FF;
+  --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+.mq-sims,.mq-sims{background:#F1F5F9;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#0F172A}
+.mq-sims .shell{display:flex;min-height:100vh;width:100%}
+.mq-sims .side{flex:0 0 232px;background:#0F172A;padding:20px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:20px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.mq-sims .side .logo{display:flex;align-items:center;gap:10px}
+.mq-sims .side .logo i{width:32px;height:32px;border-radius:8px;background:#2563EB;display:block}
+.mq-sims .side .logo span{font-weight:700;font-size:17px;color:#fff}
+.mq-sims .side .who{border:1px solid #1E293B;border-radius:10px;padding:10px 12px;background:#111C33}
+.mq-sims .side .who small{display:block;font-size:10px;letter-spacing:.08em;color:#94A3B8}
+.mq-sims .side .who b{font-size:13px;color:#fff}
+.mq-sims .side .menu-l{font-size:10px;letter-spacing:.08em;color:#94A3B8}
+.mq-sims .side .menu{display:flex;flex-direction:column;gap:4px;margin-top:-12px}
+.mq-sims .nav{display:block;padding:10px 12px;border-radius:8px;color:#CBD5E1;text-decoration:none;font-size:14px}
+.mq-sims .nav:hover{background:#1E293B;color:#fff}
+.mq-sims .nav-on{background:#172554;color:#BFDBFE;font-weight:600}
+.mq-sims main.mainv2{flex:1 1 640px;min-width:0;padding:28px 32px 48px;box-sizing:border-box;background:#F1F5F9;min-height:100vh}
+.mq-sims main.mainv2 .wrap,.mq-sims main.mainv2 .doc{max-width:none}
+.mq-sims .hdr{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;justify-content:space-between;margin-bottom:24px;position:relative}
+.mq-sims .hdr .hl{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mq-sims .hdr h1{margin:0;font-size:26px;font-weight:700}
+.mq-sims .hdr .hsub{margin:6px 0 0;font-size:13px;color:#475569}
+.mq-sims .hdr > :first-child{flex:1 1 280px;min-width:0}
+.mq-sims .hdr .hr{display:flex;flex-direction:column;gap:10px;align-items:flex-end;flex:0 1 auto}
+.mq-sims .hdr .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end}
+.mq-sims .doc-link{font-size:13px;font-weight:600;padding:5px 10px;border:1px solid #BFDBFE;border-radius:8px;background:#EFF6FF;text-decoration:none;color:#1D4ED8}
+.mq-sims .doc-link:hover{color:#1E3A8A}
+.mq-sims .vseg{display:inline-flex;align-items:center;gap:2px;background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:4px}
+.mq-sims .vseg svg{color:#64748B;margin:0 4px 0 6px}
+.mq-sims .vseg button{font:inherit;font-size:13px;border:0;background:none;color:#334155;padding:6px 10px;border-radius:7px;cursor:pointer}
+.mq-sims .vseg button:hover{background:#F1F5F9}
+.mq-sims .vseg button.on{background:#2563EB;color:#fff}
+.mq-sims .hdr input[type=month],.mq-sims .hdr input[type=date],.mq-sims .hdr select{font:inherit;font-size:13px;padding:8px 10px;border:1px solid #CBD5E1;border-radius:8px;background:#fff;color:#0F172A}
+.mq-sims .hdr label.inline{display:flex;align-items:center;gap:6px;font-size:12px;color:#475569}
+.mq-sims .cmp-btn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:600;padding:8px 12px;border-radius:8px;border:1px solid #CBD5E1;background:#fff;color:#334155;cursor:pointer}
+.mq-sims .cmp-btn[aria-pressed="true"]{background:#2563EB;border-color:#2563EB;color:#fff}
+.mq-sims .hdr select:disabled{opacity:.5}
+.mq-sims .cmp-txt{font-size:12px;color:#475569;text-align:right}
+.mq-sims .cmp-txt b{color:#0F172A;font-weight:600}
+.mq-sims .cmp-err{font-size:12px;color:#B91C1C;font-weight:600}
+.mq-sims .asof-chip{font-size:12px;color:#475569;background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:8px 12px}
+.mq-sims .bell{border-radius:8px;border-color:#CBD5E1}
+.mq-sims .bpanel{right:0;top:46px;z-index:40}
+.mq-sims .sec{margin:28px 0 10px}
+.mq-sims .sec h2{font-size:11px;letter-spacing:.06em;color:#475569;font-weight:600}
+.mq-sims .sec .hint{font-size:12px;color:#475569}
+.mq-sims .param{border-radius:10px;padding:6px 12px;color:#475569}
+.mq-sims .param input[type=range]{accent-color:#2563EB}
+.mq-sims .stat,.mq-sims .panel,.mq-sims .box,.mq-sims .cat,.mq-sims .gaps,.mq-sims .kpi,.mq-sims .tbl,.mq-sims .period{border-radius:12px;border-color:#E2E8F0}
+.mq-sims .stat{border-left:1px solid #E2E8F0!important;padding:16px 18px}
+.mq-sims .stat .t{font-size:11px;letter-spacing:.06em;color:#475569;font-weight:600}
+.mq-sims .stat .v{font-family:var(--mono);font-size:28px;font-weight:600}
+.mq-sims .stat .v small,.mq-sims .stat .v .delta{font-family:var(--mono)}
+.mq-sims .stat .ic{border-radius:8px}
+.mq-sims .delta,.mq-sims .ago{font-family:var(--mono);border-radius:6px}
+.mq-sims .alerts .al{border-radius:12px;padding:14px 16px;border-left-width:1px!important}
+.mq-sims .alerts .al:hover{border-color:#93C5FD;background:#F8FBFF;box-shadow:none}
+.mq-sims .alerts .al.on{border-color:#2563EB;box-shadow:0 0 0 2px #BFDBFE}
+.mq-sims .al .t{font-size:13px}
+.mq-sims .al .n{font-family:var(--mono);font-size:26px;line-height:1.1}
+.mq-sims .tag{border-radius:4px;font-size:10px;letter-spacing:.06em}
+.mq-sims .tag.red{background:#FEE2E2;color:#991B1B}
+.mq-sims .tag.amber{background:#FFEDD5;color:#9A3412}
+.mq-sims .tag.slate{background:#F1F5F9;color:#475569}
+.mq-sims .alerts .al.crit .n{color:#B91C1C}
+.mq-sims .alerts .al.warn .n{color:#B45309}
+.mq-sims th{font-size:11px;letter-spacing:.06em;color:#475569;font-weight:600}
+.mq-sims table:not(.heat):not(.rank) thead th{background:#F8FAFC}
+.mq-sims .filters{background:#fff}
+.mq-sims .pk{border-radius:6px;font-weight:600}
+.mq-sims .banner{border-radius:10px;border:1px solid #FECACA;margin:0 0 20px;padding:10px 14px}
+.mq-sims .doc h1{display:none}
+.mq-sims .doc .lead{font-size:14px;color:#475569}
+.mq-sims .kpi .kb > div{min-width:0;overflow-wrap:anywhere}
+.mq-sims .formula{max-width:100%;white-space:normal}
+@media (max-width:900px){.mq-sims .shell{flex-direction:column}
+.mq-sims .side{position:static;height:auto;flex:none;width:100%}
+.mq-sims .side .menu{flex-direction:row;flex-wrap:wrap;margin-top:-12px}
+.mq-sims main.mainv2{padding:20px 16px 40px}
+.mq-sims .hdr .hr{align-items:flex-start}
+.mq-sims .hdr .row{justify-content:flex-start}
+.mq-sims .cmp-txt{text-align:left}
+
+}
+.mq-sims .topx{margin-bottom:22px}
+.mq-sims .tx-row1{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.mq-sims .tx-right{display:flex;align-items:center;gap:10px;position:relative}
+.mq-sims .today-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#475569;background:#fff;border:1px solid #E2E8F0;border-radius:999px;padding:6px 12px}
+.mq-sims .today-chip b{color:#0F172A;font-weight:600}
+.mq-sims .today-chip i{width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 0 3px #D1FAE5}
+.mq-sims .tx-right .bell{width:40px;height:40px;border-radius:10px;border-color:#E2E8F0;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+.mq-sims .tx-right .bell:hover{border-color:#93C5FD;color:#1D4ED8}
+.mq-sims .tx-right .bpanel{right:0;left:auto;top:50px}
+.mq-sims .topx .hsub{margin:6px 0 0;font-size:13px;color:#475569}
+.mq-sims .toolbar{margin-top:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:8px 10px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.mq-sims .tb-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mq-sims .tb-sep{width:1px;align-self:stretch;background:#E2E8F0;margin:2px 2px}
+.mq-sims .toolbar .vseg{border:0;padding:0;background:#F1F5F9;border-radius:9px;padding:3px}
+.mq-sims .toolbar .vseg svg{margin:0 6px}
+.mq-sims .toolbar .vseg button{padding:6px 12px;font-weight:500}
+.mq-sims .toolbar .vseg button.on{background:#2563EB;color:#fff;box-shadow:0 1px 2px rgba(37,99,235,.35)}
+.mq-sims .tb-field{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#64748B}
+.mq-sims .tb-field svg{color:#64748B}
+.mq-sims .tb-field input,.mq-sims .tb-field select{font:inherit;font-size:13px;color:#0F172A;border:1px solid #E2E8F0;border-radius:8px;padding:6px 9px;background:#fff}
+.mq-sims .tb-field input:focus,.mq-sims .tb-field select:focus{outline:2px solid #BFDBFE;border-color:#93C5FD}
+.mq-sims .tb-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.mq-sims .tb-actions .btn{padding:7px 12px;font-size:13px}
+.mq-sims .tb-info{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12px;color:#475569;padding:0 4px}
+.mq-sims .tb-info b{color:#0F172A;font-weight:600}
+.mq-sims .tb-info .cmp-err{color:#B91C1C;font-weight:600}
+@media (max-width:900px){.mq-sims .tb-sep{display:none}
+.mq-sims .tb-actions{margin-left:0}}
+.mq-sims .topx .hl{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mq-sims .topx h1{margin:0;font-size:26px;font-weight:700}
+.mq-sims .tx-actions{display:flex;gap:8px;margin-right:4px}
+.mq-sims .tx-actions .btn{padding:7px 12px;font-size:13px}
+.mq-sims .tx-right .today-chip{margin-left:4px}
+@media (max-width:900px){.mq-sims .tx-right{flex-wrap:wrap}
+.mq-sims .tx-actions{order:3}}
+.mq-sims .cmp-tgl{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:8px;border:1px dashed #CBD5E1;background:#fff;color:#475569;cursor:pointer;transition:all .15s}
+.mq-sims .cmp-tgl:hover{border-color:#93C5FD;color:#1D4ED8}
+.mq-sims .cmp-tgl[aria-pressed="true"]{border-style:solid;border-color:#2563EB;background:#EFF6FF;color:#1D4ED8}
+.mq-sims .dlt{font-family:var(--mono);font-size:12px;font-weight:600;padding:1px 6px;border-radius:6px;vertical-align:middle}
+.mq-sims .dlt.pos{background:#D1FAE5;color:#065F46}
+.mq-sims .dlt.neg{background:#FEE2E2;color:#991B1B}
+.mq-sims .dlt.eq{background:#F1F5F9;color:#475569}
+

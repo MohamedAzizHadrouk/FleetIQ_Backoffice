@@ -35,7 +35,11 @@ import { PeriodKey } from '../components/PeriodFilter';
 import { ClientsFilterBar } from '../components/ClientsFilterBar';
 import { SimIccidPicker, type SimCreateContext } from '../components/SimIccidPicker';
 import { useFleetStore, type ClientProfile, type FleetClient, type FleetEquipment } from '../state/FleetStore';
-import { useBackofficePermissions } from '../hooks/useBackofficePermissions';
+import { useBackofficePermissions, useBackofficeRole } from '../hooks/useBackofficePermissions';
+import { MaquettePage } from '../components/shell/MaquettePage';
+import clientsMarkup from '../components/clients/maquette/markup.html?raw';
+import { mount as mountClientsMaquette } from '../components/clients/maquette/script';
+import '../components/clients/maquette/style.css';
 import {
   getVisibleClients,
   getVisibleEquipments,
@@ -357,6 +361,7 @@ export function ClientsPage() {
     dashboardSettings
   } = useFleetStore();
   const permissions = useBackofficePermissions();
+  const backofficeRole = useBackofficeRole();
   const canSeeCommercial = permissions?.clients.canSeeCommercialBlocks ?? false;
   const canSeePrices = permissions?.canSeePrices ?? false;
   const [searchParams, setSearchParams] = useSearchParams();
@@ -1199,474 +1204,19 @@ export function ClientsPage() {
     />
   );
 
+  // Maquette validée Clients-v3 : même page, mêmes données, mêmes fenêtres (Documentation et grands paragraphes retirés)
+  const maquetteView = isResellerUser ? 'MyCom' : '';
+  const maquetteRole = backofficeRole === 'responsable_sav' ? 'RespSAV' : backofficeRole === 'technicien_sav' ? 'TechSAV' : '';
   return (
-    <PageShell
-      header={
-        <PageChrome
-          title="Gestion Clients"
-          date={dateFr}
-          actions={
-            <>
-              <TableExportButtons
-                size="compact"
-                onExportExcel={exportFilteredExcel}
-                onExportPdf={exportFilteredPdf}
-                disabled={filteredClients.length === 0}
-              />
-              {permissions?.clients.canAddEdit && (
-                <Button type="button" variant="primary" onClick={() => openAddEditModal()}>
-                  <Plus size={16} aria-hidden="true" />
-                  Ajouter un client
-                </Button>
-              )}
-            </>
-          }
-          bell={bell}
-          tools={
-            <>
-              <label className="inline-flex items-center gap-2 text-label text-text">
-                <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
-                État au
-                <input
-                  type="date"
-                  lang="fr"
-                  value={asOfIso}
-                  max={toIsoDate(realToday)}
-                  onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
-                  className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
-                />
-              </label>
-              <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
-                Aujourd’hui
-              </Button>
-              <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-              <Button
-                type="button"
-                variant={compareOn ? 'primary' : 'secondary'}
-                aria-pressed={compareOn}
-                onClick={() => setCompareOn((v) => !v)}
-              >
-                <GitCompareArrows size={16} aria-hidden="true" />
-                Comparer
-              </Button>
-              {compareOn && (
-                <>
-                  <select
-                    value={compareMode}
-                    onChange={(e) => setCompareMode(e.target.value as CompareMode)}
-                    aria-label="Date de comparaison"
-                    className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
-                  >
-                    <option value="m30">Il y a 30 jours</option>
-                    <option value="y1">Même date l’an dernier</option>
-                    <option value="custom">Date personnalisée</option>
-                  </select>
-                  {compareMode === 'custom' && (
-                    <input
-                      type="date"
-                      lang="fr"
-                      aria-label="Date personnalisée"
-                      value={compareCustom}
-                      max={asOfIso}
-                      onChange={(e) => setCompareCustom(e.target.value)}
-                      className="h-control px-2 border border-border-strong rounded-control text-small bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
-                    />
-                  )}
-                </>
-              )}
-            </>
-          }
-        />
-      }
-    >
-      {saveNotice && (
-        <div
-          role="status"
-          className="flex items-start justify-between gap-3 rounded-control border border-success-200 bg-success-50 px-4 py-3 text-small text-success-700"
-        >
-          <span className="flex items-start gap-2">
-            <CheckCircle2 size={16} className="shrink-0 mt-0.5" aria-hidden="true" />
-            {saveNotice}{' '}
-            {permissions?.routes.subscriptions
-              ? 'Les chiffres de Gestion Clients, Packs et du Tableau de bord sont mis à jour'
-              : 'Les chiffres de Gestion Clients et du Tableau de bord sont mis à jour'}{' '}
-            (maquette : jusqu’au rechargement).
-          </span>
-          <button
-            type="button"
-            onClick={() => setSaveNotice(null)}
-            aria-label="Fermer le message"
-            className="shrink-0 rounded-control px-1 text-success-700 hover:bg-surface focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-          >
-            <XCircle size={16} aria-hidden="true" />
-          </button>
-        </div>
-      )}
-
-      <ClientsOverview
-        data={kpis}
-        isNetwork={isNetwork}
-        canSeeCommercial={canSeeCommercial}
-        compare={compare}
-        delay={delay}
-        onDelayChange={setDelay}
-        alertFilter={alertFilter}
-        onAlertClick={toggleAlert}
-        onOpenDetail={setDetail}
-        onOwnerClick={(o) => {
-          setOwnerFilter(o);
-          scrollToTable();
-        }}
-        onPackClick={(k) => {
-          setPackFilter(k);
-          scrollToTable();
-        }}
-        onClientOpen={(id, tab) => openFiche(id, tab ?? 'synthese')}
+    <>
+      <MaquettePage
+        slug="clients"
+        markup={clientsMarkup}
+        mount={mountClientsMaquette}
+        view={maquetteView}
+        role={maquetteRole}
+        actions={permissions?.clients.canAddEdit ? { 'Ajouter un client': () => openAddEditModal() } : undefined}
       />
-
-      {/* CLI-T-01 – Filtres et tableau des clients (panneau DL § 9.7 / 9.8) */}
-      <div ref={tableRef} className="bg-surface rounded-card border border-border overflow-hidden scroll-mt-4">
-        <ClientsFilterBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          typeFilter={typeFilter}
-          onTypeChange={setTypeFilter}
-          statusFilter={statusFilter}
-          onStatusChange={setStatusFilter}
-          expiryFilterEnabled={expiryFilterEnabled}
-          onExpiryFilterEnabledChange={setExpiryFilterEnabled}
-          periodFilter={periodFilter}
-          onPeriodChange={setPeriodFilter}
-          periodStart={periodStart}
-          periodEnd={periodEnd}
-          onPeriodStartChange={setPeriodStart}
-          onPeriodEndChange={setPeriodEnd}
-          activeFilterCount={activeFilterCount}
-          hasActiveFilters={hasActiveFilters}
-          onReset={resetFilters}
-          filteredCount={filteredClients.length}
-          totalCount={visibleClients.length}
-          ownerFilter={ownerFilter}
-          onOwnerChange={isNetwork ? setOwnerFilter : undefined}
-          owners={ownerOptions}
-          packFilter={packFilter}
-          onPackChange={setPackFilter}
-          packs={packOptions}
-          connFilter={connFilter}
-          onConnChange={setConnFilter}
-          alertLabel={alertFilter ? ALERT_LABELS[alertFilter](delay, kpis.graceDays) : null}
-          onClearAlert={() => setAlertFilter(null)}
-        />
-
-        <div className="overflow-x-auto">
-          <table className="fiq-table w-full border-collapse text-small text-text min-w-[1100px]">
-            <thead>
-              <tr>
-                <th scope="col" className={thCls}>Client</th>
-                <th scope="col" className={thCls}>Revendeur</th>
-                <th scope="col" className={thCls}>Type</th>
-                <th scope="col" className={thCls}>Pack</th>
-                <th scope="col" className={`${thCls} text-right`}>Parc équipements</th>
-                <th scope="col" className={`${thCls} text-right`}>Équipements connectés</th>
-                <th scope="col" className={thCls}>Dernière connexion</th>
-                <th scope="col" className={thCls}>Échéance</th>
-                <th scope="col" className={thCls}>Statut</th>
-                <th scope="col" className={`${thCls} text-right`}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageClients.length === 0 && (
-                <tr>
-                  <td colSpan={10} className="h-row px-3 py-12 text-center text-text-muted">
-                    Aucun client ne correspond aux filtres.
-                  </td>
-                </tr>
-              )}
-              {pageClients.map((client) => {
-                const info = kpis.infos.get(client.id);
-                const expanded = expandedId === client.id;
-                const dte = info?.daysToExpiry ?? null;
-                const rowRail =
-                  !info?.active
-                    ? 'shadow-rail-danger'
-                    : info.blockedInDays != null || (dte != null && dte >= 0 && dte <= delay)
-                      ? 'shadow-rail-warning'
-                      : '';
-                return (
-                  <React.Fragment key={client.id}>
-                    <tr className="hover:bg-surface-muted transition-colors duration-fast ease-standard">
-                      <td className={`h-row px-3 py-1.5 border-b border-border-subtle align-middle font-medium text-text ${rowRail}`}>
-                        {permissions?.clients.canViewDetails ? (
-                          <button type="button" onClick={() => openFiche(client.id)} className="text-left font-medium text-text hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control">
-                            {client.name}
-                          </button>
-                        ) : (
-                          client.name
-                        )}
-                      </td>
-                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle text-text">{client.reseller}</td>
-                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle">
-                        <span
-                          className={`inline-flex h-6 px-2 items-center rounded-tag border text-mention font-medium ${client.type === 'Revendeur' ? 'bg-info-50 text-info-700 border-info-200' : 'bg-neutral-50 text-neutral-700 border-neutral-200'}`}
-                        >
-                          {client.type === 'Revendeur' ? 'Revendeur' : 'Simple'}
-                        </span>
-                      </td>
-                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle">
-                        {info?.packs.length ? (
-                          <div className="flex flex-col gap-1">
-                            {info.packs.map((p) => (
-                              <span
-                                key={p.packId}
-                                className="inline-flex w-fit items-center gap-1 h-6 px-2 rounded-tag border border-primary-200 bg-primary-50 text-primary text-mention font-medium whitespace-nowrap"
-                              >
-                                {p.name}
-                                {client.type !== 'Revendeur' && <span className="text-text-muted font-normal font-qty">{p.equipments} éq.</span>}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-text-muted italic text-mention">Sans pack</span>
-                        )}
-                      </td>
-                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle text-right">
-                        {client.type === 'Revendeur' ? (
-                          (() => {
-                            const total = equipmentStats.resellerTotals.get(client.name) ?? 0;
-                            return (
-                              <span
-                                className={`text-small font-medium font-qty ${total === 0 ? 'text-text-muted italic' : 'text-text'}`}
-                                title={`${total} équipement${total > 1 ? 's' : ''} affecté${total > 1 ? 's' : ''} au total`}
-                              >
-                                {total === 0 ? 'Aucun' : total}
-                              </span>
-                            );
-                          })()
-                        ) : (
-                          (() => {
-                            const stats = equipmentStats.simpleByClient.get(client.name) ?? { installed: 0, total: 0 };
-                            if (stats.total === 0) {
-                              return <span className="text-text-muted italic text-mention">Aucun équipement</span>;
-                            }
-                            return (
-                              <span
-                                className="text-small font-medium font-qty text-text"
-                                title={`${stats.installed} installé${stats.installed > 1 ? 's' : ''} sur ${stats.total} affecté${stats.total > 1 ? 's' : ''}`}
-                              >
-                                <span className="text-success-700">{stats.installed}</span>
-                                <span className="text-text-muted mx-1">/</span>
-                                <span>{stats.total}</span>
-                              </span>
-                            );
-                          })()
-                        )}
-                      </td>
-                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle text-right">
-                        {info && info.assigned > 0 ? (
-                          <button
-                            type="button"
-                            aria-expanded={expanded}
-                            onClick={() => setExpandedId(expanded ? null : client.id)}
-                            className="text-right w-36 ml-auto focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control"
-                            title="Voir le détail par équipement"
-                          >
-                            <span className="inline-flex items-center justify-end gap-1 text-small font-medium font-qty">
-                              <span className={info.connected < info.assigned ? 'text-danger-700' : 'text-success-700'}>{fmt(info.connected)}</span>
-                              <span className="text-text-muted">/ {fmt(info.assigned)}</span>
-                              {expanded ? <ChevronUp size={14} aria-hidden="true" /> : <ChevronDown size={14} aria-hidden="true" />}
-                            </span>
-                            <span className="mt-1 block h-1.5 rounded-[1px] bg-danger-200 overflow-hidden" aria-hidden="true">
-                              <span className="block h-full bg-success rounded-[1px]" style={{ width: `${pct(info.connected, info.assigned)}%` }} />
-                            </span>
-                            {client.type === 'Revendeur' && <span className="block text-mention text-text-muted text-right">tous ses clients</span>}
-                          </button>
-                        ) : (
-                          <span className="text-text-muted italic text-mention">—</span>
-                        )}
-                      </td>
-                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle">{formatClientLastConnection(equipmentStats.lastConnectionByClient.get(client.name))}</td>
-                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle whitespace-nowrap">
-                        {frIso(client.expiry)}
-                        {info?.blockedInDays != null ? (
-                          <span className="ml-2 inline-flex h-6 items-center px-2 rounded-tag border border-danger-200 bg-danger-50 text-danger-700 text-mention font-medium">blocage J-{info.blockedInDays}</span>
-                        ) : info?.active && dte != null && dte >= 0 && dte <= delay ? (
-                          <span className="ml-2 inline-flex h-6 items-center px-2 rounded-tag border border-warning-200 bg-warning-50 text-warning-700 text-mention font-medium">J-{dte}</span>
-                        ) : null}
-                      </td>
-                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle">
-                        {info?.active ? (
-                          info.blockedInDays != null ? (
-                            <StatusTag label={`Actif · bloqué dans ${info.blockedInDays} j`} family="warning" icon={Eye} />
-                          ) : (
-                            <StatusTagFromLabel label="Actif" />
-                          )
-                        ) : (
-                          <StatusTagFromLabel label="Bloqué" />
-                        )}
-                      </td>
-                      <td className="h-row px-3 py-1.5 border-b border-border-subtle align-middle text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          {permissions?.clients.canAddEdit && (
-                            <button
-                              onClick={() => openAddEditModal(enrichClientForModal(client, clientProfiles))}
-                              className="inline-flex h-control-sm w-control-sm items-center justify-center text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-                              aria-label="Modifier"
-                              title="Modifier"
-                            >
-                              <Edit2 size={16} aria-hidden="true" />
-                            </button>
-                          )}
-                          {permissions?.clients.canViewDetails && (
-                            <button
-                              onClick={() => openFiche(client.id)}
-                              className="inline-flex h-control-sm w-control-sm items-center justify-center text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-                              aria-label="Voir détails"
-                              title="Voir détails"
-                            >
-                              <Eye size={16} aria-hidden="true" />
-                            </button>
-                          )}
-                          {permissions?.clients.canViewEquipments && (
-                            <button
-                              onClick={() => openClientEquipmentsModal(client)}
-                              className="inline-flex h-control-sm w-control-sm items-center justify-center text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-                              aria-label="Équipements affectés"
-                              title="Équipements affectés"
-                            >
-                              <Cpu size={16} aria-hidden="true" />
-                            </button>
-                          )}
-                          {permissions?.clients.canManagePayment && (
-                            <button
-                              onClick={() => openPaymentModal(enrichClientForModal(client, clientProfiles))}
-                              className="inline-flex h-control-sm w-control-sm items-center justify-center text-text-muted hover:text-text hover:bg-surface-muted rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-                              aria-label="Valider le paiement"
-                              title="Valider le paiement"
-                            >
-                              <CreditCard size={16} aria-hidden="true" />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                    {expanded && info && (
-                      <tr className="bg-surface-muted">
-                        <td colSpan={10} className="px-4 py-3">
-                          <table className="w-full text-small">
-                            <thead>
-                              <tr className="text-overline uppercase text-text">
-                                <th className="py-1 text-left">N° de série</th>
-                                <th className="py-1 text-left">Pack</th>
-                                <th className="py-1 text-left">Affecté le</th>
-                                <th className="py-1 text-left">1er envoi</th>
-                                <th className="py-1 text-left">Dernière position</th>
-                                <th className="py-1 text-left">Statut</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {info.equipments.slice(0, 50).map((e) => {
-                                const last = e.lastCommunication ? new Date(e.lastCommunication) : null;
-                                const ok = !!last && daysBetween(last, nowRef) * 24 <= disconnectThresholdHours;
-                                const statusLabel = !last ? 'Non connecté' : ok ? 'Connecté' : 'Non connecté';
-                                return (
-                                  <tr key={e.id}>
-                                    <td className="py-1.5 text-mention tracking-[0.03em] text-text-muted">{e.serial}</td>
-                                    <td className="py-1.5">{packs.find((p) => p.id === e.packId)?.name ?? '—'}</td>
-                                    <td className="py-1.5">{frIso(e.assignedAt ?? e.contractDate)}</td>
-                                    <td className="py-1.5">{e.firstSendDate ? frIso(e.firstSendDate) : 'Jamais'}</td>
-                                    <td className="py-1.5">{last ? last.toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '—'}</td>
-                                    <td className="py-1.5">
-                                      {!last ? (
-                                        <StatusTag label="Jamais connecté" family="danger" icon={WifiOff} />
-                                      ) : (
-                                        <StatusTagFromLabel label={statusLabel} />
-                                      )}
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                          {info.equipments.length > 50 && (
-                            <p className="mt-1 text-mention text-text-muted">50 premiers équipements sur {fmt(info.equipments.length)}.</p>
-                          )}
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2 border-t border-border-subtle text-mention text-text-muted">
-          <label className="inline-flex items-center gap-2 text-small">
-            Afficher
-            <select
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              className="h-control-sm px-2 border border-border-strong rounded-control bg-surface text-small focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-            >
-              {PAGE_SIZES.map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-            par page
-          </label>
-          <span className="text-small">
-            {filteredClients.length ? (Math.min(page, pageCount) - 1) * pageSize + 1 : 0}–{Math.min(Math.min(page, pageCount) * pageSize, filteredClients.length)} sur{' '}
-            {fmt(filteredClients.length)} client(s)
-          </span>
-          <div className="inline-flex items-center gap-1">
-            <button
-              type="button"
-              aria-label="Page précédente"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="h-control-sm w-control-sm inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-            >
-              <ChevronLeft size={16} aria-hidden="true" />
-            </button>
-            <span className="px-2 font-qty text-text text-small">
-              {Math.min(page, pageCount)} / {pageCount}
-            </span>
-            <button
-              type="button"
-              aria-label="Page suivante"
-              disabled={page >= pageCount}
-              onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
-              className="h-control-sm w-control-sm inline-flex items-center justify-center rounded-control border border-border bg-surface hover:bg-surface-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-            >
-              <ChevronRight size={16} aria-hidden="true" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {canSeeCommercial && (
-        <ClientsActivity data={kpis} isNetwork={isNetwork} onOpenDetail={setDetail} onClientOpen={(id) => openFiche(id)} />
-      )}
-
-      {/* CLI-F-01 – fiche client unique */}
-      <ClientFiche
-        info={ficheInfo}
-        profile={fiche ? clientProfiles[fiche.id] : undefined}
-        packs={packs}
-        offerChanges={offerChanges}
-        userConnections={userConnections}
-        simCards={simCards}
-        simConsumption={simConsumption}
-        canSeePrices={canSeePrices}
-        asOf={asOf}
-        now={nowRef}
-        delayDays={delay}
-        connHours={disconnectThresholdHours}
-        initialTab={fiche?.tab}
-        onClose={() => setFiche(null)}
-      />
-      <DetailModal detail={detail} onClose={() => setDetail(null)} canOpen={() => false} />
 
       {/* --- 1. MULTI-STEP ADD/EDIT MODAL --- */}
       <Modal
@@ -2367,10 +1917,6 @@ export function ClientsPage() {
               {clientForPayment?.status === 'Active' ? 'Actif' : 'Bloqué'}
             </span>
           </div>
-          <p className="text-small text-text-muted">
-            La validation du paiement met à jour l’expiration (client, packs) et réactive le client. Le blocage
-            empêche l’accès jusqu’à régularisation.
-          </p>
           <div>
             <label htmlFor="clients-payment-expiry" className="block text-label font-medium text-text mb-1">
               Nouvelle date d'expiration
@@ -3299,6 +2845,6 @@ export function ClientsPage() {
           </div>
         </div>
       </Modal>
-    </PageShell>
+    </>
   );
 }

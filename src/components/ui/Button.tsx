@@ -14,10 +14,10 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const VARIANT: Record<ButtonVariant, string> = {
   primary:
-    'bg-primary text-text-inverse border border-primary hover:bg-primary-hover active:bg-primary-active',
+    'bg-primary text-text-inverse border border-primary font-semibold hover:bg-primary-hover active:bg-primary-active',
   secondary:
-    'bg-surface text-primary border border-primary hover:bg-primary-50 active:bg-primary-100',
-  neutral: 'bg-surface text-text border border-border-strong hover:bg-surface-muted',
+    'bg-surface text-[#334155] border border-border-strong hover:border-accent hover:text-primary-hover active:bg-primary-50',
+  neutral: 'bg-surface text-[#334155] border border-border hover:border-accent hover:text-primary-hover',
   ghost: 'bg-transparent text-primary border border-transparent hover:bg-primary-50',
   danger: 'bg-danger text-text-inverse border border-danger hover:bg-danger-hover'
 };

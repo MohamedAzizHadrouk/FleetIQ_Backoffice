@@ -32,25 +32,25 @@ export function KpiDataTable({ table }: { table: KpiTable }) {
     return <p className="py-6 text-center text-small text-text-muted">Aucune ligne.</p>;
   }
   return (
-    <div className="overflow-hidden overflow-x-auto rounded-card border border-border bg-surface">
-      <table className="w-full text-small text-text tabular-nums">
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse text-small text-text tabular-nums">
         <thead>
           <tr className="border-b border-border bg-surface-muted">
             {table.headers.map((h, i) => (
               <th
                 key={h + i}
-                className={`px-4 py-3 text-overline font-medium uppercase tracking-wide text-text-muted ${i ? 'text-right' : 'text-left'}`}
+                className={`px-2.5 py-2 text-overline uppercase text-text-muted ${i ? 'text-right' : 'text-left'}`}
               >
                 {h}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-border-subtle">
+        <tbody>
           {table.rows.map((r, ri) => (
-            <tr key={ri} className="transition-colors duration-fast ease-standard hover:bg-primary-50">
+            <tr key={ri} className="border-b border-border-subtle">
               {r.map((v, i) => (
-                <td key={i} className={`px-4 py-3 align-middle ${i ? 'text-right' : 'text-left font-medium'}`}>
+                <td key={i} className={`px-2.5 py-[9px] align-middle ${i ? 'text-right font-mono' : 'text-left'}`}>
                   {typeof v === 'number' ? v.toLocaleString('fr-FR') : v}
                 </td>
               ))}
@@ -76,7 +76,7 @@ export function DetailModal({ detail, onClose, canOpen }: Props) {
 
   const footer = (
     <>
-      <Button type="button" variant="neutral" onClick={onClose}>
+      <Button type="button" variant="secondary" onClick={onClose}>
         Fermer
       </Button>
       {route && d && (
@@ -98,10 +98,10 @@ export function DetailModal({ detail, onClose, canOpen }: Props) {
   return (
     <Modal isOpen={!!d} onClose={onClose} title={d?.title ?? ''} size={wide ? 'xl' : 'lg'} footer={footer}>
       {d && (
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <div className="text-kpi tabular-nums text-text">{d.big}</div>
-            {d.caption ? <p className="max-w-3xl text-small leading-relaxed text-text-muted">{d.caption}</p> : null}
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-baseline gap-3">
+            <div className="font-mono text-[34px] font-semibold leading-none tabular-nums text-text">{d.big}</div>
+            {d.caption ? <span className="text-small text-text-muted">{d.caption}</span> : null}
           </div>
 
           {d.chart && <div className="space-y-3">{d.chart}</div>}

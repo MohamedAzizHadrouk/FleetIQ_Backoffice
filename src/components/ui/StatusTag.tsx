@@ -59,11 +59,11 @@ const RAIL_CLS: Record<StatusFamily, string> = {
 export function StatusTag({ label, family, icon: Icon, rail = false, className = '' }: StatusTagProps) {
   return (
     <span
-      className={`inline-flex items-center gap-1 h-6 px-2 rounded-tag border text-mention font-medium whitespace-nowrap ${FAMILY_CLS[family]} ${
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-tag border border-transparent text-[11.5px] font-semibold whitespace-nowrap ${FAMILY_CLS[family]} ${
         rail ? RAIL_CLS[family] : ''
       } ${className}`}
     >
-      {Icon && <Icon size={14} aria-hidden="true" />}
+      {Icon && <Icon size={12} aria-hidden="true" />}
       {label}
     </span>
   );

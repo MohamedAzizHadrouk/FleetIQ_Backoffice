@@ -34,12 +34,13 @@ import { daysBetween, formatMonthFr, toIsoMonth } from '../../state/mock/dates';
 import { fmt, frDate, frIso, healthScore, monthlyConnections12, pct, type ClientInfo } from '../../utils/clientsKpis';
 
 export type FicheTab = 'synthese' | 'equipements' | 'activite' | 'informations';
+/** Onglets de la maquette ClientDetail-v3 : Statistiques (synthèse + activité) · Informations · Équipements (n) */
 const TABS: Array<{ key: FicheTab; label: string }> = [
-  { key: 'synthese', label: 'Synthèse' },
-  { key: 'equipements', label: 'Équipements' },
-  { key: 'activite', label: 'Activité' },
-  { key: 'informations', label: 'Informations' }
+  { key: 'synthese', label: 'Statistiques' },
+  { key: 'informations', label: 'Informations' },
+  { key: 'equipements', label: 'Équipements' }
 ];
+const normTab = (t: FicheTab): FicheTab => (t === 'activite' ? 'synthese' : t);
 
 
 type Props = {
@@ -97,8 +98,8 @@ export function ClientFiche({
   initialTab = 'synthese',
   onClose
 }: Props) {
-  const [tab, setTab] = useState<FicheTab>(initialTab);
-  useEffect(() => setTab(initialTab), [info?.client.id, initialTab]);
+  const [tab, setTab] = useState<FicheTab>(normTab(initialTab));
+  useEffect(() => setTab(normTab(initialTab)), [info?.client.id, initialTab]);
   const c = info?.client;
   const packName = useMemo(() => new Map(packs.map((p) => [p.id, p.name])), [packs]);
 
@@ -142,7 +143,7 @@ export function ClientFiche({
   const daysSinceLogin = info.lastLogin ? Math.max(0, Math.round(daysBetween(info.lastLogin, asOf))) : null;
 
   return (
-    <Modal isOpen={!!info} onClose={onClose} title="Détails du client" size="xl">
+    <Modal isOpen={!!info} onClose={onClose} title="Détails du Client" size="xl">
       <div className="space-y-5 pb-1">
         {/* En-tête : type, statut, revendeur, pack, priorité */}
         <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-border">
@@ -191,8 +192,8 @@ export function ClientFiche({
               role="tab"
               aria-selected={tab === t.key}
               onClick={() => setTab(t.key)}
-              className={`relative h-control px-3 text-label transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                tab === t.key ? 'text-primary font-semibold after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[3px] after:bg-primary' : 'text-text-muted hover:text-text'
+              className={`relative min-h-[44px] px-1 mr-5 text-body transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+                tab === t.key ? 'text-primary-hover font-semibold after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[2px] after:bg-primary-hover' : 'text-text-muted hover:text-text'
               }`}
             >
               {t.label}
@@ -250,7 +251,7 @@ export function ClientFiche({
                   ) : (
                     <p className="mt-2 text-small text-text-muted">Aucune consommation sur les 6 derniers mois.</p>
                   )}
-                  <div className="text-mention text-text-muted">En Mo, toutes les puces du client · données fictives (SIMConsumptionHistory à confirmer).</div>
+                  <div className="text-mention text-text-muted">En Mo, toutes les puces du client</div>
                 </div>
               </div>
             )}
@@ -295,10 +296,6 @@ export function ClientFiche({
                   <dt className="text-text-muted">Quota véhicules (20 %)</dt>
                   <dd className="text-right tabular-nums">{score.quota}</dd>
                 </dl>
-                <p className="mt-2 text-mention text-text-muted">
-                  Barème proposé par la maquette, à valider avec Tunav. 0,30×{score.connexion} + 0,25×{score.contrat} + 0,25×{score.installation} + 0,20×
-                  {score.quota} = {score.total}
-                </p>
               </div>
             </div>
 
@@ -371,14 +368,13 @@ export function ClientFiche({
           </div>
         )}
 
-        {tab === 'activite' && (
+        {tab === 'synthese' && (
           <div role="tabpanel" className="space-y-5">
             {/* CD-6 – Connexion mensuelle 12 mois */}
             <div>
               <h4 className="text-small font-semibold text-text">Connexion mensuelle</h4>
               <p className="text-mention text-text-muted mb-2">
-                {conn12[0] ? `${formatMonthFr(conn12[0].month)} → ${formatMonthFr(conn12[conn12.length - 1].month)}` : ''} · canal de la majorité des
-                connexions · source : journal des connexions utilisateur (à confirmer back-end)
+                {conn12[0] ? `${formatMonthFr(conn12[0].month)} → ${formatMonthFr(conn12[conn12.length - 1].month)}` : ''}
               </p>
               <div className="grid grid-cols-6 md:grid-cols-12 gap-1.5">
                 {conn12.map((m) => (
@@ -443,9 +439,6 @@ export function ClientFiche({
                   </tbody>
                 </table>
               </div>
-              <p className="mt-1 text-mention text-text-muted">
-                Écart de prix non affiché : aucun prix de pack dans les données (historique des affectations à confirmer back-end).
-              </p>
             </div>
           </div>
         )}
@@ -498,7 +491,6 @@ export function ClientFiche({
                   <div className="font-medium text-text" aria-label="Mot de passe masqué">
                     ••••
                   </div>
-                  <div className="text-mention text-text-muted">Jamais affiché · modification par « Modifier le client ».</div>
                 </div>
               </div>
             </section>

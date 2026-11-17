@@ -57,9 +57,8 @@ const ROLE_META: Record<
 };
 
 /**
- * Zone A – barre latérale claire (palette TUNAV) + bascule réduire / agrandir.
- * Fond Blanc + Fond clair, texte Anthracite, action Bleu Royal – plus confortable à l’œil
- * que l’ancien fond anthracite plein.
+ * Zone A – barre latérale design system TUNAV :
+ * Blanc / Fond clair, bande Bleu Royal + logo TUNAV, action Bleu Royal.
  */
 export function Sidebar({
   role,
@@ -101,14 +100,12 @@ export function Sidebar({
           <X size={20} aria-hidden="true" />
         </button>
 
-        {/* Rail desktop : symbole seul */}
         <img
           src="/brand/tunav-symbole-blanc.svg"
           alt="TUNAV"
           className={`h-7 w-7 shrink-0 ${rail ? 'hidden md:block' : 'hidden'}`}
         />
 
-        {/* Large : logo + sous-titre (mobile toujours ; desktop si non réduit) */}
         <div className={`min-w-0 flex-1 flex-col gap-0.5 pr-8 md:pr-0 ${rail ? 'flex md:hidden' : 'flex'}`}>
           <img
             src="/brand/tunav-logo-horizontal-sans-signature-blanc-ui.svg"
@@ -133,11 +130,11 @@ export function Sidebar({
         )}
       </div>
 
-      {/* Bloc de rôle – masqué en rail */}
+      {/* Bloc de rôle – Bleu Royal uni (pas de dégradés multi-couleurs) */}
       <div className={`m-3 ${rail ? 'md:hidden' : ''}`}>
         <div className="flex items-center gap-2.5 rounded-control border border-border bg-surface-muted px-3 py-2">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-primary text-text-inverse">
-            <RoleIcon size={16} />
+            <RoleIcon size={16} aria-hidden="true" />
           </div>
           <div className="min-w-0">
             <div className="text-overline uppercase text-text-muted">Connecté</div>
@@ -149,7 +146,6 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* Rail : pastille rôle seule */}
       {rail && (
         <div className="hidden md:flex justify-center py-2" title={roleMeta.label}>
           <div className="flex h-9 w-9 items-center justify-center rounded-control bg-primary-50 text-primary">

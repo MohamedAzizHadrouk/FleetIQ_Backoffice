@@ -94,8 +94,9 @@ export function ClientsFilterBar({
         )}
       </div>
 
-      <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3">
-        <div className="lg:col-span-5">
+      {/* Ordre de la maquette Clients-v3 : Recherche · Propriétaire · Type client · Statut · Pack · Connexion équip. */}
+      <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-3">
+        <div>
           <label className="block text-mention font-medium text-text mb-1">Recherche</label>
           <div className="relative">
             <Search
@@ -112,15 +113,30 @@ export function ClientsFilterBar({
             />
           </div>
         </div>
-        <div className="lg:col-span-3">
+        {onOwnerChange && owners && (
+          <div>
+            <label htmlFor="cli-f-owner" className="block text-mention font-medium text-text mb-1">
+              Propriétaire
+            </label>
+            <select id="cli-f-owner" value={ownerFilter} onChange={(e) => onOwnerChange(e.target.value)} className={selectCls}>
+              <option value="">Tous les propriétaires</option>
+              {owners.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        <div>
           <label className="block text-mention font-medium text-text mb-1">Type client</label>
           <select value={typeFilter} onChange={(e) => onTypeChange(e.target.value)} className={selectCls}>
             <option value="">Tous les types</option>
-            <option value="Simple">Simple</option>
+            <option value="Simple">Client final</option>
             <option value="Revendeur">Revendeur</option>
           </select>
         </div>
-        <div className="lg:col-span-4">
+        <div>
           <label className="block text-mention font-medium text-text mb-1">Statut</label>
           <select value={statusFilter} onChange={(e) => onStatusChange(e.target.value)} className={selectCls}>
             <option value="">Tous les statuts</option>
@@ -128,56 +144,36 @@ export function ClientsFilterBar({
             <option value="Blocked">Bloqué</option>
           </select>
         </div>
+        {onPackChange && packs && (
+          <div>
+            <label htmlFor="cli-f-pack" className="block text-mention font-medium text-text mb-1">
+              Pack
+            </label>
+            <select id="cli-f-pack" value={packFilter} onChange={(e) => onPackChange(e.target.value)} className={selectCls}>
+              <option value="">Tous les packs</option>
+              {packs.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+              <option value="none">Sans pack</option>
+            </select>
+          </div>
+        )}
+        {onConnChange && (
+          <div>
+            <label htmlFor="cli-f-conn" className="block text-mention font-medium text-text mb-1">
+              Connexion équip.
+            </label>
+            <select id="cli-f-conn" value={connFilter} onChange={(e) => onConnChange(e.target.value)} className={selectCls}>
+              <option value="">Tous</option>
+              <option value="tous">Tous connectés</option>
+              <option value="partiel">Au moins 1 non connecté</option>
+              <option value="aucun">Aucun équipement</option>
+            </select>
+          </div>
+        )}
       </div>
-
-      {(onOwnerChange || onPackChange || onConnChange) && (
-        <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3">
-          {onOwnerChange && owners && (
-            <div>
-              <label htmlFor="cli-f-owner" className="block text-mention font-medium text-text mb-1">
-                Propriétaire
-              </label>
-              <select id="cli-f-owner" value={ownerFilter} onChange={(e) => onOwnerChange(e.target.value)} className={selectCls}>
-                <option value="">Tous les propriétaires</option>
-                {owners.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-          {onPackChange && packs && (
-            <div>
-              <label htmlFor="cli-f-pack" className="block text-mention font-medium text-text mb-1">
-                Pack
-              </label>
-              <select id="cli-f-pack" value={packFilter} onChange={(e) => onPackChange(e.target.value)} className={selectCls}>
-                <option value="">Tous les packs</option>
-                {packs.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-                <option value="none">Sans pack</option>
-              </select>
-            </div>
-          )}
-          {onConnChange && (
-            <div>
-              <label htmlFor="cli-f-conn" className="block text-mention font-medium text-text mb-1">
-                Connexion équip.
-              </label>
-              <select id="cli-f-conn" value={connFilter} onChange={(e) => onConnChange(e.target.value)} className={selectCls}>
-                <option value="">Tous</option>
-                <option value="tous">Tous connectés</option>
-                <option value="partiel">Au moins 1 non connecté</option>
-                <option value="aucun">Aucun équipement</option>
-              </select>
-            </div>
-          )}
-        </div>
-      )}
 
       {alertLabel && (
         <div className="col-span-12 flex flex-wrap items-center gap-2 rounded-control border border-info-200 bg-info-50 px-3 py-2 text-small text-text">
@@ -236,11 +232,6 @@ export function ClientsFilterBar({
               onEndDateChange={onPeriodEndChange}
             />
           </div>
-        )}
-        {!expiryFilterEnabled && (
-          <p className="mt-2 text-mention text-text-muted">
-            Toutes les dates d&apos;expiration sont affichées. Activez le filtre pour restreindre la liste.
-          </p>
         )}
       </div>
 

@@ -4,8 +4,8 @@
  * CLI-A-04a · CLI-A-01 · CLI-A-02 · CLI-A-04b (À traiter, un seul filtre « Délai ») · CLI-D-01 · CLI-D-02.
  * Les blocs commerciaux (A-01, A-02, A-04 a) sont masqués au Responsable SAV (canSeeCommercial = false).
  */
-import type { ReactNode } from 'react';
-import { ArrowRight, Cpu, UserCheck, Users } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import { ArrowRight, ChevronLeft, ChevronRight, Cpu, UserCheck, Users } from 'lucide-react';
 import { HorizontalBarList, Legend, StackedBar } from '../charts';
 import type { DetailSpec } from '../dashboard/DetailModal';
 import { Panel, SectionRule } from '../shell/PageShell';
@@ -58,26 +58,37 @@ function TopCard({
   title,
   children,
   onOpen,
-  rail
+  rail,
+  icon: Icon,
+  iconCls = 'bg-primary-50 text-primary'
 }: {
   kpiId: string;
   title: string;
   children: ReactNode;
   onOpen: () => void;
   rail?: string;
+  icon?: typeof Users;
+  iconCls?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className={`group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 pt-3 hover:border-border-strong transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${rail ?? ''}`}
+      className={`group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 hover:border-accent transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${rail ?? ''}`}
     >
-      <span className="text-overline uppercase text-text-muted">{title}</span>
+      <span className="flex items-start justify-between gap-2">
+        <span className="text-overline uppercase text-text-muted">{title}</span>
+        {Icon && (
+          <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-control ${iconCls}`} aria-hidden="true">
+            <Icon size={16} />
+          </span>
+        )}
+      </span>
       {children}
-      <span className="mt-auto inline-flex items-center gap-1 pt-2 border-t border-border-subtle text-mention font-medium text-primary">
+      <span className="mt-auto inline-flex items-center gap-1 self-end text-[11.5px] text-text-muted group-hover:text-primary-hover">
         Voir le détail
-        <ArrowRight size={14} aria-hidden="true" />
+        <ArrowRight size={12} aria-hidden="true" />
       </span>
     </button>
   );
@@ -175,7 +186,8 @@ export function ClientsOverview({
     alertCards.push({ key: 'echeance', title: `Échéance ≤ ${delay} j`, count: alerts.echeance.list.length, unit: 'client(s)', detail: alerts.echeance.detail });
     alertCards.push({ key: 'relance', title: `Sans connexion > ${delay} j`, count: alerts.relance.list.length, unit: 'client(s)', detail: alerts.relance.detail });
   }
-  alertCards.push({
+  // Maquette Clients-v3 : 3 cartes (Bloqués, Échéance, Sans connexion). « Jamais connectés » reste la carte du Responsable SAV.
+  if (!canSeeCommercial) alertCards.push({
     key: 'jamais',
     title: 'Équipements jamais connectés',
     count: alerts.jamais.equipments.length,
@@ -184,17 +196,32 @@ export function ClientsOverview({
   });
 
   const d01Max = Math.max(1, ...data.d01.map((r) => r.equipments));
-  const k02Rail = k02.blocked > 0 ? 'shadow-rail-danger' : '';
-  const k04Rail = k04.notConnected > 0 ? 'shadow-rail-warning' : '';
+
+  /* ---------- Revendeurs (vue Tunav) : un propriétaire par ligne, le clic filtre la page ---------- */
+  const dueIds = new Set(alerts.echeance.list.map((c) => c.id));
+  const resellerRows = ownersOf().map(([owner, list]) => {
+    const finals = list.filter((c) => c.type !== 'Revendeur');
+    const assigned = finals.reduce((s, c) => s + (infos.get(c.id)?.assigned ?? 0), 0);
+    const connected = finals.reduce((s, c) => s + (infos.get(c.id)?.connected ?? 0), 0);
+    const blocked = list.filter((c) => !infos.get(c.id)?.active).length;
+    const due = list.filter((c) => dueIds.has(c.id)).length;
+    return { owner, clients: list.length, assigned, connected, blocked, due };
+  });
+  const RV_PAGE = 5;
+  const rvPages = Math.max(1, Math.ceil(resellerRows.length / RV_PAGE));
+  const [rvPage, setRvPage] = useState(0);
+  const rvCur = Math.min(rvPage, rvPages - 1);
+  const rvShown = resellerRows.slice(rvCur * RV_PAGE, rvCur * RV_PAGE + RV_PAGE);
+  const k02Rail = '';
+  const k04Rail = '';
 
   return (
     <div className="grid grid-cols-12 gap-4 gap-y-8">
       {/* Cartes du haut — parts égales sur 12 cols */}
       <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
-        <TopCard kpiId="CLI-K-01" title="Total clients" onOpen={openK01}>
+        <TopCard kpiId="CLI-K-01" title="Total clients" onOpen={openK01} icon={Users}>
           <span className="flex items-baseline gap-2">
             <span className="text-kpi text-text font-qty">{fmt(k01.total)}</span>
-            <Users size={16} className="text-text-muted" aria-hidden="true" />
           </span>
           <p className="text-small text-text-muted">
             dont {fmt(k01.resellers)} revendeur(s) · {fmt(k01.equipments)} équip.
@@ -205,13 +232,12 @@ export function ClientsOverview({
             </p>
           )}
         </TopCard>
-        <TopCard kpiId="CLI-K-02" title="Statut des clients" onOpen={openK02} rail={k02Rail}>
+        <TopCard kpiId="CLI-K-02" title="Statut des clients" onOpen={openK02} rail={k02Rail} icon={UserCheck}>
           <span className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-kpi text-text font-qty">{fmt(k02.active)}</span>
+            <span className="text-kpi text-success font-qty">{fmt(k02.active)}</span>
             <span className="text-small text-text-muted">actifs ·</span>
-            <span className="text-kpi text-text font-qty">{fmt(k02.blocked)}</span>
+            <span className="text-kpi text-danger font-qty">{fmt(k02.blocked)}</span>
             <span className="text-small text-text-muted">bloqués</span>
-            <UserCheck size={16} className="text-text-muted" aria-hidden="true" />
           </span>
           <div className="mt-1">
             <StackedBar
@@ -229,12 +255,11 @@ export function ClientsOverview({
             </p>
           )}
         </TopCard>
-        <TopCard kpiId="CLI-K-04" title="Équipements connectés" onOpen={openK04} rail={k04Rail}>
+        <TopCard kpiId="CLI-K-04" title="Parc équipements" onOpen={openK04} rail={k04Rail} icon={Cpu} iconCls="bg-success-50 text-success">
           <span className="flex items-baseline gap-2 flex-wrap">
             <span className="text-kpi text-text font-qty">{fmt(k04.connected)}</span>
             <span className="text-small text-text-muted">/ {fmt(k04.assigned)}</span>
             <span className="text-small font-semibold text-text">{pct(k04.connected, k04.assigned)} %</span>
-            <Cpu size={16} className="text-text-muted" aria-hidden="true" />
           </span>
           <div className="mt-1">
             <StackedBar
@@ -277,18 +302,11 @@ export function ClientsOverview({
             ) : undefined
           }
         />
-        <div className={`col-span-12 grid grid-cols-1 sm:grid-cols-2 gap-4 ${alertCards.length >= 4 ? 'xl:grid-cols-4' : ''}`}>
+        <div className={`col-span-12 grid grid-cols-1 sm:grid-cols-2 gap-4 ${alertCards.length >= 3 ? 'xl:grid-cols-3' : ''}`}>
           {alertCards.map((a) => {
             const meta = ALERT_META[a.key];
             const on = alertFilter === a.key;
-            const rail =
-              a.count > 0
-                ? meta.family === 'danger'
-                  ? 'shadow-rail-danger'
-                  : meta.family === 'warning'
-                    ? 'shadow-rail-warning'
-                    : 'shadow-rail-info'
-                : '';
+            const rail = on ? 'shadow-rail-info' : '';
             return (
               <button
                 key={a.key}
@@ -315,12 +333,82 @@ export function ClientsOverview({
                 <p className="text-mention text-text-muted truncate" title={a.detail}>
                   {a.detail}
                 </p>
-                {on && <p className="mt-1 text-mention text-text-muted">Filtre actif</p>}
               </button>
             );
           })}
         </div>
       </section>
+
+      {/* Revendeurs (vue Tunav) */}
+      {isNetwork && (
+        <section aria-labelledby="cli-rv" className="col-span-12 grid grid-cols-12 gap-4">
+          <SectionRule id="cli-rv" title="Revendeurs" />
+          <div className="col-span-12 overflow-hidden rounded-card border border-border bg-surface">
+            <div className="overflow-x-auto px-3 pt-2">
+              <table className="fiq-table">
+                <thead>
+                  <tr>
+                    <th>Propriétaire</th>
+                    <th>Clients</th>
+                    <th>Équipements</th>
+                    <th className="w-[24%]">Connectés</th>
+                    <th>Bloqués</th>
+                    <th>Échéances ≤ {delay} j</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rvShown.map((r) => {
+                    const pc = pct(r.connected, r.assigned);
+                    return (
+                      <tr key={r.owner} className="cursor-pointer" onClick={() => onOwnerClick(r.owner)}>
+                        <td>
+                          <button type="button" onClick={() => onOwnerClick(r.owner)} className="font-semibold text-text hover:text-primary-hover focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control">
+                            {r.owner}
+                          </button>
+                        </td>
+                        <td className="font-mono">{fmt(r.clients)}</td>
+                        <td className="font-mono">{fmt(r.assigned)}</td>
+                        <td>
+                          <span className="flex items-center gap-2">
+                            <span className="relative block h-2 flex-1 rounded-[4px] bg-[#EEF2F7]">
+                              <span className={`absolute inset-y-0 left-0 rounded-[4px] ${pc >= 85 ? 'bg-success' : 'bg-warning'}`} style={{ width: `${pc}%` }} />
+                            </span>
+                            <span className="w-10 text-right font-mono text-mention text-text-muted">{pc} %</span>
+                          </span>
+                        </td>
+                        <td className={`font-mono ${r.blocked ? 'text-danger' : ''}`}>
+                          {fmt(r.blocked)} · {pct(r.blocked, r.clients)} %
+                        </td>
+                        <td className={`font-mono ${r.due ? 'text-warning' : ''}`}>{fmt(r.due)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex items-center justify-between gap-2 px-4 py-3 text-mention text-text-muted">
+              <span>
+                {fmt(rvCur * RV_PAGE + 1)}–{fmt(rvCur * RV_PAGE + rvShown.length)} sur {fmt(resellerRows.length)} propriétaires
+              </span>
+              {rvPages > 1 && (
+                <span className="flex items-center gap-1">
+                  <button type="button" aria-label="Page précédente" disabled={rvCur === 0} onClick={() => setRvPage(rvCur - 1)} className="grid h-7 w-7 place-items-center rounded-control border border-border bg-surface disabled:opacity-40">
+                    <ChevronLeft size={14} aria-hidden="true" />
+                  </button>
+                  {Array.from({ length: rvPages }, (_, i) => (
+                    <button key={i} type="button" aria-current={i === rvCur ? 'page' : undefined} onClick={() => setRvPage(i)} className={`h-7 min-w-7 rounded-control px-2 font-semibold ${i === rvCur ? 'bg-primary text-text-inverse' : 'border border-border bg-surface text-text'}`}>
+                      {i + 1}
+                    </button>
+                  ))}
+                  <button type="button" aria-label="Page suivante" disabled={rvCur === rvPages - 1} onClick={() => setRvPage(rvCur + 1)} className="grid h-7 w-7 place-items-center rounded-control border border-border bg-surface disabled:opacity-40">
+                    <ChevronRight size={14} aria-hidden="true" />
+                  </button>
+                </span>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Répartition */}
       <section aria-labelledby="cli-rep" className="col-span-12 grid grid-cols-12 gap-4">
@@ -348,7 +436,7 @@ export function ClientsOverview({
         </div>
         <div className="col-span-12 xl:col-span-6">
           <Panel
-            title={isNetwork ? 'Équipements hors ligne par propriétaire' : 'Équipements hors ligne par client'}
+            title="Équipements connectés / non connectés"
             bodyClassName="p-0"
             footer={
               <Legend
@@ -367,9 +455,7 @@ export function ClientsOverview({
                     <button
                       type="button"
                       onClick={() => (isNetwork ? onOwnerClick(r.key) : onClientOpen(Number(r.key), 'equipements'))}
-                      className={`flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-4 py-2.5 text-left hover:bg-surface-muted transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                        offline > 0 ? 'shadow-rail-danger' : ''
-                      }`}
+                      className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                     >
                       <span className="basis-full min-w-0 truncate text-small font-medium text-text sm:basis-auto sm:w-40 sm:shrink-0">{r.label}</span>
                       <span className="flex-1 min-w-[80px]">

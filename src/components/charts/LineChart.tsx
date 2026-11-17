@@ -17,6 +17,13 @@ type Props = {
   selectedIndex?: number | null;
   onPointClick?: (index: number) => void;
   formatValue?: (n: number) => string;
+  /** écrit la valeur au-dessus de chaque point (pas seulement le dernier) */
+  showAllValues?: boolean;
+  /** bas de l'axe vertical (défaut 0) */
+  min?: number;
+  /** objectif : ligne horizontale en pointillés avec son libellé */
+  goal?: number | null;
+  goalLabel?: string;
 };
 
 /**
@@ -30,20 +37,25 @@ export function LineChart({
   height = 200,
   selectedIndex = null,
   onPointClick,
-  formatValue = (n) => n.toLocaleString('fr-FR')
+  formatValue = (n) => n.toLocaleString('fr-FR'),
+  showAllValues = false,
+  min = 0,
+  goal = null,
+  goalLabel = 'Objectif'
 }: Props) {
   const width = 640;
   const padL = 40;
   const padR = 48;
-  const padTop = 14;
+  const padTop = showAllValues ? 28 : 14;
   const padBottom = 24;
   const plotW = width - padL - padR;
   const plotH = height - padTop - padBottom;
   const all = series.flatMap((s) => s.values.filter((v): v is number => v != null));
-  const max = Math.max(1, ...all);
+  const max = Math.max(1, ...all, goal ?? 0);
   const step = plotW / Math.max(1, labels.length - 1);
   const x = (i: number) => padL + i * step;
-  const y = (v: number) => padTop + plotH * (1 - v / max);
+  const lo = Math.min(min, max - 1);
+  const y = (v: number) => padTop + plotH * (1 - (v - lo) / (max - lo));
   const grid = [0, 0.5, 1];
   return (
     <figure className="w-full" role="group" aria-label={ariaLabel}>
@@ -52,12 +64,28 @@ export function LineChart({
           <g key={g}>
             <line x1={padL} x2={width - padR} y1={padTop + plotH * (1 - g)} y2={padTop + plotH * (1 - g)} strokeWidth={1} className="stroke-chart-grid" />
             <text x={padL - 6} y={padTop + plotH * (1 - g) + 4} textAnchor="end" className="fill-text-muted text-mention tabular-nums">
-              {formatValue(Math.round(max * g))}
+              {formatValue(Math.round(lo + (max - lo) * g))}
             </text>
           </g>
         ))}
         {selectedIndex != null && (
           <rect x={x(selectedIndex) - step / 2} y={padTop} width={step} height={plotH} className="fill-primary-50" />
+        )}
+        {goal != null && (
+          <g>
+            <line
+              x1={padL}
+              x2={width - padR}
+              y1={y(goal)}
+              y2={y(goal)}
+              strokeWidth={1.5}
+              strokeDasharray="6 4"
+              className="stroke-success"
+            />
+            <text x={padL + 6} y={y(goal) - 6} className="fill-success-700 text-mention font-semibold tabular-nums">
+              {goalLabel} {formatValue(goal)}
+            </text>
+          </g>
         )}
         {labels.map((l, i) => (
           <text
@@ -94,6 +122,14 @@ export function LineChart({
                   </circle>
                 ) : null
               )}
+              {showAllValues &&
+                pts.map((p, i) =>
+                  p && i !== lastI ? (
+                    <text key={`v${i}`} x={p[0]} y={p[1] - 8} textAnchor="middle" className="fill-text-muted text-mention tabular-nums">
+                      {formatValue(s.values[i] ?? 0)}
+                    </text>
+                  ) : null
+                )}
               {lastI >= 0 && (
                 <text x={x(lastI) + 8} y={y(s.values[lastI] ?? 0) + 4} className="fill-text text-mention font-medium tabular-nums">
                   {formatValue(s.values[lastI] ?? 0)}

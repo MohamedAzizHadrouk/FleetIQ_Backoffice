@@ -92,6 +92,10 @@ import {
   type StatusFilter
 } from '../utils/simsKpis';
 import { formatMonthFr } from '../state/mock/dates';
+import { MaquettePage } from '../components/shell/MaquettePage';
+import simsMarkup from '../components/sims/maquette/markup.html?raw';
+import { mount as mountSimsMaquette } from '../components/sims/maquette/script';
+import '../components/sims/maquette/style.css';
 
 const OPERATORS = ['Télécom', 'Orange', 'Ooredoo'];
 
@@ -577,391 +581,18 @@ export function SimsPage() {
     />
   );
 
+  // Maquette validée sims (FleetAdmin-maquettes v3) : même page, mêmes données, mêmes fenêtres (Documentation et grands paragraphes retirés)
   return (
-    <PageShell
-      header={
-        <PageChrome
-          title="Gestion des puces"
-          date={dateFr}
-          actions={
-            <>
-              <TableExportButtons size="compact" onExportExcel={exportFilteredExcel} onExportPdf={exportFilteredPdf} disabled={filteredSims.length === 0} />
-              {canManageSims && (
-                <>
-                  <Button type="button" variant="neutral" onClick={() => setIsOffersListOpen(true)}>
-                    <Tag size={16} aria-hidden="true" />
-                    Offres puce
-                  </Button>
-                  <Button type="button" variant="primary" onClick={openCreateSim}>
-                    <Plus size={16} aria-hidden="true" />
-                    Ajouter une puce
-                  </Button>
-                </>
-              )}
-            </>
-          }
-          bell={bell}
-          tools={
-            <>
-              {/* Réseau en premier, puis période */}
-              <label className="inline-flex items-center gap-2 text-small text-text">
-                <Network size={16} aria-hidden="true" className="text-text-muted" />
-                <span className="font-medium">Réseau</span>
-                <select value={network} onChange={(e) => setNetwork(e.target.value)} className={selCls}>
-                  <option value="">Tout le réseau</option>
-                  {allNetworks.map((n) => (
-                    <option key={n} value={n}>
-                      {networkLabel(n)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <span className="hidden sm:block h-6 w-px bg-border" aria-hidden="true" />
-              <div className="inline-flex flex-wrap items-center gap-0.5 rounded-control border border-border p-0.5" role="group" aria-label="Période">
-                <CalendarDays size={16} aria-hidden="true" className="mx-1.5 text-text-muted" />
-                {PERIOD_OPTIONS.map((p) => (
-                  <button
-                    key={p.key}
-                    type="button"
-                    aria-pressed={periodKind === p.key}
-                    onClick={() => setPeriodKind(p.key)}
-                    className={`h-8 px-3 text-button-sm rounded-control transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-                      periodKind === p.key ? 'bg-primary text-text-inverse' : 'text-text hover:bg-surface-muted'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-              {periodKind === 'mois' && (
-                <select value={month} onChange={(e) => setMonth(e.target.value)} aria-label="Mois" className={selCls}>
-                  {ctx.yearMonths.map((m) => (
-                    <option key={m} value={m}>
-                      {formatMonthFr(m)}
-                      {m === ctx.currentMonth ? ' (en cours)' : ''}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </>
-          }
-        />
-      }
-    >
-
-      {/* 1. Quatre cartes · 2. Puces installées par offre (PU-P-05) */}
-      <SimsTopCards
-        data={data}
-        period={period}
-        showPrices={showPrices}
-        onTotal={() => setDetail(totalDetail(dctx))}
-        onInstalled={() => setDetail(installedDetail(dctx))}
-        onNotInstalled={() => setDetail(notInstalledDetail(dctx))}
-        onOver={() => setDetail(overDetail(dctx))}
-        onOffer={(o) => setDetail(offerDetail(dctx, o))}
-        onOfferList={() => undefined}
-      />
-      <SimsOffers
-        data={data}
-        period={period}
-        showPrices={showPrices}
-        onTotal={() => undefined}
-        onInstalled={() => undefined}
-        onNotInstalled={() => undefined}
-        onOver={() => undefined}
-        onOffer={(o) => setDetail(offerDetail(dctx, o))}
-        onOfferList={(o) => {
-          setFilters({ ...EMPTY_FILTERS, offer: o.key });
-          scrollToList();
-        }}
+    <>
+      <MaquettePage
+        slug="sims"
+        markup={simsMarkup}
+        mount={mountSimsMaquette}
+        view={''}
+        role={''}
+        actions={canManageSims ? { 'Offres puce': () => setIsOffersListOpen(true), 'Ajouter une puce': () => openCreateSim() } : undefined}
       />
 
-      {/* 3. Liste des puces PU-T-21 (T-21) – une ligne ouvre la fiche PU-F-21 */}
-      <section aria-labelledby="pu-t21" className="space-y-3 scroll-mt-4" ref={listRef} data-kpi="PU-T-21">
-        <SectionTitle id="pu-t21" title="Liste des puces" />
-        <div className="bg-surface rounded-card border border-border overflow-hidden">
-          <div className="p-4 border-b border-border-subtle bg-surface-muted flex flex-wrap items-end gap-3">
-            <div className="relative flex-1 min-w-[220px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} aria-hidden="true" />
-              <input
-                type="search"
-                aria-label="Recherche"
-                placeholder="Numéro, ICCID, ID, client, équipement, opérateur…"
-                value={filters.q}
-                onChange={(e) => setFilter('q', e.target.value)}
-                className="w-full h-control pl-9 pr-4 bg-surface border border-border-strong rounded-control focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus text-small"
-              />
-            </div>
-            <select aria-label="Statut" value={filters.status} onChange={(e) => setFilter('status', e.target.value as StatusFilter)} className={selCls}>
-              {STATUS_FILTERS.map((s) => (
-                <option key={s.key} value={s.key}>
-                  {s.key ? s.label : 'Statut : tous'}
-                </option>
-              ))}
-            </select>
-            <select aria-label="Offre" value={filters.offer} onChange={(e) => setFilter('offer', e.target.value)} className={selCls}>
-              <option value="">Offre : toutes</option>
-              {data.offers.map((o) => (
-                <option key={o.key} value={o.key}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-            <select aria-label="Opérateur" value={filters.operator} onChange={(e) => setFilter('operator', e.target.value)} className={selCls}>
-              <option value="">Opérateur : tous</option>
-              {operatorOptions.map((o) => (
-                <option key={o} value={o}>
-                  {o}
-                </option>
-              ))}
-            </select>
-            <select aria-label="Revendeur" value={filters.network} onChange={(e) => setFilter('network', e.target.value)} className={selCls}>
-              <option value="">Revendeur : tous</option>
-              {scopeNetworks.map((n) => (
-                <option key={n} value={n}>
-                  {n === 'Tunav' ? 'Tunav (clients directs)' : n}
-                </option>
-              ))}
-            </select>
-            <select aria-label="Client" value={filters.client} onChange={(e) => setFilter('client', e.target.value)} className={`${selCls} max-w-[14rem]`}>
-              <option value="">Client : tous</option>
-              {clientOptions.map(([k, l]) => (
-                <option key={k} value={k}>
-                  {l}
-                </option>
-              ))}
-            </select>
-            <select aria-label="Alerte" value={filters.alert} onChange={(e) => setFilter('alert', e.target.value as AlertFilter)} className={selCls}>
-              {ALERT_FILTERS.map((a) => (
-                <option key={a.key} value={a.key}>
-                  {a.key ? a.label : 'Alerte : toutes'}
-                </option>
-              ))}
-            </select>
-            {hasFilters && (
-              <button
-                type="button"
-                onClick={() => setFilters(EMPTY_FILTERS)}
-                className="inline-flex items-center gap-1 h-control px-3 text-button-sm rounded-control text-primary hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-              >
-                <X size={14} aria-hidden="true" /> Effacer les filtres
-              </button>
-            )}
-          </div>
-          <p className="px-4 py-2 text-small text-text border-b border-border-subtle">
-            <b>{fmt(filteredRows.length)}</b> puce(s){showPrices ? ` · coût ${formatTnd(filteredCost)} / mois` : ''}
-            {filters.alert === 'surconso' ? ` · au-delà du forfait sur ${period.label}` : ''}
-          </p>
-
-          {canManageSims && selectedSimIds.size > 0 && (
-            <div className="px-4 py-3 bg-primary-50 border-b border-primary-200 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-small text-primary">
-                <span className="inline-flex items-center justify-center min-w-[1.5rem] h-6 px-2 rounded-pill bg-primary text-text-inverse text-mention font-semibold">
-                  {selectedSimIds.size}
-                </span>
-                <span className="font-medium">
-                  puce{selectedSimIds.size > 1 ? 's' : ''} sélectionnée{selectedSimIds.size > 1 ? 's' : ''}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  type="button"
-                  onClick={clearSelection}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-mention font-medium text-text bg-surface border border-border rounded-control hover:bg-surface-muted transition-colors duration-fast ease-standard"
-                >
-                  <X size={14} />
-                  Tout désélectionner
-                </button>
-                <button
-                  type="button"
-                  onClick={openBulkAssignToClient}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-mention font-medium text-text-inverse bg-primary rounded-card hover:bg-primary-hover transition-colors duration-fast ease-standard"
-                >
-                  <ArrowLeftRight size={14} />
-                  Affecter au client
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="overflow-x-auto" onContextMenu={(e) => e.preventDefault()}>
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-border-subtle text-text-muted text-overline uppercase bg-surface-muted">
-                  {canManageSims && (
-                    <th className="p-3 w-10">
-                      <input
-                        type="checkbox"
-                        checked={allSelectableSelected}
-                        ref={(el) => {
-                          if (el) el.indeterminate = someSelectableSelected && !allSelectableSelected;
-                        }}
-                        onChange={toggleSelectAllFiltered}
-                        disabled={selectableFilteredSims.length === 0}
-                        aria-label="Tout sélectionner (puces affectables)"
-                        className="rounded-control border-border-strong text-primary focus-visible:ring-focus"
-                      />
-                    </th>
-                  )}
-                  <th className="p-3 font-medium">Numéro / ICCID</th>
-                  <th className="p-3 font-medium">Client · équipement</th>
-                  <th className="p-3 font-medium">Revendeur</th>
-                  <th className="p-3 font-medium">Offre · prix</th>
-                  <th className="p-3 font-medium">Activation</th>
-                  <th className="p-3 font-medium">Statut</th>
-                  {canManageSims && <th className="p-3 font-medium text-right">Actions</th>}
-                </tr>
-              </thead>
-              <tbody className="text-small divide-y divide-border-subtle">
-                {pager.slice.map((r) => {
-                  const sim = r.sim;
-                  const status = getSimStatus(sim);
-                  const selectable = isSimSelectable(sim);
-                  const isSelected = selectedSimIds.has(sim.id);
-                  return (
-                    <tr
-                      key={sim.id}
-                      tabIndex={0}
-                      onClick={() => openFiche(r)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && e.target === e.currentTarget) openFiche(r);
-                      }}
-                      className={`cursor-pointer hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-focus ${isSelected ? 'bg-primary-50' : ''} ${contextMenu?.sim.id === sim.id ? 'ring-1 ring-inset ring-primary-200' : ''}`}
-                      onContextMenu={(e) => handleRowContextMenu(e, sim)}
-                    >
-                      {canManageSims && (
-                        <td className="p-3 w-10" onClick={(e) => e.stopPropagation()}>
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            disabled={!selectable}
-                            onChange={() => toggleSimSelection(sim.id)}
-                            aria-label={selectable ? `Sélectionner la puce ${sim.id}` : 'Non sélectionnable (affectée à un équipement)'}
-                            className="rounded-control border-border-strong text-primary focus-visible:ring-focus disabled:opacity-40"
-                          />
-                        </td>
-                      )}
-                      <td className="p-3">
-                        <span className="font-medium text-text inline-flex items-center gap-1.5">
-                          <Smartphone size={14} className="text-text-muted" aria-hidden="true" />
-                          {sim.phoneNumber || <span className="italic text-text-muted">Pas de numéro</span>}
-                        </span>
-                        <span className="block text-mention text-text-muted">
-                          <Hash size={11} className="inline" aria-hidden="true" /> {sim.iccid || 'Pas d’ICCID'}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        <span className="block font-medium text-text">{r.clientLabel}</span>
-                        <span className="block text-mention text-text-muted">
-                          {r.eq ? `${r.eq.serial} · ${r.installed ? 'installé' : 'non installé'}` : 'Aucun équipement'}
-                        </span>
-                      </td>
-                      <td className="p-3">
-                        <span className="block text-text">{r.network}</span>
-                        <span className="block text-mention text-text-muted">{r.network === 'Tunav' ? 'client direct' : 'revendeur'}</span>
-                      </td>
-                      <td className="p-3">
-                        {r.offer ? (
-                          <>
-                            <span className="block text-text">
-                              {r.offer.name.split(' - ')[0]} · {r.offer.operator}
-                            </span>
-                            {showPrices && <span className="block text-mention text-text-muted">{formatTnd(r.offer.pricePerSim)} / mois</span>}
-                          </>
-                        ) : (
-                          <span className="italic text-mention text-text-muted">Aucune offre</span>
-                        )}
-                      </td>
-                      <td className="p-3 tabular-nums text-text">{frDate(sim.activationDate)}</td>
-                      <td className="p-3">
-                        <SimStatusBadge row={r} />
-                      </td>
-                      {canManageSims && (
-                        <td className="p-3 text-right" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex items-center justify-end gap-1">
-                            <button
-                              type="button"
-                              onClick={() => openEditSim(sim)}
-                              className="p-1.5 text-text-muted hover:text-primary hover:bg-primary-50 rounded-control transition-colors duration-fast ease-standard"
-                              title="Modifier la puce"
-                              aria-label="Modifier la puce"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            {status !== 'assigned_equipment' && (
-                              <button
-                                type="button"
-                                onClick={() => openAssignToClient(sim)}
-                                className="p-1.5 text-text-muted hover:text-success-700 hover:bg-success-50 rounded-control transition-colors duration-fast ease-standard"
-                                title="Affecter à un client"
-                                aria-label="Affecter à un client"
-                              >
-                                <ArrowLeftRight size={16} />
-                              </button>
-                            )}
-                            {status === 'assigned_client' && (
-                              <button
-                                type="button"
-                                onClick={() => unassignSim(sim)}
-                                className="p-1.5 text-text-muted hover:text-warning-700 hover:bg-warning-50 rounded-control transition-colors duration-fast ease-standard"
-                                title="Retirer du client (retour au stock)"
-                                aria-label="Retirer du client (retour au stock)"
-                              >
-                                <Unlink size={16} />
-                              </button>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => setSimToDelete(sim)}
-                              className="p-1.5 text-text-muted hover:text-danger-700 hover:bg-danger-50 rounded-control transition-colors duration-fast ease-standard disabled:opacity-40"
-                              title="Supprimer la puce"
-                              aria-label="Supprimer la puce"
-                              disabled={status === 'assigned_equipment'}
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })}
-                {filteredRows.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="p-8 text-center text-text-muted">
-                      Aucune puce trouvée.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          <Pager pager={pager} label="Pagination de la liste des puces" />
-        </div>
-      </section>
-
-      {/* 4. Consommation data : PU-C-21 puis PU-C-25 */}
-      <section aria-labelledby="pu-cons" className="space-y-3">
-        <SectionTitle id="pu-cons" title="Consommation data" />
-        <SimsConsumption data={data} period={period} onOpenSim={openFiche} onOverNetwork={(n) => setDetail(overNetworkDetail(dctx, n))} />
-      </section>
-
-      {/* 5. Statistiques (sans prix) */}
-      <SimsStats
-        data={data}
-        period={period}
-        ctx={ctx}
-        cons={cons}
-        networks={scopeNetworks}
-        onStatus={(ins) => setDetail(statusDetail(dctx, ins))}
-        onOffer={(o) => setDetail(offerDetail(dctx, o, 'PU-S-21'))}
-        onOperator={(o) => setDetail(operatorDetail(dctx, o))}
-        onOpenDetail={setDetail}
-      />
-
-      <DetailModal detail={detail} onClose={() => setDetail(null)} canOpen={() => false} />
-
-      {/* PU-F-21 – fiche puce */}
       <Modal isOpen={ficheRow != null} onClose={() => setFicheId(null)} title="Fiche puce" size="lg">
         {ficheRow && (
           <SimFiche
@@ -1132,10 +763,7 @@ export function SimsPage() {
         size="lg"
       >
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-small text-text-muted">
-              Créez et gérez les offres tarifaires applicables aux puces SIM.
-            </p>
+          <div className="flex items-center justify-end">
             <button
               onClick={openCreateOffer}
               className="bg-primary hover:bg-primary-hover text-text-inverse px-3 py-1.5 rounded-card text-small font-medium flex items-center gap-2 transition-colors duration-fast ease-standard"
@@ -1394,6 +1022,6 @@ export function SimsPage() {
           </div>
         </div>
       </Modal>
-    </PageShell>
+    </>
   );
 }

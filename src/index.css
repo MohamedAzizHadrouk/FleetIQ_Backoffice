@@ -1,6 +1,6 @@
 /* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
-/* TUNAV – Poppins + IBM Plex Sans Arabic (SIL OFL 1.1) – carte FleetIQ 03, extrait design-tokens/index-css-snippet.css */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+/* Polices TUNAV : Poppins (Brand Book) + IBM Plex Mono (chiffres) + IBM Plex Sans Arabic */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
 @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
 
 /* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
@@ -10,40 +10,41 @@
 
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
-/* TUNAV base styles + jetons Industrial Tech (T-002) */
+/* Styles de base – maquette v3 */
 @layer base {
   :root {
     /* Jetons CSS (mêmes valeurs que tailwind-theme.js) – utiles pour Leaflet, jsPDF, styles en ligne */
-    --tunav-primary: #0848FE;       /* Bleu Royal */
-    --tunav-primary-hover: #063ACB;
-    --tunav-accent: #0099FF;        /* Bleu Ciel – jamais pour du petit texte */
-    --tunav-text: #3F3F3F;          /* Anthracite */
-    --tunav-text-muted: #6E6E6E;    /* Gris texte */
-    --tunav-gris: #777777;          /* Gris – neutre graphique */
+    --tunav-primary: #0848FE;
+    --tunav-primary-hover: #0639CB;
+    --tunav-accent: #0099FF;
+    --tunav-text: #3F3F3F;
+    --tunav-text-muted: #6E6E6E;
+    --tunav-gris: #777777;
     --tunav-surface: #FFFFFF;
-    --tunav-surface-muted: #F2F6FF; /* Fond clair */
-    --tunav-border: #DDDDDD;
-    --tunav-success: #1B7F3B;  --tunav-success-700: #176C32;
-    --tunav-warning: #B45309;  --tunav-warning-700: #994708;
-    --tunav-danger:  #C62828;  --tunav-danger-700:  #A82222;
+    --tunav-surface-muted: #F2F6FF;
+    --tunav-border: #E2E8F0;
+    --tunav-success: #1B7F3B;  --tunav-success-700: #145C2B;
+    --tunav-warning: #B45309;  --tunav-warning-700: #92400E;
+    --tunav-danger:  #C62828;  --tunav-danger-700:  #9B1C1C;
     --tunav-focus: #0848FE;
-    --font-latin: "Poppins", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --font-latin: "Poppins", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --font-arabe: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, "Geeza Pro", "Noto Sans Arabic", Arial, sans-serif;
 
     /* Industrial Tech – mesures (tokens-update.md §4) */
-    --r-tag: 2px;
-    --r-control: 4px;
-    --r-card: 6px;
-    --r-modal: 8px;
-    --h-control: 36px;
+    --r-tag: 999px;
+    --r-control: 8px;
+    --r-card: 12px;
+    --r-modal: 14px;
+    --h-control: 34px;
     --h-control-sm: 28px;
     --h-control-touch: 44px;
-    --h-row: 48px;
-    --h-row-compact: 36px;
+    --h-row: 40px;
+    --h-row-compact: 34px;
     --h-topbar: 48px;
     --w-sidebar: 240px;
     --w-rail: 56px;
-    --shadow-raised: 0 2px 8px 0 rgba(63, 63, 63, 0.14);
+    --shadow-raised: 0 12px 32px rgba(15, 23, 42, 0.14);
     --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   }
 
@@ -55,8 +56,8 @@
   body {
     font-family: var(--font-latin);
     font-weight: 400;
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 0.875rem;
+    line-height: 1.5;
     background-color: #F2F6FF;
     color: #3F3F3F;
     -webkit-font-smoothing: antialiased;
@@ -76,17 +77,20 @@
   }
   :focus:not(:focus-visible) { outline: none; }
 
-  ::placeholder { color: #6E6E6E; opacity: 1; }
+  ::placeholder { color: #64748B; opacity: 1; }
 
-  ::selection { background-color: #E1E9FF; color: #3F3F3F; }
+  ::selection { background-color: #DBEAFE; color: #0F172A; }
 
   /* Chiffres : proportionnels (T-001) ; alignement à droite via text-right.
      Stub chasse fixe 0,63 em – colonnes quantités seulement (.font-qty / .font-qty-digit). */
   table, .tabular-nums { font-variant-numeric: proportional-nums; }
   .font-qty {
     text-align: right;
-    font-variant-numeric: proportional-nums;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
+  /* Chiffres clés en IBM Plex Mono, comme la maquette (.kc .v, .big b, .n) */
+  .text-kpi { font-family: var(--font-mono); }
   .font-qty-digit {
     display: inline-block;
     width: 0.63em;
@@ -109,12 +113,12 @@
     @apply w-full border-collapse text-small text-text;
   }
   .fiq-table thead th {
-    @apply h-row-head px-3 text-left text-overline uppercase text-text bg-surface-muted border-b border-border-strong whitespace-nowrap;
+    @apply h-row-head px-2.5 text-left text-overline uppercase text-text-muted bg-surface-muted border-b border-border whitespace-nowrap;
   }
   .fiq-table tbody td {
-    @apply h-row px-3 py-1.5 border-b border-border-subtle align-middle;
+    @apply h-row px-2.5 py-2 border-b border-border-subtle align-middle;
   }
   .fiq-table tbody tr:hover {
-    @apply bg-surface-muted;
+    @apply bg-primary-50;
   }
 }

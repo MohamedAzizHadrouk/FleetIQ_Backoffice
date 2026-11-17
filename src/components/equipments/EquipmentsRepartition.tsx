@@ -4,10 +4,7 @@
  * - EQ-G-02 (G-02) Top 5 produits vendus (+ autres modèles, modèle le plus en stock)
  * - EQ-G-03 (G-03) Dernière communication
  * - EQ-G-04 (G-04) Affectations par mois (‹ › année), couleur = état actuel
- * Ajouts de la carte 07 (d'après § 5.4 de l'analyse, hors maquette) :
- * - EQ-C-01 Connectés / non connectés par client ou par pack
- * - EQ-C-02 Équipements les plus connectés (jours avec données sur 30)
- * - EQ-C-03 Taux de connexion par type d'équipement
+ * Les 4 panneaux de la maquette Equipements-v3 (les ajouts hors maquette C-01…C-03 ont été retirés).
  * Tous les chiffres viennent des lignes du tableau T-11 (EqRow) ; aucun prix.
  */
 import { useMemo, useState, type ReactNode } from 'react';
@@ -18,8 +15,6 @@ import { DetailPanel, EqListItem, EqShortList, StatesLines } from './EqUi';
 import {
   assignmentsByMonth,
   assignmentYears,
-  connectionBy,
-  connectionRateByType,
   countStates,
   fmt,
   groupByNetwork,
@@ -28,7 +23,6 @@ import {
   networkLabel,
   pct,
   productRanking,
-  topConnected,
   type EqRow,
   type GroupRow,
   type LastCommBucket,
@@ -141,17 +135,6 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
   const monthIdx = g04Month ?? defaultMonth;
   const isFuture = (m: number) => year > now.getFullYear() || (year === now.getFullYear() && m > now.getMonth());
   const monthList = months[monthIdx]?.rows ?? [];
-
-  /* ---------- EQ-C-01 / C-02 / C-03 ---------- */
-  const [c01By, setC01By] = useState<'owner' | 'pack'>('pack');
-  const c01 = useMemo(() => connectionBy(rows, c01By), [rows, c01By]);
-  const top = useMemo(() => topConnected(rows, 10), [rows]);
-  const rates = useMemo(() => connectionRateByType(rows), [rows]);
-
-  const tabBtn = (on: boolean) =>
-    `h-8 px-3 text-button-sm rounded-control border transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-      on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-surface-muted'
-    }`;
 
   return (
     <section aria-labelledby="eq-rep" className="space-y-4">
@@ -380,122 +363,6 @@ export function EquipmentsRepartition({ rows, isNetwork, now, onOpenRow, onFilte
           }
         />
 
-        {/* EQ-C-01 Connectés / non connectés par client ou par pack */}
-        <Card
-          id="EQ-C-01"
-          title={`Connectés et non connectés par ${c01By === 'pack' ? 'pack' : 'client'}`}
-          
-          chart={
-            <div className="space-y-2">
-              <div className="inline-flex gap-1" role="group" aria-label="Regrouper par">
-                <button type="button" aria-pressed={c01By === 'pack'} onClick={() => setC01By('pack')} className={tabBtn(c01By === 'pack')}>
-                  Par pack
-                </button>
-                <button type="button" aria-pressed={c01By === 'owner'} onClick={() => setC01By('owner')} className={tabBtn(c01By === 'owner')}>
-                  Par client
-                </button>
-              </div>
-              <ul className="divide-y divide-border-subtle">
-                {c01.slice(0, 10).map((g) => (
-                  <li key={g.key}>
-                    <button
-                      type="button"
-                      onClick={() => onFilter({ etat: 'installe', ...(c01By === 'pack' ? { pack: g.key } : { owner: g.key }) })}
-                      className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-2 py-2 text-left rounded-control hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
-                    >
-                      {/* FleetIQ 13 (B5) : < 640 px, le libellé prend sa propre ligne */}
-                      <span className="basis-full min-w-0 sm:basis-auto sm:w-44 sm:shrink-0">
-                        <span className="block truncate text-small font-medium text-text">{g.label}</span>
-                        {c01By === 'owner' && isNetwork && <span className="block truncate text-mention text-text-muted">{g.network}</span>}
-                      </span>
-                      <span className="flex-1 min-w-[90px]">
-                        <StackedBar
-                          height="md"
-                          labelMinShare={0.15}
-                          ariaLabel={`${g.label} : connectés et non connectés`}
-                          segments={[
-                            { key: 'c', label: 'Connectés', value: g.counts.connected, tone: 'success' },
-                            { key: 'n', label: 'Non connectés', value: g.counts.notConnected, tone: 'danger' }
-                          ]}
-                        />
-                      </span>
-                      <span className="shrink-0 text-right text-small tabular-nums sm:w-36">
-                        <b className="text-danger-700">{fmt(g.counts.notConnected)}</b> non conn. / {fmt(g.counts.installed)}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          }
-          detail={
-            <DetailPanel title="Taux de connexion par type d’équipement" sub="Connectés / installés">
-              <HorizontalBarList
-                ariaLabel="Taux de connexion par type d’équipement"
-                max={100}
-                tone="success"
-                onRowClick={(t) => onFilter({ type: t, etat: 'installe' })}
-                rows={rates.map((t) => ({
-                  key: t.type,
-                  label: t.type,
-                  sub: `${fmt(t.counts.connected)} / ${fmt(t.counts.installed)} installés`,
-                  value: t.rate,
-                  valueLabel: `${t.rate} %`,
-                  tone: t.rate < 60 ? 'danger' : 'success'
-                }))}
-              />
-            </DetailPanel>
-          }
-        />
-
-        {/* EQ-C-02 Équipements les plus connectés */}
-        <Card
-          id="EQ-C-02"
-          title="Équipements les plus connectés"
-          
-          chart={
-            <HorizontalBarList
-              ranked
-              max={30}
-              tone="success"
-              ariaLabel="Équipements les plus connectés"
-              onRowClick={(k) => {
-                const r = top.find((x) => String(x.eq.id) === k);
-                if (r) onOpenRow(r);
-              }}
-              rows={top.map((r) => ({
-                key: String(r.eq.id),
-                label: `${r.eq.serial} · ${r.type}`,
-                sub: `${r.owner}${isNetwork ? ` · ${r.network}` : ''}`,
-                value: r.days30,
-                valueLabel: `${r.days30} / 30 j`
-              }))}
-            />
-          }
-          detail={
-            <DetailPanel title="Activité sur 30 jours" sub="Installés connectés">
-              {(() => {
-                const conn = rows.filter((r) => r.state === 'connected');
-                const full = conn.filter((r) => r.days30 >= 28).length;
-                const avg = conn.length ? Math.round(conn.reduce((s, r) => s + r.days30, 0) / conn.length) : 0;
-                return (
-                  <dl className="grid grid-cols-2 gap-2">
-                    <div className="rounded-control border border-border-subtle bg-surface-muted px-3 py-2">
-                      <dt className="text-mention text-text-muted">Moyenne</dt>
-                      <dd className="text-h4 text-text tabular-nums">{avg} / 30 j</dd>
-                    </div>
-                    <div className="rounded-control border border-border-subtle bg-surface-muted px-3 py-2">
-                      <dt className="text-mention text-text-muted">≥ 28 j sur 30</dt>
-                      <dd className="text-h4 text-text tabular-nums">
-                        {fmt(full)} <span className="text-mention text-text-muted">· {pct(full, conn.length)} % des connectés</span>
-                      </dd>
-                    </div>
-                  </dl>
-                );
-              })()}
-            </DetailPanel>
-          }
-        />
       </div>
     </section>
   );

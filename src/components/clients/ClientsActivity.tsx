@@ -139,8 +139,8 @@ export function ClientsActivity({ data, isNetwork, onOpenDetail, onClientOpen }:
   };
 
   const chip = (on: boolean) =>
-    `rounded-control border px-3 py-1 text-mention font-medium transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
-      on ? 'bg-primary text-text-inverse border-primary' : 'bg-surface text-text border-border hover:bg-surface-muted'
+    `rounded-pill border px-2.5 py-1 text-mention transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus ${
+      on ? 'bg-primary-50 text-primary-hover border-accent font-semibold' : 'bg-surface text-[#334155] border-border-strong hover:border-accent'
     }`;
 
   return (

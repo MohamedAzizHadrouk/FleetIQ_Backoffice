@@ -199,7 +199,6 @@ export function SimLiveToast({ client, onView, onClose }: { client: OverClient; 
             {networkLabel(client.network)} · puce {top.sim.phoneNumber || '—'} (ID {top.sim.id}) · {plusVolume(top.used30 - (top.quota ?? 0))} au-delà de{' '}
             {top.quota != null ? volume(top.quota) : '—'}
           </p>
-          <p className="mt-1 text-mention text-text-muted">Notification simulée (maquette) – en production : à chaque relevé de consommation.</p>
           <div className="mt-2 flex gap-2">
             <button
               type="button"

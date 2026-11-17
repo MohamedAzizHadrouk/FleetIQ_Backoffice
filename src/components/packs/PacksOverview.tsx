@@ -7,7 +7,7 @@
  */
 import { AlertTriangle, ArrowRight, Package, Trophy, Users, Wifi, X } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { DonutRing, Legend, StackedBar } from '../charts';
+import { StackedBar } from '../charts';
 import type { DetailSpec } from '../dashboard/DetailModal';
 import { ALERT_META, alertDetail } from './packsAlerts';
 import { SectionTitle } from '../clients/ClientsOverview';
@@ -51,22 +51,24 @@ export function CriticalBanner({ data, onShow, onClose }: { data: PacksData; onS
   );
 }
 
-function TopCard({ kpiId, title, icon: Icon, children, onOpen }: { kpiId: string; title: string; icon: typeof Users; children: ReactNode; onOpen: () => void }) {
+function TopCard({ kpiId, title, icon: Icon, children, onOpen, iconCls = 'bg-primary-50 text-primary' }: { kpiId: string; title: string; icon: typeof Users; children: ReactNode; onOpen: () => void; iconCls?: string }) {
   return (
     <button
       type="button"
       onClick={onOpen}
       data-kpi={kpiId}
-      className="group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 pt-3 hover:border-border-strong transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className="group flex h-full w-full flex-col gap-1.5 text-left bg-surface rounded-card border border-border p-4 hover:border-accent transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
     >
       <span className="flex items-start justify-between gap-2">
         <span className="text-overline uppercase text-text-muted">{title}</span>
-        <Icon size={16} className="shrink-0 text-text-muted" aria-hidden="true" />
+        <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-control ${iconCls}`} aria-hidden="true">
+          <Icon size={16} />
+        </span>
       </span>
       {children}
-      <span className="mt-auto inline-flex items-center gap-1 pt-2 border-t border-border-subtle text-mention font-medium text-primary">
+      <span className="mt-auto inline-flex items-center gap-1 self-end text-[11.5px] text-text-muted group-hover:text-primary-hover">
         Voir le détail
-        <ArrowRight size={14} aria-hidden="true" />
+        <ArrowRight size={12} aria-hidden="true" />
       </span>
     </button>
   );
@@ -85,6 +87,8 @@ function Evolution({ now, before }: { now: number; before: number }) {
 }
 
 type Props = {
+  /** bloc affiché entre les cartes et « À traiter » (Packs vendus aux revendeurs) */
+  between?: ReactNode;
   data: PacksData;
   periodLabel: string;
   compareLabel: string | null;
@@ -92,62 +96,12 @@ type Props = {
   onOpenDetail: (d: DetailSpec) => void;
 };
 
-export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, onOpenDetail }: Props) {
+export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, onOpenDetail, between }: Props) {
   const { p01, p05 } = data;
   const lead = data.ranking[0];
   const n02 = data.periodSales.length;
   const c02 = data.compareSales?.length ?? null;
   const p05Rate = pct(p05.connected, p05.total);
-
-  const openP01 = () =>
-    onOpenDetail({
-      title: 'Clients avec pack',
-      kpiId: 'PK-P-01',
-      big: `${fmt(p01.withPack)} sur ${fmt(p01.total)}`,
-      caption: `clients · ${pct(p01.withPack, p01.total)} % · ${fmt(p01.newClients.length)} nouveau(x) client(s) équipé(s) sur la période`,
-      what: `${fmt(p01.single)} client(s) avec un pack, ${fmt(p01.multi.length)} avec plusieurs packs, ${fmt(p01.without.length)} sans pack (action : proposer un pack).`,
-      chart: (
-        <div className="flex flex-wrap items-center gap-6">
-          <DonutRing
-            centerLabel={`${pct(p01.withPack, p01.total)} %`}
-            centerSub="avec pack"
-            segments={[
-              { label: 'Un pack', value: p01.single, tone: 'series1' },
-              { label: 'Plusieurs packs', value: p01.multi.length, tone: 'series3' },
-              { label: 'Sans pack', value: p01.without.length, tone: 'series4' }
-            ]}
-          />
-          <Legend
-            items={[
-              { tone: 'series1', label: `Un pack · ${fmt(p01.single)}` },
-              { tone: 'series3', label: `Plusieurs packs · ${fmt(p01.multi.length)}` },
-              { tone: 'series4', label: `Sans pack · ${fmt(p01.without.length)}` }
-            ]}
-          />
-        </div>
-      ),
-      table: {
-        headers: ['Pack', 'Clients', 'Équipements', 'Tunav', 'Revendeurs'],
-        rows: data.ranking.map((r) => [r.pack.name, r.clients.length, r.equipments.length, r.tunav, r.resellers])
-      },
-      note: (
-        <div className="space-y-2">
-          <p>
-            <b>Plusieurs packs :</b> {p01.multi.length ? p01.multi.map((c) => `${c.client.name} (${c.packs.map((p) => p.name).join(' + ')})`).join(' · ') : 'aucun'}
-          </p>
-          <p>
-            <b>Sans pack :</b> {p01.without.length ? p01.without.map((c) => c.client.name).join(' · ') : 'aucun'}
-          </p>
-          <p>
-            <b>Nouveaux clients équipés ({periodLabel}) :</b>{' '}
-            {p01.newClients.length ? p01.newClients.map((c) => `${c.client.name} (${frDate(c.firstAssignedAt)})`).join(' · ') : 'aucun'}
-            {p01.newClientsCompare && ` · ${fmt(p01.newClientsCompare.length)} sur la période de comparaison`}
-          </p>
-        </div>
-      ),
-      definition: 'Nombre de clients qui ont au moins un pack affecté, sur le total des clients (hors stock). Un client à plusieurs packs compte une fois.',
-      formula: 'Clients avec pack = clients distincts ayant ≥ 1 affectation · % = ÷ total clients'
-    });
 
   const openP02 = () =>
     onOpenDetail({
@@ -218,20 +172,10 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
 
   return (
     <div className="grid grid-cols-12 gap-4 gap-y-8">
-      <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-stretch">
-        {/* PK-P-01 Clients avec pack */}
-        <TopCard kpiId="PK-P-01" title="Clients avec pack" icon={Users} onOpen={openP01}>
-          <div className="flex items-baseline gap-2">
-            <span className="text-kpi text-text font-qty">{fmt(p01.withPack)}</span>
-            <span className="text-small text-text-muted">sur {fmt(p01.total)}</span>
-            <span className="text-small font-semibold text-primary">{pct(p01.withPack, p01.total)} %</span>
-          </div>
-          <p className="text-small text-text-muted mt-1">
-            {fmt(p01.without.length)} sans pack · {fmt(p01.multi.length)} à plusieurs packs
-          </p>
-        </TopCard>
+      {/* Maquette Packs-v3 : 3 cartes (Packs vendus · Pack le plus choisi · Équipements connectés par pack) */}
+      <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch">
         {/* PK-P-02 Packs affectés sur la période (vs comparaison) */}
-        <TopCard kpiId="PK-P-02" title={`Packs vendus (${periodLabel})`} icon={Package} onOpen={openP02}>
+        <TopCard kpiId="PK-P-02" title={`Packs vendus (${periodLabel})`} icon={Package} onOpen={openP02} iconCls="bg-[#EDE9FE] text-[#7C3AED]">
           <div className="text-kpi text-text font-qty">{fmt(n02)}</div>
           <p className="mt-1">
             {c02 != null ? (
@@ -244,14 +188,14 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
           </p>
         </TopCard>
         {/* PK-P-03 Pack le plus choisi */}
-        <TopCard kpiId="PK-P-03" title="Pack le plus choisi" icon={Trophy} onOpen={openP03}>
+        <TopCard kpiId="PK-P-03" title="Pack le plus choisi" icon={Trophy} onOpen={openP03} iconCls="bg-warning-50 text-warning">
           <div className="text-title text-text">{lead?.pack.name ?? '—'}</div>
           <p className="text-small text-text-muted mt-1">
             {lead ? `${fmt(lead.clients.length)} clients · ${fmt(lead.equipments.length)} équipements` : 'Aucun pack affecté'}
           </p>
         </TopCard>
         {/* PK-P-05 Équipements connectés */}
-        <TopCard kpiId="PK-P-05" title="Équipements connectés · par pack" icon={Wifi} onOpen={openP05}>
+        <TopCard kpiId="PK-P-05" title="Équipements connectés · par pack" icon={Wifi} onOpen={openP05} iconCls="bg-success-50 text-success">
           <div className="flex items-baseline gap-2">
             <span className="text-kpi text-text font-qty">{p05Rate} %</span>
             <span className="text-small text-text-muted">
@@ -271,6 +215,8 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
           <p className="mt-1 text-mention text-text-muted">données ≤ {fmt(data.connDays)} j</p>
         </TopCard>
       </div>
+
+      {between}
 
       {/* À traiter */}
       <section aria-labelledby="pk-todo" className="col-span-12 grid grid-cols-12 gap-4">
@@ -317,7 +263,6 @@ export function PacksOverview({ data, periodLabel, compareLabel, alertFilter, on
                 <p className="text-mention text-text-muted truncate" title={detail}>
                   {detail}
                 </p>
-                <p className="mt-1 text-mention text-text-muted">{on ? 'Filtre actif sur la liste des clients' : meta.mockup}</p>
               </button>
             );
           })}

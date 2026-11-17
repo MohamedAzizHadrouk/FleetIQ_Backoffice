@@ -1,0 +1,184 @@
+<main class="mainv2">
+<section id="dash" class="wrap">
+  <header class="topx">
+    <div class="tx-row1">
+      <div class="hl"><h1>Gestion Clients</h1><a hidden href="Documentation-Clients-v3.html" class="doc-link"></a></div>
+      <div class="tx-right">
+        <div class="tx-actions">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>Excel</button>
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>PDF</button>
+        <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Ajouter un client</button>
+      </div>
+        <span class="today-chip"><i></i>Aujourd'hui <b id="todayTxt"></b></span>
+        <button class="bell" id="bell" aria-label="Alertes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="cnt" id="bellCnt">0</span></button>
+        <div class="bpanel hidden" id="bpanel"></div>
+      </div>
+    </div>
+    <p class="hsub" id="pSub" hidden></p>
+    <div class="toolbar">
+      <div class="tb-group">
+        <label class="tb-field"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>État au</span><input type="date" id="pAu"></label>
+        <button class="btn" id="pAuToday" style="padding:6px 10px;font-size:12px">Aujourd'hui</button>
+      </div>
+      <span class="tb-sep"></span>
+      <div class="tb-group">
+        <!-- Comparaison optionnelle : l'état choisi comparé à une autre date -->
+        <button class="cmp-tgl" id="cmpOn" aria-pressed="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 7h13l-4-4M17 17H4l4 4"/></svg>Comparer</button>
+        <label class="tb-field hidden" id="cmpModeW"><span>à</span>
+          <select id="cmpMode" aria-label="Date de comparaison"><option value="30">Il y a 30 jours</option><option value="year">Même date l'an dernier</option><option value="custom">Date personnalisée</option></select></label>
+        <label class="tb-field hidden" id="cmpCustW"><span>le</span><input type="date" id="cDate"></label>
+      </div>
+    </div>
+    <div class="tb-info"><span id="pVs"></span></div>
+  </header>
+
+  <!-- Vue d'ensemble (les échéances ≤ 30 j sont dans « À traiter ») -->
+  <div class="grid4 g3">
+    <button class="stat kc" id="kTotal">
+      <div class="t">Total clients</div>
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+      <div class="v" id="k01">–</div>
+      <div class="s" id="k01s"></div>
+      <span class="more">Voir le détail →</span>
+    </button>
+    <!-- Actifs + bloqués réunis : le détail (répartition par statut) s'ouvre au clic -->
+    <button class="stat kc" id="kStatus">
+      <div class="t">Statut des clients</div>
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></div>
+      <div class="v" id="k02">–</div>
+      <div class="sbar" id="k02m"></div>
+      <span class="more">Voir le détail →</span>
+    </button>
+    <!-- Parc équipements : connectés + hors ligne réunis ; le détail (onglets connectés / non connectés) s'ouvre au clic -->
+    <button class="stat kc" id="kParc">
+      <div class="t">Parc équipements</div>
+      <div class="ic" style="background:var(--green-bg);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.6a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 8.8a15 15 0 0 1 20 0"/><circle cx="12" cy="20" r="1"/></svg></div>
+      <div class="v" id="k04">–</div>
+      <div class="sbar" id="k04m"></div>
+      <div class="s" id="k04s"></div>
+      <span class="more">Voir le détail →</span>
+    </button>
+  </div>
+
+  <!-- À traiter -->
+  <div class="sec">
+    <h2>À traiter</h2>
+    <span class="hint">Cliquez sur une carte pour voir les clients</span>
+    <div class="params">
+      <label class="param" title="S'applique à toutes les cartes qui ont un délai : Échéance ≤ N j et Sans connexion > N j">Délai
+        <select id="pDelay"><option value="15">15 j</option><option value="30" selected>30 j</option><option value="60">60 j</option></select>
+      </label>
+    </div>
+  </div>
+  <div class="grid4 alerts g2" id="alerts"></div>
+
+  <!-- Revendeurs (super admin) : un propriétaire par ligne ; le clic filtre toute la page -->
+  <div class="sec adm-only"><h2>Revendeurs</h2><span class="hint">Cliquez sur une ligne pour filtrer toute la page sur ce propriétaire</span></div>
+  <div class="panel adm-only rv-panel">
+    <table class="ft-t rv-t"><thead><tr><th>Propriétaire</th><th>Clients</th><th>Équipements</th><th style="width:24%">Connectés</th><th>Bloqués</th><th>Échéances ≤ <span id="rvD">30</span> j</th></tr></thead>
+      <tbody id="rvRows"></tbody></table>
+    <div id="rvPg"></div>
+  </div>
+
+  <!-- Répartition -->
+  <div class="sec"><h2>Répartition</h2></div>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Clients et équipements par pack</h3>
+      <div class="sub">Pack actuel de chaque client (dernière affectation)</div>
+      <div class="bars" id="packBars"></div>
+      <div class="legend" id="packLeg"></div>
+    </div>
+    <div class="panel">
+      <h3 id="connT">Équipements connectés / non connectés</h3>
+      <div class="sub"><span id="connSub"></span></div>
+      <div class="bars" id="connBars"></div>
+      <div class="legend" id="connLeg"></div>
+    </div>
+  </div>
+
+  <!-- Filtres + tableau -->
+  <div class="box">
+    <div class="filters">
+      <div class="ft"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtres</div>
+      <div class="fgrid">
+        <div><label>Recherche</label><input id="fSearch" placeholder="Nom, e-mail…"></div>
+        <div class="adm-only"><label>Propriétaire</label><select id="fOwner" aria-label="Propriétaire"></select></div>
+        <div class="adm-only"><label>Type client</label><select id="fType"><option value="">Tous les types</option><option value="simple">Client final</option><option value="rev">Revendeur</option></select></div>
+        <div><label>Statut</label><select id="fStatus"><option value="">Tous les statuts</option><option value="on">Actif</option><option value="off">Bloqué</option></select></div>
+        <div><label>Pack<span class="new">• nouveau</span></label><select id="fPack"><option value="">Tous les packs</option></select></div>
+        <div><label>Connexion équip.<span class="new">• nouveau</span></label><select id="fConn"><option value="">Tous</option><option value="all">Tous connectés</option><option value="some">Au moins 1 non connecté</option><option value="none">Aucun équipement</option></select></div>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="tw">
+      <table id="cTbl">
+        <thead><tr>
+          <th>Client</th><th>Propriétaire</th><th>Type</th><th>Pack</th><th>Équipements connectés</th><th>Dernière connexion</th><th>Échéance</th><th>Statut</th><th style="text-align:right">Actions</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="pager" id="pager"></div>
+    
+  </div>
+  <div style="height:8px"></div>
+  <!-- Activité et renouvellement : graphique à gauche, détail fixe à droite -->
+  <div class="sec"><h2>Activité et renouvellement</h2><span class="hint">Cliquez sur un graphique pour voir le détail à droite</span></div>
+  <div class="panel split">
+    <div>
+      <div class="ph3"><h3>Connexion mensuelle des clients</h3>
+        <label class="lsearch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="logQ" list="logQL" placeholder="Filtrer par client…" aria-label="Filtrer par nom de client"><datalist id="logQL"></datalist><button id="logQx" class="hidden" aria-label="Effacer le filtre">×</button></label></div>
+      <div class="sub" id="logSub"></div>
+      <div class="st-tabs" id="logMode" style="margin:0 0 6px"><button data-lmode="n" class="on">Nombre de connexions</button><button data-lmode="p">% de clients connectés</button></div>
+      <div class="lchart" id="logChart"></div>
+      <div class="legend" id="logLeg"></div>
+    </div>
+    <div class="det" id="logDet"></div>
+  </div>
+  <div class="panel split">
+    <div>
+      <h3>Pic du nombre de clients connectés</h3>
+      <div class="sub" id="peakSub"></div>
+      <div class="cc" id="peak"></div><div class="ccx" id="peakX"></div>
+      <div class="legend"><span><i class="dot" style="background:#93C5FD"></i>Clients connectés dans le mois</span><span><i class="dot" style="background:#1D4ED8"></i>Pic de la période</span></div>
+    </div>
+    <div class="det" id="peakDet"></div>
+  </div>
+  <div class="panel split">
+    <div>
+      <h3>Nouveaux clients vs clients bloqués par mois</h3>
+      <div class="sub">6 derniers mois · arrivée = création du client · départ = passage en bloqué</div>
+      <div class="cc" id="flow"></div><div class="ccx" id="flowX"></div>
+      <div class="legend" id="flowLeg"></div>
+    </div>
+    <div class="det" id="flowDet"></div>
+  </div>
+  <div class="panel split">
+    <div>
+      <h3>Échéances des packs par mois</h3>
+      <div class="sub" id="echSub"></div>
+      <div class="ech-ctl" id="echCtl"></div>
+      <div class="ech-k" id="echK"></div>
+      <div class="cc" id="ech"></div><div class="ccx" id="echX"></div>
+      <div class="legend" id="echLeg"></div>
+    </div>
+    <div class="det" id="echDet"></div>
+  </div>
+
+</section>
+</main><div id="modal"></div><div hidden><nav class="side" aria-label="Menu principal">
+  <div class="logo"><i></i><span>FleetAdmin</span></div>
+  <!-- Maquette : compte connecté. Le super admin voit tout le réseau, un revendeur ne voit que ses clients -->
+  <div class="who"><small>CONNECTÉ</small>
+    <select id="pView" aria-label="Compte connecté"><option value="">Admin TUNAV</option><option value="MyCom">Revendeur</option></select></div>
+  <div class="menu-l">MENU</div>
+  <div class="menu">
+    <a href="Main-v3.html" class="nav">Tableau de bord</a>
+    <a href="Clients-v3.html" class="nav nav-on">Gestion Clients</a>
+    <a href="Packs-v3.html" class="nav adm-only">Packs</a>
+    <a href="Puces-v3.html" class="nav adm-only">Gestion des puces</a>
+    <a href="Equipements-v3.html" class="nav">Équipements</a>
+  </div>
+</nav></div>

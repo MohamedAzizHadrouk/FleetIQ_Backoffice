@@ -46,6 +46,10 @@ import {
   type SavFilters
 } from '../utils/savKpis';
 import { exportTableToCsv, exportTableToPdf } from '../utils/tableExport';
+import { MaquettePage } from '../components/shell/MaquettePage';
+import savMarkup from '../components/sav/maquette/markup.html?raw';
+import { mount as mountSavMaquette } from '../components/sav/maquette/script';
+import '../components/sav/maquette/style.css';
 
 export function SavPage() {
   const store = useFleetStore();
@@ -165,102 +169,17 @@ export function SavPage() {
   const dateFr = realToday.toLocaleDateString('fr-FR');
   const bell = <SavBell kpi={team ? 'SAV-S-10' : 'SAV-T-07'} items={bellItems} open={bellOpen} onToggle={setBellOpen} onSelect={onBell} />;
 
+  // Maquette validée sav (FleetAdmin-maquettes v3) : même page, mêmes données, mêmes fenêtres (Documentation et grands paragraphes retirés)
   return (
-    <PageShell
-      header={
-        <PageChrome
-          title={pageTitle}
-          date={dateFr}
-          actions={
-            <TableExportButtons
-              size="compact"
-              onExportExcel={() => {
-                const { headers, rows } = exp();
-                exportTableToCsv(headers, rows, exportName);
-              }}
-              onExportPdf={() => {
-                const { headers, rows } = exp();
-                exportTableToPdf(
-                  `${team ? 'Interventions SAV' : `Mes interventions – ${me?.name ?? ''}`} – état au ${asOf.toLocaleDateString('fr-FR')}`,
-                  headers,
-                  rows,
-                  exportName
-                );
-              }}
-            />
-          }
-          bell={bell}
-          tools={
-            <>
-              <label className="inline-flex items-center gap-2 text-label text-text">
-                <CalendarDays size={16} aria-hidden="true" className="text-text-muted" />
-                État au
-                <input
-                  type="date"
-                  lang="fr"
-                  value={asOfIso}
-                  min={toIsoDate(addDays(realToday, -60))}
-                  max={toIsoDate(addDays(realToday, 30))}
-                  onChange={(e) => setAsOfIso(e.target.value || toIsoDate(realToday))}
-                  className="h-control max-md:h-control-touch px-2 border border-border-strong rounded-control text-small max-md:text-body bg-surface focus-visible:outline-none focus-visible:border-primary focus-visible:ring-3 focus-visible:ring-focus/25"
-                />
-              </label>
-              <Button type="button" variant="neutral" onClick={() => setAsOfIso(toIsoDate(realToday))}>
-                Aujourd’hui
-              </Button>
-            </>
-          }
-        />
-      }
-    >
-
-      {notice && (
-        <div role="status" className="flex items-start justify-between gap-3 rounded-control border border-success-200 bg-success-50 px-4 py-3 text-small text-success-700">
-          <span>{notice}</span>
-          <button type="button" onClick={() => setNotice(null)} className="font-medium underline focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus rounded-control">
-            OK
-          </button>
-        </div>
-      )}
-
-      {team ? (
-        <SavTeamView
-          list={interventions}
-          toPlan={toPlan}
-          kpis={kpis}
-          loads={loads}
-          asOf={asOf}
-          asOfIso={asOfIso}
-          now={now}
-          techs={technicians}
-          zones={zones}
-          eqAlerts={eqAlerts}
-          eqBySerial={eqBySerial}
-          soldEquipments={equipments.filter((e) => !e.client.endsWith('_Stock'))}
-          cityOf={cityOf}
-          zoneOfCity={zoneOfCity}
-          filters={filters}
-          setFilters={setFilters}
-          canPlan={sav.canPlan}
-          canOpenEquipments={!!role && canAccessRoute(role, 'equipments')}
-          onOpen={(iv) => setSelectedId(iv.id)}
-          onPlan={onPlan}
-          onCreate={onCreate}
-          onGo={(href) => navigate(href)}
-          scrollTo={scrollTo}
-        />
-      ) : (
-        <SavTechnicianView
-          kpis={tKpis}
-          lists={tLists}
-          zoneToPlan={zoneToPlan}
-          asOfIso={asOfIso}
-          isToday={isToday}
-          eqBySerial={eqBySerial}
-          onOpen={(iv) => setSelectedId(iv.id)}
-          scrollTo={scrollTo}
-        />
-      )}
+    <>
+      <MaquettePage
+        slug="sav"
+        markup={savMarkup}
+        mount={mountSavMaquette}
+        view={''}
+        role={role === 'responsable_sav' ? 'RespSAV' : role === 'technicien_sav' ? 'TechSAV' : ''}
+        actions={undefined}
+      />
 
       <Modal
         isOpen={!!selected}
@@ -291,6 +210,6 @@ export function SavPage() {
           />
         )}
       </Modal>
-    </PageShell>
+    </>
   );
 }

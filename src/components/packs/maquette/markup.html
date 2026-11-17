@@ -1,0 +1,158 @@
+<main class="mainv2">
+<section id="dash" class="wrap">
+  <header class="topx">
+    <div class="tx-row1">
+      <div class="hl"><h1>Gestion des Packs</h1><a hidden href="Documentation-Packs-v3.html" class="doc-link"></a></div>
+      <div class="tx-right">
+        <div class="tx-actions">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>Excel</button>
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>PDF</button>
+        <button class="btn primary" id="newPack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Nouveau pack</button>
+      </div>
+        <span class="today-chip"><i></i>Aujourd'hui <b id="todayTxt"></b></span>
+        <button class="bell" id="bell" aria-label="Alertes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="cnt" id="bellCnt">0</span></button>
+        <div class="bpanel hidden" id="bpanel"></div>
+      </div>
+    </div>
+    <p class="hsub" id="pSub" hidden></p>
+    <div class="toolbar">
+      <div class="tb-group">
+        <div class="vseg" id="pMode" role="group" aria-label="Période analysée">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <button data-m="7">7 jours</button><button data-m="30" class="on">30 jours</button><button data-m="3m">3 mois</button><button data-m="custom">Personnalisé</button>
+        </div>
+        <label class="tb-field" id="pAuW"><span>Au</span><input type="date" id="pAu"></label>
+        <span class="tb-field hidden" id="pCustW"><span>Du</span><input type="date" id="pFrom"><span>au</span><input type="date" id="pTo"></span>
+      </div>
+      <span class="tb-sep"></span>
+      <div class="tb-group">
+        <!-- Comparaison optionnelle : bouton à activer, les choix n'apparaissent qu'ensuite -->
+        <button class="cmp-tgl" id="cmpOn" aria-pressed="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 7h13l-4-4M17 17H4l4 4"/></svg>Comparer</button>
+        <label class="tb-field hidden" id="cmpModeW"><span>à</span>
+          <select id="cmpMode" aria-label="Période de comparaison"><option value="prev">Période précédente</option><option value="year">Même période l'an dernier</option><option value="custom">Personnalisée</option></select></label>
+        <span class="tb-field hidden" id="cmpCustW"><span>Du</span><input type="date" id="cFrom"><span>au</span><input type="date" id="cTo"></span>
+      </div>
+    </div>
+    <div class="tb-info"><span id="pVs"></span><span class="cmp-err" id="pErr"></span></div>
+  </header>
+  <div class="banner hidden" id="banner"></div>
+
+  <!-- KPI -->
+  <!-- Cartes simples : un titre, un chiffre ; le détail s'ouvre au clic -->
+  <div class="grid4 g3">
+    <button class="stat kc" data-kd="ventes">
+      <div class="t" id="k2t">Packs vendus</div>
+      <div class="ic" style="background:var(--violet-bg);color:var(--violet)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.3 9 5.2M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg></div>
+      <div class="v" id="k2">–</div>
+      <span class="more">Voir le détail →</span>
+    </button>
+    <button class="stat kc" data-kd="top">
+      <div class="t">Pack le plus choisi</div>
+      <div class="ic" style="background:var(--amber-bg);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.2 7 22M14 14.7V17c0 .6.5 1 1 1.2 1.1.6 2 2 2 3.8M18 2H6v7a6 6 0 0 0 12 0z"/></svg></div>
+      <div class="v" id="k3">–</div>
+      <span class="more">Voir le détail →</span>
+    </button>
+    <button class="stat kc" data-kd="conn">
+      <div class="t">Équipements connectés · par pack</div>
+      <div class="ic" style="background:var(--green-bg);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.6a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 8.8a15 15 0 0 1 20 0"/><circle cx="12" cy="20" r="1"/></svg></div>
+      <div class="v" id="k4">–</div>
+      <div class="meter" style="margin-right:90px"><i id="k4m" style="background:var(--green)"></i></div>
+      <span class="more">Voir le détail →</span>
+    </button>
+  </div>
+
+  <!-- Packs vendus aux revendeurs (super admin uniquement) -->
+  <div class="sec" id="rsSec"><h2>Packs vendus aux revendeurs</h2><span class="hint">Packs de Tunav revendus par chaque revendeur · cliquez sur une case pour voir les clients</span></div>
+  <div class="panel conn-split" id="rsPanel">
+    <div>
+      <div class="rs-k" id="rsK"></div>
+      <div class="tw"><table class="cxt rs-t" id="rsT"></table></div>
+      <div class="pkf" id="rsCtl" style="margin:10px 0 0"></div>
+    </div>
+    <div class="conn-det" id="rsDet"></div>
+  </div>
+
+  <!-- À traiter -->
+  <div class="sec"><h2>À traiter</h2></div>
+  <div class="grid4 alerts" id="alerts"></div>
+
+  <!-- Classement + évolution -->
+  <div class="sec"><h2>Packs les plus choisis</h2></div>
+  <div class="panel">
+    <h3>Classement des packs</h3>
+    <div class="sub">Cliquez sur un pack pour voir ses clients</div>
+    <div class="tw"><table class="rank" id="rank"></table></div>
+    <div class="legend" id="rankLeg"></div>
+  </div>
+  <div class="panel conn-split" style="margin-top:16px">
+    <div>
+      <h3>Packs vendus par mois</h3>
+      <div class="sub" id="evoSub"></div>
+      <div class="cols" id="evo"></div>
+      <div class="xl" id="evoX"></div>
+      <div class="legend" id="evoLeg"></div>
+    </div>
+    <div class="conn-det" id="evoDet"></div>
+  </div>
+
+  <!-- Catalogue + clients (écran actuel) -->
+  <div class="sec"><h2>Catalogue et affectations</h2></div>
+  <div class="grid2" style="grid-template-columns:5fr 7fr">
+    <div class="cat">
+      <div class="ctb"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="qPack" placeholder="Rechercher un pack…"></label></div>
+      <div id="plist"></div>
+    </div>
+    <div class="cat">
+      <div class="ctb"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="qClient" placeholder="Rechercher un client…"></label>
+        <select id="fPack" class="inp" style="width:auto"><option value="">Tous les packs</option></select></div>
+      <div class="chips" id="chips"></div>
+      <div class="tw"><table class="ctable" id="clist"></table></div>
+    </div>
+  </div>
+
+  <!-- Fonctionnalités -->
+  <div class="sec"><h2>Fonctionnalités vendues</h2></div>
+  <div class="panel">
+    <div class="ph3"><h3>Fonctionnalités les plus vendues</h3><div class="fmode" id="fMode"></div></div>
+    <div class="sub">Nombre de clients qui ont la fonctionnalité dans au moins un de leurs packs · cliquez sur une ligne pour le détail</div>
+    <div class="frk" id="heat"></div>
+    <div class="legend" id="featLeg"></div>
+    <div class="fdet" id="fdet"></div>
+  </div>
+
+  <!-- Connexion + renouvellement -->
+  <div class="sec"><h2>Usage et renouvellement</h2></div>
+  <div class="panel conn-split">
+    <div>
+      <h3>Équipements connectés par pack</h3>
+      <div class="sub">Cliquez sur le vert ou le rose d'un pack pour voir ses équipements · alerte sous 60 %</div>
+      <div class="bars" id="connBars"></div>
+      <div class="legend" id="connLeg"></div>
+    </div>
+    <div class="conn-det" id="connDet"></div>
+  </div>
+  <div class="grid2" style="grid-template-columns:1fr;margin-top:16px">
+    <div class="panel">
+      <h3>Échéances des abonnements</h3>
+      <div class="sub" id="pipeSub"></div>
+      <div class="cols" id="pipe" style="height:160px"></div>
+      <div class="xl" id="pipeX"></div>
+      <div class="legend" id="pipeLeg"></div>
+    </div>
+  </div>
+
+</section>
+</main><div id="modal"></div><div hidden><nav class="side" aria-label="Menu principal">
+  <div class="logo"><i></i><span>FleetAdmin</span></div>
+  <!-- Maquette : compte connecté. Le super admin voit tout le réseau, un revendeur ne voit que ses clients -->
+  <div class="who"><small>CONNECTÉ</small>
+    <select id="pView" aria-label="Compte connecté"><option value="">Admin TUNAV</option><option value="MyCom">Revendeur MyCom</option></select></div>
+  <div class="menu-l">MENU</div>
+  <div class="menu">
+    <a href="Main-v3.html" class="nav">Tableau de bord</a>
+    <a href="Clients-v3.html" class="nav">Gestion Clients</a>
+    <a href="Packs-v3.html" class="nav nav-on">Packs</a>
+    <a href="Puces-v3.html" class="nav">Gestion des puces</a>
+    <a href="Equipements-v3.html" class="nav">Équipements</a>
+  </div>
+</nav></div>

@@ -13,8 +13,8 @@ type Props = {
 export function GoalMeter({ value, goal, tone, label }: Props) {
   const v = Math.max(0, Math.min(100, value));
   return (
-    <span className="relative block h-2 w-full rounded-pill bg-border-subtle" role="img" aria-label={label} title={label}>
-      <span className={`absolute inset-y-0 left-0 rounded-pill ${TONE_BG[tone]}`} style={{ width: `${v}%` }} />
+    <span className="relative mt-1 block h-2 w-full rounded-[4px] bg-[#EEF2F7]" role="img" aria-label={label} title={label}>
+      <span className={`absolute inset-y-0 left-0 rounded-[4px] ${TONE_BG[tone]}`} style={{ width: `${v}%` }} />
       {goal != null && (
         <span
           className="absolute -top-1 -bottom-1 w-0.5 rounded-pill bg-text"

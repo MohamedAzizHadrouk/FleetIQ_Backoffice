@@ -155,7 +155,6 @@ export function SimFiche({ row: r, ctx, cons, showPrices, canManage, onEdit, onA
             </li>
           ))}
         </ul>
-        <p className="text-mention text-text-muted">Déduits des données (journal SimEvent à créer – à confirmer back-end).</p>
       </div>
 
       {canManage && (

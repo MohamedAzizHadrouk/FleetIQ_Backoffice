@@ -313,10 +313,6 @@ export function SimsConsumption({ data, period, onOpenSim, onOverNetwork }: Prop
           </div>
           <Pager pager={pager} label="Pagination de la consommation" />
         </div>
-        <p className="text-mention text-text-muted">
-          Le % utilisé ne compte que les puces installées avec un forfait (une puce non installée a un forfait mais ne consomme pas). Offres illimitées hors %.
-          Stock exclu.
-        </p>
       </Block>
 
       <Block

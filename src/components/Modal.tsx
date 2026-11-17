@@ -20,7 +20,7 @@ const FOCUSABLE =
 
 /** En-tête / pied : Fond clair TUNAV (#F2F6FF) – sépare clairement du corps blanc. */
 const CHROME =
-  'bg-surface-muted border-border shrink-0';
+  'bg-surface border-border-subtle shrink-0';
 
 /** Modale Industrial Tech – header + footer colorés (design system TUNAV). */
 export function Modal({ isOpen, onClose, title, children, size = 'md', footer }: ModalProps) {
@@ -102,25 +102,25 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
             exit={{ opacity: 0 }}
             transition={{ duration: 0.16, ease: [0.2, 0, 0, 1] }}
             onClick={onClose}
-            className="absolute inset-0 bg-tunav-anthracite/60"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             aria-hidden="true"
           />
           <motion.div
             key="modal-content"
             ref={panelRef}
             tabIndex={-1}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.16, ease: [0.2, 0, 0, 1] }}
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className={`relative flex h-full w-full max-h-[calc(100vh-2rem)] flex-col overflow-hidden bg-surface outline-none shadow-overlay rounded-none md:h-auto md:w-[calc(100%-2rem)] md:rounded-modal ${sizeClasses[size]}`}
+            className={`relative flex h-full w-full max-h-[calc(100vh-2rem)] flex-col overflow-hidden bg-white outline-none shadow-2xl rounded-none md:h-auto md:w-[calc(100%-2rem)] md:rounded-xl ${sizeClasses[size]}`}
           >
             {/* Header – Fond clair */}
             <div
-              className={`flex h-12 items-center justify-between gap-4 border-b px-4 ${CHROME} md:rounded-t-modal`}
+              className={`flex items-center justify-between gap-4 border-b px-5 py-4 ${CHROME} md:rounded-t-modal`}
             >
               <h2 id={titleId} className="truncate text-h4 text-text">
                 {title}
@@ -136,12 +136,12 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
             </div>
 
             {/* Corps – Blanc */}
-            <div className="min-h-0 flex-1 overflow-y-auto bg-surface p-4">{children}</div>
+            <div className="min-h-0 flex-1 overflow-y-auto bg-surface px-5 py-4">{children}</div>
 
             {/* Footer – Fond clair */}
             {showFooter && (
               <div
-                className={`flex flex-wrap items-center justify-end gap-3 border-t px-4 py-3 ${CHROME} md:rounded-b-modal`}
+                className={`flex flex-wrap items-center justify-between gap-2.5 border-t px-5 py-3 ${CHROME} md:rounded-b-modal [&>:only-child]:ml-auto`}
               >
                 {footerContent}
               </div>

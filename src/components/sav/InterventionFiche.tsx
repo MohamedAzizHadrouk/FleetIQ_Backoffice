@@ -119,9 +119,6 @@ export function InterventionFiche(p: Props) {
         <div className="rounded-card border border-border p-4 space-y-3" data-kpi="SAV-S-11">
           <div>
             <p className="text-label text-text">Type d’intervention</p>
-            <p className="text-mention text-text-muted">
-              Proposé par le système à partir de l’alerte ; à corriger si le diagnostic est différent (ex. boîtier hors service : Remplacement).
-            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <select value={type} onChange={(e) => setType(e.target.value as InterventionType)} aria-label="Type d’intervention" className={FIELD}>
@@ -209,7 +206,6 @@ export function InterventionFiche(p: Props) {
                 );
               })}
             </ul>
-            <p className="mt-1 text-mention text-text-muted">Photo : case à cocher dans la maquette (envoi de fichier à brancher, InterventionCheck.PhotoUrl).</p>
           </div>
 
           {canWork && (

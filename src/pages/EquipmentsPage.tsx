@@ -74,6 +74,10 @@ import {
 } from 'react-leaflet';
 // @ts-expect-error - leaflet has no bundled types in this project (same usage as ClientsPage)
 import L from 'leaflet';
+import { MaquettePage } from '../components/shell/MaquettePage';
+import equipmentsMarkup from '../components/equipments/maquette/markup.html?raw';
+import { mount as mountEquipmentsMaquette } from '../components/equipments/maquette/script';
+import '../components/equipments/maquette/style.css';
 
 // Cast to any to bypass missing @types/leaflet declarations
 const MapContainer = MapContainerBase as any;
@@ -710,96 +714,18 @@ export function EquipmentsPage() {
     />
   );
 
+  // Maquette validée equipments (FleetAdmin-maquettes v3) : même page, mêmes données, mêmes fenêtres (Documentation et grands paragraphes retirés)
   return (
-    <PageShell
-      header={
-        <PageChrome
-          title="Gestion des Équipements"
-          dateLabel="Données au"
-          date={dateFr}
-          actions={
-            <>
-              <TableExportButtons
-                size="compact"
-                onExportExcel={exportFilteredExcel}
-                onExportPdf={exportFilteredPdf}
-                disabled={filteredEquipments.length === 0}
-              />
-              {permissions?.equipments.canAdd && (
-                <Button type="button" variant="primary" onClick={openAddStock}>
-                  <Plus size={16} aria-hidden="true" />
-                  Ajouter un équipement
-                </Button>
-              )}
-            </>
-          }
-          bell={bell}
-        />
-      }
-    >
-      <EquipmentsOverview
-        rows={allRows}
-        isNetwork={isNetwork}
-        connDays={connDays}
-        alertDays={alertDays}
-        alertFilter={alertFilter}
-        onAlertClick={toggleAlert}
-        onOpenDetail={setDetail}
+    <>
+      <MaquettePage
+        slug="equipments"
+        markup={equipmentsMarkup}
+        mount={mountEquipmentsMaquette}
+        view={isResellerUser ? 'MyCom' : ''}
+        role={role === 'responsable_sav' ? 'RespSAV' : role === 'technicien_sav' ? 'TechSAV' : ''}
+        actions={undefined}
       />
 
-      {/* EQ-T-11 Liste des équipements, juste sous « À traiter » */}
-      <section aria-labelledby="eq-list" className="space-y-3 scroll-mt-4" ref={tableRef}>
-        <SectionTitle id="eq-list" title="Liste des équipements" />
-        <EquipmentsUnifiedTable
-          rows={tableRows}
-          totalCount={allRows.length}
-          stateCounts={barCounts}
-          filters={filters}
-          onFiltersChange={patchFilters}
-          onReset={resetFilters}
-          equipmentTypes={equipmentTypes}
-          packs={packs}
-          networkOptions={networkOptions}
-          showNetworkFilter={isNetwork}
-          ownerGroups={ownerGroups}
-          alertLabel={alertFilter ? ALERT_LABELS[alertFilter] : null}
-          onClearAlert={() => setAlertFilter(null)}
-          connDays={connDays}
-          actionPermissions={
-            permissions?.equipments ?? {
-              readOnly: true,
-              canAdd: false,
-              canEdit: false,
-              canAssign: false,
-              canReturnToStock: false,
-              canViewDetails: false
-            }
-          }
-          onOpen={openFiche}
-          onEdit={openEditEquipment}
-          onAssign={openAssign}
-          onReturnToStock={(eq) => cancelAssignmentToTunavStock(eq.id)}
-        />
-      </section>
-
-      <EquipmentsRepartition rows={allRows} isNetwork={isNetwork} now={now} onOpenRow={openFiche} onFilter={applyPatch} />
-
-      <DetailModal detail={detail} onClose={() => setDetail(null)} canOpen={canOpenRoute} />
-
-      {toast && (
-        <LiveAlertToast
-          alert={toast}
-          others={liveAlerts.length - 1}
-          alertDays={alertDays}
-          onView={() => {
-            openFiche(toast);
-            setToastClosed(true);
-          }}
-          onClose={() => setToastClosed(true)}
-        />
-      )}
-
-      {/* Quotas modal (placeholder write path) */}
       <Modal
         isOpen={isQuotasOpen}
         onClose={() => setIsQuotasOpen(false)}
@@ -1494,9 +1420,6 @@ export function EquipmentsPage() {
                 />
               </div>
             </div>
-            <p className="text-mention text-text-muted mt-2">
-              La puce SIM sera associée lors de l'affectation à un client ou à un revendeur depuis le tableau.
-            </p>
           </div>
 
           <div>
@@ -1561,6 +1484,6 @@ export function EquipmentsPage() {
           </div>
         </div>
       </Modal>
-    </PageShell>
+    </>
   );
 }

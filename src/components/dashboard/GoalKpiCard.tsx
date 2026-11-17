@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { GoalMeter } from '../charts';
 import { fmt, goalStatus, pct, type GoalKpi } from '../../utils/dashboardKpis';
-import { StatusTagFromLabel } from '../ui/StatusTag';
+import { StatusTag, StatusTagFromLabel } from '../ui/StatusTag';
 import { FOCUS, TRANSITION } from '../ui/focus';
 
 export type CompareInfo = { label: string; previous: number | null } | null;
@@ -27,7 +27,7 @@ export function GoalKpiCard({ kpi, compare, onOpen }: Props) {
     const d = rate != null ? rate - compare.previous : kpi.value - compare.previous;
     delta = {
       txt: `${d > 0 ? '+' : ''}${fmt(d)}${rate != null ? ' pt' : ''}`,
-      cls: d > 0 ? 'text-success' : d < 0 ? 'text-danger' : 'text-text-muted',
+      cls: d > 0 ? 'bg-success-50 text-success-700' : d < 0 ? 'bg-danger-50 text-danger-700' : 'bg-neutral-50 text-neutral-700',
       prevTxt: rate != null ? `${compare.previous} %` : fmt(compare.previous)
     };
   }
@@ -35,14 +35,20 @@ export function GoalKpiCard({ kpi, compare, onOpen }: Props) {
     <button
       type="button"
       onClick={onOpen}
-      className={`group flex h-full w-full flex-col gap-1.5 bg-surface rounded-card border border-border p-4 pt-3 text-left hover:border-border-strong ${TRANSITION} ${FOCUS} ${st?.rail ?? ''}`}
+      className={`group flex h-full w-full min-w-0 flex-col gap-1.5 bg-surface rounded-card border border-border border-l-4 px-4 pt-4 pb-3.5 text-left shadow-card hover:border-border-strong ${TRANSITION} ${FOCUS} ${
+        st?.tone === 'danger'
+          ? 'border-l-danger'
+          : st?.tone === 'warning'
+            ? 'border-l-warning'
+            : 'border-l-primary'
+      }`}
     >
       <span className="text-overline uppercase text-text-muted">{kpi.label}</span>
-      <span className="flex items-baseline gap-2">
-        <span className="text-kpi text-text">{rate != null ? `${rate} %` : fmt(kpi.value)}</span>
-        <span className="text-small text-text-muted">
+      <span className="text-kpi text-text">
+        {rate != null ? `${rate} %` : fmt(kpi.value)}
+        <small className="ml-1.5 font-sans text-small font-medium text-text-muted">
           {rate != null ? `${fmt(kpi.value)} / ${fmt(kpi.of ?? 0)}` : kpi.unit}
-        </span>
+        </small>
       </span>
       {rate != null && (
         <GoalMeter
@@ -52,28 +58,31 @@ export function GoalKpiCard({ kpi, compare, onOpen }: Props) {
           label={`${rate} %${kpi.goal != null ? ` · objectif ${kpi.goal} %` : ''}`}
         />
       )}
-      <span className="flex flex-wrap items-center gap-2">
+      <span className="mt-0.5 flex items-center justify-between gap-2 text-mention text-text-muted">
         {st ? (
-          <StatusTagFromLabel label={st.text} />
+          <>
+            <StatusTagFromLabel label={st.text} />
+            {kpi.goal != null && <span>objectif {kpi.goal} %</span>}
+          </>
         ) : (
-          <StatusTagFromLabel label="Information" />
+          <StatusTag label={kpi.info ?? 'Information'} family="info" />
         )}
-        {!st && kpi.info && <span className="text-mention text-text-muted">{kpi.info}</span>}
       </span>
+      <span className="text-[12.5px] text-text-muted">{kpi.context}</span>
       {compare && (
-        <span className="text-mention text-text-muted">
+        <span className="text-[12.5px] text-text-muted">
           {delta ? (
             <>
-              <span className={`font-semibold ${delta.cls}`}>{delta.txt}</span> vs {compare.label} ({delta.prevTxt})
+              <span className={`rounded-[6px] px-1.5 py-px font-mono text-mention font-semibold ${delta.cls}`}>{delta.txt}</span> vs {compare.label} ({delta.prevTxt})
             </>
           ) : (
             <>Pas d’instantané pour {compare.label}</>
           )}
         </span>
       )}
-      <span className="mt-auto inline-flex items-center gap-1 pt-2 border-t border-border-subtle text-mention font-medium text-primary">
+      <span className="mt-auto inline-flex items-center gap-1 text-[11.5px] font-semibold text-primary-hover">
         {kpi.routeLabel}
-        <ArrowRight size={14} aria-hidden="true" />
+        <ArrowRight size={12} aria-hidden="true" />
       </span>
     </button>
   );
