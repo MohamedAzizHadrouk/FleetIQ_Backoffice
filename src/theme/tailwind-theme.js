@@ -1,107 +1,105 @@
 /**
- * FleetIQ Back-office – thème Tailwind 3.4 (theme.extend) – style de la maquette v3 (FleetAdmin-maquettes, pages-navigateur).
- * Valeurs reprises du CSS des maquettes Main-v3, Clients-v3, Packs-v3, Puces-v3, Equipements-v3, SAV-v3 :
- * palette Slate / Blue, IBM Plex Sans + IBM Plex Mono (chiffres), cartes 12 px, contrôles 8 px, fenêtres 14 px.
- * Les noms des jetons sont inchangés : tous les composants suivent sans modification.
+ * FleetIQ Back-office – thème Tailwind 3.4 (theme.extend).
+ * Design system TUNAV (Brand Book) : Bleu Royal #0848FE, Fond clair #F2F6FF, Anthracite, Bleu Ciel.
  */
 
 const tunavTheme = {
   colors: {
-    /* ---- Couleurs brutes (anciens noms gardés pour compatibilité) ---- */
+    /* ---- Couleurs brutes (charte TUNAV) ---- */
     tunav: {
-      'bleu-royal': '#2563EB',
-      'bleu-ciel': '#60A5FA',
-      anthracite: '#0F172A',
-      'gris-texte': '#475569',
-      gris: '#64748B',
-      'fond-clair': '#F1F5F9',
+      'bleu-royal': '#0848FE',
+      'bleu-ciel': '#0099FF',
+      anthracite: '#3F3F3F',
+      'gris-texte': '#6E6E6E',
+      gris: '#777777',
+      'fond-clair': '#F2F6FF',
       blanc: '#FFFFFF',
     },
 
     /* ---- Sémantique ---- */
     primary: {
-      DEFAULT: '#2563EB', // boutons, liens, élément actif
-      hover: '#1D4ED8',
-      active: '#1E3A8A',
-      50: '#EFF6FF', // survol de ligne, puce sélectionnée
-      100: '#DBEAFE',
-      200: '#BFDBFE',
+      DEFAULT: '#0848FE', // Bleu Royal – action, sélection, focus
+      hover: '#0639CB',
+      active: '#052AA3',
+      50: '#F2F6FF', // Fond clair
+      100: '#E0E9FF',
+      200: '#C2D4FF',
     },
     accent: {
-      DEFAULT: '#93C5FD', // bordure au survol
+      DEFAULT: '#0099FF', // Bleu Ciel – filet actif / accent UI
     },
     surface: {
-      DEFAULT: '#FFFFFF', // cartes, tableaux, fenêtres, champs
-      muted: '#F8FAFC', // en-têtes de tableau, survol
-      page: '#F1F5F9', // fond de l'application
-      inverse: '#0F172A', // barre latérale
-      'inverse-hover': '#1E293B',
+      DEFAULT: '#FFFFFF',
+      muted: '#F2F6FF',
+      page: '#F2F6FF',
+      inverse: '#3F3F3F', // Anthracite
+      'inverse-hover': '#2E2E2E',
     },
     text: {
-      DEFAULT: '#0F172A',
-      muted: '#475569',
+      DEFAULT: '#3F3F3F',
+      muted: '#6E6E6E',
       inverse: '#FFFFFF',
-      'inverse-muted': '#CBD5E1',
-      link: '#1D4ED8',
+      'inverse-muted': '#D4D4D4',
+      link: '#0848FE',
     },
     border: {
       DEFAULT: '#E2E8F0',
-      subtle: '#F1F5F9',
+      subtle: '#F2F6FF',
       strong: '#CBD5E1',
     },
 
     /* ---- États (pastilles .badge de la maquette) ---- */
     success: {
-      DEFAULT: '#059669',
-      hover: '#047857',
-      50: '#D1FAE5',
-      200: '#A7F3D0',
-      700: '#065F46',
+      DEFAULT: '#1B7F3B',
+      hover: '#145C2B',
+      50: '#E8F5EC',
+      200: '#A7D4B5',
+      700: '#0F4A22',
     },
     warning: {
-      DEFAULT: '#D97706',
-      hover: '#B45309',
+      DEFAULT: '#B45309',
+      hover: '#92400E',
       50: '#FEF3C7',
       200: '#FDE68A',
-      700: '#92400E',
+      700: '#78350F',
     },
     danger: {
-      DEFAULT: '#DC2626',
-      hover: '#B91C1C',
-      50: '#FEE2E2',
-      200: '#FECACA',
-      700: '#991B1B',
+      DEFAULT: '#C62828',
+      hover: '#9B1C1C',
+      50: '#FDECEC',
+      200: '#F5B5B5',
+      700: '#7F1D1D',
     },
     info: {
-      DEFAULT: '#2563EB',
-      50: '#E0E7FF',
-      200: '#C7D2FE',
-      700: '#3730A3',
+      DEFAULT: '#0848FE',
+      50: '#F2F6FF',
+      200: '#C2D4FF',
+      700: '#052AA3',
     },
     neutral: {
-      50: '#F1F5F9',
+      50: '#F2F6FF',
       200: '#E2E8F0',
-      700: '#475569',
+      700: '#6E6E6E',
     },
 
     /* ---- Graphiques ---- */
     chart: {
-      1: '#2563EB',
-      2: '#60A5FA',
-      3: '#64748B', // stock / autres
-      4: '#94A3B8',
-      grid: '#F1F5F9',
+      1: '#0848FE',
+      2: '#0099FF',
+      3: '#777777',
+      4: '#6E6E6E',
+      grid: '#F2F6FF',
     },
 
     /* ---- Focus clavier ---- */
     focus: {
-      DEFAULT: '#2563EB',
+      DEFAULT: '#0848FE',
       inverse: '#FFFFFF',
     },
   },
 
   fontFamily: {
-    sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', '"Segoe UI"', 'Arial', 'sans-serif'],
+    sans: ['Poppins', 'system-ui', '-apple-system', '"Segoe UI"', 'Arial', 'sans-serif'],
     mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
     arabic: ['"IBM Plex Sans Arabic"', '"Segoe UI"', 'Tahoma', '"Geeza Pro"', '"Noto Sans Arabic"', 'Arial', 'sans-serif'],
   },
@@ -119,7 +117,7 @@ const tunavTheme = {
     button: ['0.8125rem', { lineHeight: '1.25', fontWeight: '600' }], // 13 SemiBold (.btn)
     'button-sm': ['0.8125rem', { lineHeight: '1.25', fontWeight: '500' }], // 13 Medium (.hbtn)
     overline: ['0.6875rem', { lineHeight: '1.4', letterSpacing: '0.06em', fontWeight: '600' }], // 11 CAPITALES (.lbl)
-    kpi: ['1.875rem', { lineHeight: '1.05', fontWeight: '600' }], // 30 – chiffre des cartes (IBM Plex Mono, voir index.css)
+    kpi: ['1.875rem', { lineHeight: '1.05', fontWeight: '600' }], // 30 – chiffre des cartes (mono, voir index.css)
     title: ['1.625rem', { lineHeight: '1.2', fontWeight: '700' }], // 26 – titre de page
     section: ['1rem', { lineHeight: '1.4', fontWeight: '600' }], // 16 – titre de bloc
   },
@@ -133,18 +131,18 @@ const tunavTheme = {
   },
 
   boxShadow: {
-    card: 'none',
+    card: '0 1px 2px rgba(15, 23, 42, 0.06)',
     raised: '0 12px 32px rgba(15, 23, 42, 0.14)', // cloche, menus
     overlay: '0 20px 50px rgba(15, 23, 42, 0.25)', // fenêtres
     // bord gauche 3 px (cartes « À traiter » de la maquette)
-    'rail-success': 'inset 3px 0 0 0 #059669',
-    'rail-warning': 'inset 3px 0 0 0 #D97706',
-    'rail-danger': 'inset 3px 0 0 0 #DC2626',
-    'rail-info': 'inset 3px 0 0 0 #2563EB',
-    'toast-success': 'inset 3px 0 0 0 #059669, 0 12px 32px rgba(15, 23, 42, 0.14)',
-    'toast-warning': 'inset 3px 0 0 0 #D97706, 0 12px 32px rgba(15, 23, 42, 0.14)',
-    'toast-danger': 'inset 3px 0 0 0 #DC2626, 0 12px 32px rgba(15, 23, 42, 0.14)',
-    'toast-info': 'inset 3px 0 0 0 #2563EB, 0 12px 32px rgba(15, 23, 42, 0.14)',
+    'rail-success': 'inset 3px 0 0 0 #1B7F3B',
+    'rail-warning': 'inset 3px 0 0 0 #B45309',
+    'rail-danger': 'inset 3px 0 0 0 #C62828',
+    'rail-info': 'inset 3px 0 0 0 #0848FE',
+    'toast-success': 'inset 3px 0 0 0 #1B7F3B, 0 12px 32px rgba(63, 63, 63, 0.14)',
+    'toast-warning': 'inset 3px 0 0 0 #B45309, 0 12px 32px rgba(63, 63, 63, 0.14)',
+    'toast-danger': 'inset 3px 0 0 0 #C62828, 0 12px 32px rgba(63, 63, 63, 0.14)',
+    'toast-info': 'inset 3px 0 0 0 #0848FE, 0 12px 32px rgba(63, 63, 63, 0.14)',
   },
 
   spacing: {
@@ -156,7 +154,7 @@ const tunavTheme = {
     'row-head': '34px',
     topbar: '48px',
     'topbar-mobile': '56px',
-    sidebar: '232px', // barre latérale de la maquette
+    sidebar: '240px', // w-60 – chrome sombre type FleetAdmin
     rail: '56px',
   },
 

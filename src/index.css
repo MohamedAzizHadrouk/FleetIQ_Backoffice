@@ -1,6 +1,6 @@
 /* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
-/* Polices de la maquette v3 : IBM Plex Sans (texte) + IBM Plex Mono (chiffres) + IBM Plex Sans Arabic */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+/* Polices TUNAV : Poppins (Brand Book) + IBM Plex Mono (chiffres) + IBM Plex Sans Arabic */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
 @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
 
 /* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
@@ -14,20 +14,20 @@
 @layer base {
   :root {
     /* Jetons CSS (mêmes valeurs que tailwind-theme.js) – utiles pour Leaflet, jsPDF, styles en ligne */
-    --tunav-primary: #2563EB;
-    --tunav-primary-hover: #1D4ED8;
-    --tunav-accent: #93C5FD;
-    --tunav-text: #0F172A;
-    --tunav-text-muted: #475569;
-    --tunav-gris: #64748B;
+    --tunav-primary: #0848FE;
+    --tunav-primary-hover: #0639CB;
+    --tunav-accent: #0099FF;
+    --tunav-text: #3F3F3F;
+    --tunav-text-muted: #6E6E6E;
+    --tunav-gris: #777777;
     --tunav-surface: #FFFFFF;
-    --tunav-surface-muted: #F8FAFC;
+    --tunav-surface-muted: #F2F6FF;
     --tunav-border: #E2E8F0;
-    --tunav-success: #059669;  --tunav-success-700: #065F46;
-    --tunav-warning: #D97706;  --tunav-warning-700: #92400E;
-    --tunav-danger:  #DC2626;  --tunav-danger-700:  #991B1B;
-    --tunav-focus: #2563EB;
-    --font-latin: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --tunav-success: #1B7F3B;  --tunav-success-700: #145C2B;
+    --tunav-warning: #B45309;  --tunav-warning-700: #92400E;
+    --tunav-danger:  #C62828;  --tunav-danger-700:  #9B1C1C;
+    --tunav-focus: #0848FE;
+    --font-latin: "Poppins", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
     --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --font-arabe: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, "Geeza Pro", "Noto Sans Arabic", Arial, sans-serif;
 
@@ -42,7 +42,7 @@
     --h-row: 40px;
     --h-row-compact: 34px;
     --h-topbar: 48px;
-    --w-sidebar: 232px;
+    --w-sidebar: 240px;
     --w-rail: 56px;
     --shadow-raised: 0 12px 32px rgba(15, 23, 42, 0.14);
     --ease-standard: cubic-bezier(0.2, 0, 0, 1);
@@ -58,8 +58,8 @@
     font-weight: 400;
     font-size: 0.875rem;
     line-height: 1.5;
-    background-color: #F1F5F9;
-    color: #0F172A;
+    background-color: #F2F6FF;
+    color: #3F3F3F;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

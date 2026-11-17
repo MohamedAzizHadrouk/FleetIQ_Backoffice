@@ -102,21 +102,21 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
             exit={{ opacity: 0 }}
             transition={{ duration: 0.16, ease: [0.2, 0, 0, 1] }}
             onClick={onClose}
-            className="absolute inset-0 bg-[rgba(15,23,42,0.45)]"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             aria-hidden="true"
           />
           <motion.div
             key="modal-content"
             ref={panelRef}
             tabIndex={-1}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.16, ease: [0.2, 0, 0, 1] }}
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className={`relative flex h-full w-full max-h-[calc(100vh-2rem)] flex-col overflow-hidden bg-surface outline-none shadow-overlay rounded-none md:h-auto md:w-[calc(100%-2rem)] md:rounded-modal ${sizeClasses[size]}`}
+            className={`relative flex h-full w-full max-h-[calc(100vh-2rem)] flex-col overflow-hidden bg-white outline-none shadow-2xl rounded-none md:h-auto md:w-[calc(100%-2rem)] md:rounded-xl ${sizeClasses[size]}`}
           >
             {/* Header – Fond clair */}
             <div

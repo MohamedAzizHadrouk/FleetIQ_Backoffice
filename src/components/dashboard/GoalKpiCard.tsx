@@ -35,7 +35,13 @@ export function GoalKpiCard({ kpi, compare, onOpen }: Props) {
     <button
       type="button"
       onClick={onOpen}
-      className={`group flex h-full w-full min-w-0 flex-col gap-1.5 bg-surface rounded-card border border-border px-4 pt-4 pb-3.5 text-left hover:border-accent hover:shadow-[0_2px_8px_rgba(15,23,42,0.06)] ${TRANSITION} ${FOCUS}`}
+      className={`group flex h-full w-full min-w-0 flex-col gap-1.5 bg-surface rounded-card border border-border border-l-4 px-4 pt-4 pb-3.5 text-left shadow-card hover:border-border-strong ${TRANSITION} ${FOCUS} ${
+        st?.tone === 'danger'
+          ? 'border-l-danger'
+          : st?.tone === 'warning'
+            ? 'border-l-warning'
+            : 'border-l-primary'
+      }`}
     >
       <span className="text-overline uppercase text-text-muted">{kpi.label}</span>
       <span className="text-kpi text-text">

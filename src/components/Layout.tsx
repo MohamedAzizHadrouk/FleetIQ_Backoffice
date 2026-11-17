@@ -21,8 +21,8 @@ function readCollapsed(): boolean {
 }
 
 /**
- * Coque – zone A (sidebar claire + bascule) + contenu.
- * < 768 px : barre claire + tiroir · ≥ 768 : sidebar 240 px ou rail 56 px (préférence utilisateur).
+ * Coque – design system TUNAV (Fond clair + sidebar marque Bleu Royal).
+ * Conserve collapse/rail et tiroir mobile.
  */
 export function Layout({ role, onLogout }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -51,7 +51,7 @@ export function Layout({ role, onLogout }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-surface-page md:flex">
-      {/* Barre mobile claire */}
+      {/* Barre mobile claire TUNAV */}
       <div className="sticky top-0 z-topbar flex h-topbar-mobile items-center justify-between gap-3 border-b border-border bg-surface px-4 md:hidden">
         <div className="flex items-center gap-2 min-w-0">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary">
@@ -88,7 +88,6 @@ export function Layout({ role, onLogout }: LayoutProps) {
         onToggleCollapsed={toggleCollapsed}
       />
 
-      {/* Menu réduit : seul le rail à gauche ; header / page en pleine largeur (pas de bande vide à droite) */}
       <main
         className={`min-w-0 flex-1 transition-[margin] duration-slow ease-standard [&:has(.fiq-shell)]:p-0 p-4 md:p-6 ${
           collapsed ? 'md:ml-rail' : 'md:ml-sidebar'
