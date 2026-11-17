@@ -442,7 +442,7 @@ function renderBell(){
   $$('[data-bi]').forEach(li=>li.onclick=()=>{ closeBell(); BELL[+li.dataset.bi].act(); });
 }
 function closeBell(){ $('#bpanel').classList.add('hidden'); }
-function focusAlert(id){ closeBell(); showTab('dash'); F.alert = id; renderAlerts(); renderClients(); $('#clist').scrollIntoView({behavior:'smooth',block:'start'}); }
+function focusAlert(id){ closeBell(); showTab('dash'); F.alert = id; clientPage = 0; renderAlerts(); renderClients(); $('#clist').scrollIntoView({behavior:'smooth',block:'start'}); }
 
 function rankRows(){
   const withP = CLIENTS.filter(c=>c.packs.length).length;
@@ -680,6 +680,7 @@ function renderClients(){
   const pageSize = 10, pageCount = Math.max(1, Math.ceil(list.length / pageSize));
   clientPage = Math.min(clientPage, pageCount - 1);
   const pageList = list.slice(clientPage * pageSize, (clientPage + 1) * pageSize);
+  const pageNumbers = Array.from({length:pageCount}, (_,i)=>i).filter(i=>pageCount <= 7 || i === 0 || i === pageCount - 1 || Math.abs(i - clientPage) <= 1);
   $('#clist').innerHTML = `<thead><tr><th>Client</th><th>Pack</th><th>Parc</th><th>Expiration</th><th>Statut</th><th style="text-align:right">Actions</th></tr></thead><tbody>` +
     pageList.map(c=>{
       const du = daysUntil(c.exp), inc = incoherent(c);
@@ -705,8 +706,8 @@ function renderClients(){
   $$('#clist [data-cp]').forEach(b=>b.onclick=()=>openClientPacks(+b.dataset.cp));
   $$('#clist [data-pay]').forEach(b=>b.onclick=()=>openPay(+b.dataset.pay));
   $('#chips').innerHTML = `<span>${list.length} client(s)</span>` + (a ? `<span class="chip">${a.ref} · ${a.title()} <button data-clr>×</button></span>` : '');
-  const clr = $('[data-clr]'); if (clr) clr.onclick = ()=>{ F.alert=''; renderAlerts(); renderClients(); };
-  $('#clientPager').innerHTML = pageCount > 1 ? `<span>${clientPage * pageSize + 1}–${Math.min(list.length, (clientPage + 1) * pageSize)} sur ${list.length} clients</span><button data-client-page="${clientPage - 1}" ${clientPage === 0 ? 'disabled' : ''} aria-label="Page précédente">‹</button>${Array.from({length:pageCount}, (_,i)=>`<button data-client-page="${i}" ${i === clientPage ? 'aria-current="page"' : ''} aria-label="Page ${i + 1}">${i + 1}</button>`).join('')}<button data-client-page="${clientPage + 1}" ${clientPage === pageCount - 1 ? 'disabled' : ''} aria-label="Page suivante">›</button>` : '';
+  const clr = $('[data-clr]'); if (clr) clr.onclick = ()=>{ F.alert=''; clientPage = 0; renderAlerts(); renderClients(); };
+  $('#clientPager').innerHTML = pageCount > 1 ? `<span>${clientPage * pageSize + 1}–${Math.min(list.length, (clientPage + 1) * pageSize)} sur ${list.length} clients</span><button data-client-page="${clientPage - 1}" ${clientPage === 0 ? 'disabled' : ''} aria-label="Page précédente">‹</button>${pageNumbers.map((i,j)=>`${j && i - pageNumbers[j-1] > 1 ? '<span aria-hidden="true">…</span>' : ''}<button data-client-page="${i}" ${i === clientPage ? 'aria-current="page"' : ''} aria-label="Page ${i + 1}">${i + 1}</button>`).join('')}<button data-client-page="${clientPage + 1}" ${clientPage === pageCount - 1 ? 'disabled' : ''} aria-label="Page suivante">›</button>` : '';
   $$('#clientPager [data-client-page]').forEach(b=>b.onclick=()=>{ clientPage = +b.dataset.clientPage; renderClients(); });
 }
 

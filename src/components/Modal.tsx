@@ -19,11 +19,7 @@ interface ModalProps {
 const FOCUSABLE =
   'a[href],button:not([disabled]),textarea:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
-/** En-tête / pied : Fond clair TUNAV (#F2F6FF) – sépare clairement du corps blanc. */
-const CHROME =
-  'bg-surface border-border-subtle shrink-0';
-
-/** Modale Industrial Tech – header + footer colorés (design system TUNAV). */
+/** Modale du design system TUNAV : en-tête blanc et pied sur Fond clair. */
 export function Modal({ isOpen, onClose, title, children, size = 'md', footer }: ModalProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -105,7 +101,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
             exit={{ opacity: 0 }}
             transition={{ duration: 0.16, ease: [0.2, 0, 0, 1] }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-surface-inverse/60"
             aria-hidden="true"
           />
           <motion.div
@@ -119,32 +115,32 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', footer }:
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className={`relative flex h-full w-full max-h-[calc(100vh-2rem)] flex-col overflow-hidden bg-white outline-none shadow-2xl rounded-none md:h-auto md:w-[calc(100%-2rem)] md:rounded-xl ${sizeClasses[size]}`}
+            className={`relative flex h-full w-full max-h-[calc(100vh-2rem)] flex-col overflow-hidden border border-border bg-surface outline-none shadow-overlay rounded-none md:h-auto md:w-[calc(100%-2rem)] md:rounded-modal ${sizeClasses[size]}`}
           >
-            {/* Header – Fond clair */}
+            {/* En-tête blanc, séparé du contenu selon les tokens TUNAV. */}
             <div
-              className={`flex items-center justify-between gap-4 border-b px-5 py-4 ${CHROME} md:rounded-t-modal`}
+              className="flex shrink-0 items-center justify-between gap-4 border-b border-border-subtle bg-surface px-6 py-4 md:rounded-t-modal"
             >
-              <h2 id={titleId} className="truncate text-h4 text-text">
+              <h2 id={titleId} className="min-w-0 text-h4 font-semibold text-text">
                 {title}
               </h2>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Fermer"
-                className={`flex h-control w-control items-center justify-center rounded-control text-text-muted hover:bg-surface hover:text-text ${TRANSITION} ${FOCUS}`}
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-text-muted hover:bg-surface-muted hover:text-text ${TRANSITION} ${FOCUS}`}
               >
                 <X size={20} aria-hidden="true" />
               </button>
             </div>
 
             {/* Corps – Blanc */}
-            <div className="min-h-0 flex-1 overflow-y-auto bg-surface px-5 py-4">{children}</div>
+            <div className="min-h-0 flex-1 overflow-y-auto bg-surface px-6 py-5 text-text">{children}</div>
 
-            {/* Footer – Fond clair */}
+            {/* Pied de modale sur le Fond clair TUNAV. */}
             {showFooter && (
               <div
-                className={`flex flex-wrap items-center justify-between gap-2.5 border-t px-5 py-3 ${CHROME} md:rounded-b-modal [&>:only-child]:ml-auto`}
+                className="flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-border-subtle bg-surface-muted px-6 py-4 md:rounded-b-modal"
               >
                 {footerContent}
               </div>

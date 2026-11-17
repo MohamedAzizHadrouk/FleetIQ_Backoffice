@@ -403,11 +403,12 @@ function applyFilters(keep){
   });
   const pageSize = 25, pages = Math.max(1, Math.ceil(matched.length / pageSize));
   PAGE = Math.min(PAGE, pages - 1);
+  const pageNumbers = Array.from({length:pages}, (_,i)=>i).filter(i=>pages <= 7 || i === 0 || i === pages - 1 || Math.abs(i - PAGE) <= 1);
   const shown = new Set(matched.slice(PAGE * pageSize, (PAGE + 1) * pageSize));
   EQ.forEach(e => { e.tr.style.display = shown.has(e) ? '' : 'none'; });
   renderTabs(pass);
   $('#eqCount').textContent = `${matched.length} / ${EQ.length} équipement(s)`;
-  $('#eqMore').innerHTML = pages > 1 ? `<span>${PAGE * pageSize + 1}–${Math.min(matched.length, (PAGE + 1) * pageSize)} sur ${matched.length}</span><button data-page="${PAGE - 1}" ${PAGE === 0 ? 'disabled' : ''} aria-label="Page précédente">‹</button>${Array.from({length:pages}, (_,i)=>`<button data-page="${i}" ${i === PAGE ? 'aria-current="page"' : ''} aria-label="Page ${i + 1}">${i + 1}</button>`).join('')}<button data-page="${PAGE + 1}" ${PAGE === pages - 1 ? 'disabled' : ''} aria-label="Page suivante">›</button>` : '';
+  $('#eqMore').innerHTML = pages > 1 ? `<span>${PAGE * pageSize + 1}–${Math.min(matched.length, (PAGE + 1) * pageSize)} sur ${matched.length}</span><button data-page="${PAGE - 1}" ${PAGE === 0 ? 'disabled' : ''} aria-label="Page précédente">‹</button>${pageNumbers.map((i,j)=>`${j && i - pageNumbers[j-1] > 1 ? '<span aria-hidden="true">…</span>' : ''}<button data-page="${i}" ${i === PAGE ? 'aria-current="page"' : ''} aria-label="Page ${i + 1}">${i + 1}</button>`).join('')}<button data-page="${PAGE + 1}" ${PAGE === pages - 1 ? 'disabled' : ''} aria-label="Page suivante">›</button>` : '';
   $$('#eqMore [data-page]').forEach(b => b.onclick = () => { PAGE = +b.dataset.page; applyFilters(true); });
 }
 FI.forEach(f => f.addEventListener(f.tagName === 'SELECT' ? 'change' : 'input', () => applyFilters()));

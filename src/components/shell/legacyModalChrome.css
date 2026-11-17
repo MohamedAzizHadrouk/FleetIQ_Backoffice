@@ -1,0 +1,80 @@
+/* Shared modal chrome for the five HTML mockup pages. Values follow TUNAV UI tokens. */
+body .mq-root :is(.ov,.ov3){background:rgba(63,63,63,.6)}
+body .mq-root [role="dialog"]{
+  border:1px solid #E2E8F0;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 20px 50px rgba(15,23,42,.25);
+  color:#3F3F3F;
+}
+body .mq-root [role="dialog"] :is(.mh,.md-h,.md3-h){
+  flex:none;
+  min-height:72px;
+  padding:16px 24px;
+  border-bottom:1px solid #E2E8F0;
+  background:#fff;
+  color:#3F3F3F;
+  gap:16px;
+}
+body .mq-root [role="dialog"] :is(.mh,.md-h,.md3-h) h3{
+  min-width:0;
+  margin:0;
+  color:#3F3F3F;
+  font-family:Poppins,system-ui,sans-serif;
+  font-size:18px;
+  font-weight:600;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+body .mq-root [role="dialog"] :is(.mh,.md-h,.md3-h) > button:is(.x,[data-x]){
+  display:grid;
+  place-items:center;
+  flex:none;
+  width:40px;
+  height:40px;
+  padding:0;
+  border:1px solid transparent;
+  border-radius:8px;
+  background:transparent;
+  color:#3F3F3F;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+}
+body .mq-root [role="dialog"] :is(.mh,.md-h,.md3-h) > button:is(.x,[data-x]):hover{
+  border-color:#C1D1FF;
+  background:#F2F6FF;
+  color:#0848FE;
+}
+body .mq-root [role="dialog"] :is(.mf,.md-f,.md3-f){
+  flex:none;
+  min-height:72px;
+  padding:14px 24px;
+  border-top:1px solid #E2E8F0;
+  background:#F2F6FF;
+  gap:12px;
+  flex-wrap:wrap;
+  font-family:Poppins,system-ui,sans-serif;
+}
+body .mq-root [role="dialog"] :is(.mf,.md-f,.md3-f) button[data-x]{
+  min-height:40px;
+  padding:8px 16px;
+  border:1px solid #0848FE;
+  border-radius:8px;
+  background:#fff;
+  color:#0848FE;
+  font:600 13px Poppins,system-ui,sans-serif;
+  cursor:pointer;
+}
+body .mq-root [role="dialog"] :is(.mf,.md-f,.md3-f) button[data-x]:hover{background:#E1E9FF;color:#063ACB}
+body .mq-root [role="dialog"] :is(.mf,.md-f,.md3-f) button.btn.primary:not([data-x]){
+  border-color:#0848FE;
+  background:#0848FE;
+  color:#fff;
+}
+body .mq-root [role="dialog"] :is(.mf,.md-f,.md3-f) button.btn.primary:not([data-x]):hover{background:#063ACB}
+body .mq-root [role="dialog"] button:focus-visible{outline:3px solid #0848FE;outline-offset:2px}
+@media (max-width:600px){
+  body .mq-root [role="dialog"] :is(.mh,.md-h,.md3-h){padding:14px 16px}
+  body .mq-root [role="dialog"] :is(.mf,.md-f,.md3-f){padding:12px 16px}
+}

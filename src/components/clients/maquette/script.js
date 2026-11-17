@@ -70,6 +70,7 @@ const daysSince = s => Math.floor((d0(TODAY) - d0(s)) / DAY);
 const daysUntil = s => Math.round((d0(s) - d0(TODAY)) / DAY);
 const pct = (a,b) => b ? Math.round(a*100/b) : 0;
 const packOf = id => PACKS.find(p => p.id === id);
+const safeText = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
 // Un seul délai (filtre « Délai » de À traiter) pour l'échéance et l'inactivité ; 30 j à l'ouverture
 const P = { renew:30, inact:30, hours:24, pctOff:50 };
@@ -132,6 +133,8 @@ function openAlert(id){
 }
 
 /* ---------------- Rendu KPI ---------------- */
+let CONN_PAGE = 0;
+const CONN_PAGE_SIZE = 4;
 function renderKpis(){
   const total = CLIENTS.length, rev = CLIENTS.filter(c=>c.rev).length;
   const act = CLIENTS.filter(isActive).length, blk = total - act;
@@ -186,10 +189,20 @@ function renderKpis(){
   $('#connT').textContent = byOwner ? 'Équipements hors ligne par propriétaire' : 'Équipements connectés / non connectés : 10 clients les plus touchés';
   $('#connSub').innerHTML = byOwner ? 'Un propriétaire par ligne · cliquez pour voir ses clients' : `Trié par nombre de non connectés · <button class="lnk" data-eqall style="border:0;background:none;padding:0;font:inherit;color:var(--blue);cursor:pointer">voir tous les clients →</button>`;
   const maxEqC = Math.max(1,...withEq.map(r=>byOwner ? r.off : r.on+r.off));
-  $('#connBars').innerHTML = withEq.map(r=>`
+  const pageCount = Math.max(1, Math.ceil(withEq.length / CONN_PAGE_SIZE));
+  CONN_PAGE = Math.min(CONN_PAGE, pageCount - 1);
+  const pageRows = withEq.slice(CONN_PAGE * CONN_PAGE_SIZE, (CONN_PAGE + 1) * CONN_PAGE_SIZE);
+  $('#connBars').innerHTML = pageRows.map(r=>`
     <div class="b clk" role="button" tabindex="0" ${r.own ? `data-cbo="${r.own}"` : `data-cb="${r.id}"`} aria-label="${r.own ? 'Voir les clients de' : 'Voir les équipements de'} ${r.name}"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</span>
       <div class="track">${byOwner ? `<i style="width:${pct(r.off,maxEqC)}%;background:var(--red)"></i>` : `${shown('conn','on')?`<i style="width:${pct(r.on,maxEqC)}%;background:var(--green)"></i>`:''}${shown('conn','off')?`<i style="width:${pct(r.off,maxEqC)}%;background:#fca5a5"></i>`:''}`}</div>
       <span class="num">${sc==='off' ? `${fmtN(r.off)} non conn. / ${fmtN(r.on+r.off)}` : byOwner ? `${fmtN(r.off)} hors ligne / ${fmtN(r.on+r.off)}` : `${r.on} / ${r.on+r.off}`}</span></div>`).join('');
+  $('#connPager').innerHTML = pageCount > 1 ? `<span>${CONN_PAGE * CONN_PAGE_SIZE + 1}–${Math.min((CONN_PAGE + 1) * CONN_PAGE_SIZE, withEq.length)} sur ${withEq.length} ${byOwner?'propriétaires':'clients'}</span>
+    <div class="distribution-pager-actions" role="group" aria-label="Pages des propriétaires">
+      <button type="button" data-conn-page="${CONN_PAGE - 1}" aria-label="Page précédente" ${CONN_PAGE===0?'disabled':''}>‹</button>
+      <span aria-live="polite">${CONN_PAGE + 1} / ${pageCount}</span>
+      <button type="button" data-conn-page="${CONN_PAGE + 1}" aria-label="Page suivante" ${CONN_PAGE===pageCount-1?'disabled':''}>›</button>
+    </div>` : '';
+  $$('#connPager [data-conn-page]').forEach(b=>b.onclick=()=>{ CONN_PAGE = +b.dataset.connPage; renderKpis(); });
   if (byOwner) $('#connLeg').innerHTML = '<span><i class="dot" style="background:var(--red)"></i>Hors ligne · longueur relative au propriétaire le plus touché</span>';
   else legend('#connLeg', 'conn', [{k:'on',l:'Connectés',c:'var(--green)'},{k:'off',l:'Non connectés',c:'#fca5a5'}]);
   // chaque ligne ouvre son détail : pack → clients du pack, client → onglet Équipements de sa fiche
@@ -850,10 +863,13 @@ function priority(c){
 }
 function openClient(id){
   const c = CLIENTS.find(x=>x.id===id); if (!c) return;
+  const details = opts.getClientDetails?.(c.name) || {};
   const pr = priority(c), du = c.exp ? daysUntil(c.exp) : null, on = connCount(c), never = c.eq.filter(neverSent).length;
   const tot = ELAPSED.reduce((t,k)=>t+(c.logm[k]||0),0), nm = ELAPSED.filter(k=>(c.logm[k]||0)>0).length;
   const tile = (t, v, sub, cls='') => `<div class="ft-k ${cls}"><span>${t}</span><b>${v}</b><small>${sub}</small></div>`;
-  const tabs = { syn:'Synthèse', eq:`Équipements (${c.eq.length})`, act:'Activité' };
+  const field = (label, value) => `<div class="ft-info-field"><dt>${label}</dt><dd>${value === '' || value == null ? 'Non renseigné' : safeText(value)}</dd></div>`;
+  const group = (title, content) => `<section class="ft-info-section"><h4>${title}</h4><dl class="ft-info-grid">${content}</dl></section>`;
+  const tabs = { syn:'Synthèse', eq:`Équipements (${c.eq.length})`, act:'Activité', info:'Informations' };
   const body = {
     syn: `<div class="ft-grid">
         ${tile('Abonnement', du===null ? '—' : du < 0 ? (inGrace(c) ? `bloqué dans ${blockIn(c)} j` : `expiré`) : `J-${du}`, c.exp ? (du < 0 ? (inGrace(c) ? `expiré le ${fmtD(c.exp)} · blocage le ${blockDate(c).toLocaleDateString('fr-FR')}` : `depuis le ${fmtD(c.exp)}`) : `échéance le ${fmtD(c.exp)}`) : 'sans échéance', du!==null && du < 0 ? 'bad' : du!==null && du <= P.renew ? 'warn' : '')}
@@ -873,17 +889,31 @@ function openClient(id){
     act: `<div class="ft-mini">${lineChart([c], MONTHS12, c.id, {w:620, h:170})}</div>
       <div class="d-months m12">${MONTHS12.map(k=>k > mk(TODAY) ? `<span class="fut">${mShort(k)}<b></b></span>` : `<span class="${(c.logm[k]||0)?'on':''}">${mShort(k)}<b>${c.logm[k]||''}</b></span>`).join('')}</div>
       <div class="ft-grid" style="margin-top:12px">${tile('Mois avec connexion', `${nm} / ${ELAPSED.length}`, '')}${tile('Connexions', tot, 'depuis janvier')}${tile('Canal', c.ch || '—', 'de la dernière connexion')}</div>`,
+    info: `<div class="ft-information">
+      ${group('Informations générales', field('Type de client', c.rev ? 'Revendeur' : 'Client final') + field('Propriétaire', c.reseller) + field('Date d’expiration', fmtD(c.exp)) + field('Site web', details.website) + field('Formule commerciale', details.formula) + field('Décalage horaire', details.timezone))}
+      ${group('Contact', field('Adresse complète', details.address) + field('Téléphone 1', details.tel) + field('Email 1', details.email) + field('Téléphone 2', details.tel2) + field('Email 2', details.email2))}
+      ${group('Configuration', field('Nombre de véhicules autorisés', details.vehicleLimit === -1 ? 'Illimité' : details.vehicleLimit) + field('Nombre de comptes autorisés', details.accountLimit === -1 ? 'Illimité' : details.accountLimit))}
+      ${group('Compte', field('Nom d’utilisateur', details.username) + field('Mot de passe', 'Non affiché'))}
+    </div>`,
   };
   $('#modal').innerHTML = `<div class="ov" id="ov"><div class="modal fiche" role="dialog" aria-modal="true">
-    <div class="mh"><div class="ft-id"><span class="ft-av">${c.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</span><div><h3>${c.name}</h3>
-      <div class="ft-tags"><span class="type ${c.rev?'rev':''}">${c.rev?'Revendeur':'Client final'}</span>${statusHtml(c)}<span class="note">Propriétaire : ${c.reseller}</span>${packsHtml(c)}</div></div></div>
+    <div class="mh"><div class="ft-id"><span class="ft-av" aria-hidden="true">${c.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</span><div class="ft-main"><span class="ft-eyebrow">Fiche client</span><h3>${c.name}</h3>
+      <div class="ft-tags"><span class="type ${c.rev?'rev':''}">${c.rev?'Revendeur':'Client final'}</span>${statusHtml(c)}<span class="ft-owner">Propriétaire : <strong>${c.reseller}</strong></span></div>
+      <div class="ft-packs">${packsHtml(c)}</div></div></div>
       <div class="ft-pr ${pr.lvl}"><small>Priorité</small><b>${pr.label}</b></div>
       <button class="x" data-x aria-label="Fermer">×</button></div>
-    <div class="ft-tabs">${Object.entries(tabs).map(([k,l])=>`<button data-ft="${k}" class="${FICHE_TAB===k?'on':''}">${l}</button>`).join('')}</div>
-    <div class="mb">${body[FICHE_TAB]}</div>
+    <div class="ft-tabs" role="tablist" aria-label="Sections de la fiche client">${Object.entries(tabs).map(([k,l])=>`<button type="button" role="tab" data-ft="${k}" id="client-tab-${k}" aria-controls="client-tab-panel" aria-selected="${FICHE_TAB===k}" class="${FICHE_TAB===k?'on':''}">${l}</button>`).join('')}</div>
+    <div class="mb" id="client-tab-panel" role="tabpanel" aria-labelledby="client-tab-${FICHE_TAB}">${body[FICHE_TAB]}</div>
     <div class="mf"><button class="btn primary" data-x>Fermer</button></div></div></div>`;
   $('#ov').onclick = e => { if (e.target.id==='ov' || e.target.closest('[data-x]')) $('#modal').innerHTML = ''; };
-  $$('#modal [data-ft]').forEach(b=>b.onclick=()=>{ FICHE_TAB = b.dataset.ft; openClient(id); });
+  $$('#modal [data-ft]').forEach(b=>{
+    b.onclick=()=>{ FICHE_TAB = b.dataset.ft; openClient(id); $(`#client-tab-${FICHE_TAB}`)?.focus(); };
+    b.onkeydown=e=>{
+      const keys=Object.keys(tabs), i=keys.indexOf(b.dataset.ft);
+      const next=e.key==='ArrowRight' ? keys[(i+1)%keys.length] : e.key==='ArrowLeft' ? keys[(i+keys.length-1)%keys.length] : e.key==='Home' ? keys[0] : e.key==='End' ? keys[keys.length-1] : null;
+      if (next){ e.preventDefault(); FICHE_TAB=next; openClient(id); $(`#client-tab-${next}`)?.focus(); }
+    };
+  });
 }
 
 /* 2 · Pic du nombre de clients connectés */

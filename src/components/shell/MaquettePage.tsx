@@ -7,6 +7,7 @@
  */
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import './legacyModalChrome.css';
 import { enhanceModalTables } from './modalTableEnhancer';
 
 type MountFn = (
@@ -18,6 +19,7 @@ type MountFn = (
     navigate?: (href: string) => void;
     actions?: { edit: boolean; payment: boolean };
     onClientAction?: (action: string, name: string) => boolean;
+    getClientDetails?: (name: string) => Record<string, string | number | null | undefined> | null;
     after?: (api: { setView: ((v: string) => void) | null }) => void;
   }
 ) => () => void;
@@ -50,14 +52,17 @@ type Props = {
   role?: string;
   /** clic sur un bouton de la maquette repéré par son texte (ex. « Ajouter un client ») */
   actions?: Record<string, (name?: string) => boolean | void>;
+  getClientDetails?: (name: string) => Record<string, string | number | null | undefined> | null;
 };
 
-export function MaquettePage({ slug, markup, mount, view = '', role = '', actions }: Props) {
+export function MaquettePage({ slug, markup, mount, view = '', role = '', actions, getClientDetails }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const actionsRef = useRef(actions);
   actionsRef.current = actions;
+  const detailsRef = useRef(getClientDetails);
+  detailsRef.current = getClientDetails;
 
   useEffect(() => {
     const root = ref.current;
@@ -89,7 +94,8 @@ export function MaquettePage({ slug, markup, mount, view = '', role = '', action
       cleanup = mount(root, {
         view, role, search: location.search, navigate: go,
         actions: { edit: Boolean(actionsRef.current?.['client-edit']), payment: Boolean(actionsRef.current?.['client-payment']) },
-        onClientAction: (action, name) => Boolean(actionsRef.current?.[action]?.(name))
+        onClientAction: (action, name) => Boolean(actionsRef.current?.[action]?.(name)),
+        getClientDetails: (name) => detailsRef.current?.(name) ?? null
       });
     } catch (err) {
       // eslint-disable-next-line no-console

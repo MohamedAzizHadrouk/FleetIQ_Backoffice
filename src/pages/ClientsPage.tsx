@@ -1274,6 +1274,24 @@ export function ClientsPage() {
         mount={mountClientsMaquette}
         view={maquetteView}
         role={maquetteRole}
+        getClientDetails={(name) => {
+          const client = visibleClients.find((item) => item.name === name);
+          if (!client) return null;
+          const profile = clientProfiles[client.id];
+          return {
+            website: profile?.website,
+            formula: profile?.formula,
+            timezone: profile?.timezone,
+            address: profile?.address,
+            tel: client.tel,
+            email: client.email,
+            tel2: profile?.tel2,
+            email2: profile?.email2,
+            vehicleLimit: client.vehicleLimit,
+            accountLimit: profile?.accountLimit,
+            username: profile?.username
+          };
+        }}
         actions={{
           ...(permissions?.clients.canAddEdit ? {
             'Ajouter un client': () => openAddEditModal(),
