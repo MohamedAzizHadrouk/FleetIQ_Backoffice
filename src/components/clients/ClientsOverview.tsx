@@ -196,6 +196,7 @@ export function ClientsOverview({
   });
 
   const d01Max = Math.max(1, ...data.d01.map((r) => r.equipments));
+  const d02OfflineMax = Math.max(1, ...data.d02.map((r) => Math.max(0, r.assigned - r.connected)));
 
   /* ---------- Revendeurs (vue Tunav) : un propriétaire par ligne, le clic filtre la page ---------- */
   const dueIds = new Set(alerts.echeance.list.map((c) => c.id));
@@ -411,14 +412,14 @@ export function ClientsOverview({
       )}
 
       {/* Répartition – design system TUNAV (séries chart 1–4 + états succès / erreur) */}
-      <section aria-labelledby="cli-rep" className="col-span-12 grid grid-cols-12 gap-4 items-stretch">
+      <section aria-labelledby="cli-rep" className="col-span-12 grid grid-cols-12 gap-4 items-start">
         <SectionRule id="cli-rep" title="Répartition" />
-        <div className="col-span-12 xl:col-span-6 flex">
+        <div className="col-span-12 xl:col-span-6 flex min-w-0">
           <Panel
-            className="flex w-full flex-col"
+            className="flex w-full min-w-0 flex-col"
             title="Clients et équipements par pack"
             hint="Pack actuel de chaque client (dernière affectation)"
-            bodyClassName="flex flex-1 flex-col gap-3 p-4"
+            bodyClassName="flex min-w-0 flex-col gap-3 overflow-hidden p-4"
             footer={
               <Legend
                 items={[
@@ -440,14 +441,11 @@ export function ClientsOverview({
                   key: r.key,
                   label: r.label,
                   value: r.equipments,
-                  valueLabel: (
-                    <span>
-                      <span className="font-semibold text-text">{fmt(r.clients)}</span>
-                      <span className="text-text-muted"> clients · </span>
-                      <span className="font-semibold text-text">{fmt(r.equipments)}</span>
-                      <span className="text-text-muted"> équip.</span>
-                    </span>
-                  ),
+                  title: `${r.label} — ${fmt(r.clients)} clients, ${fmt(r.equipments)} équipements`,
+                  metrics: [
+                    { label: 'clients', value: fmt(r.clients) },
+                    { label: 'équipements', value: fmt(r.equipments), tone: 'muted' as const }
+                  ],
                   tone: (['series1', 'series2', 'series3', 'series4'] as const)[i % 4]
                 })),
                 ...(data.noPack
@@ -456,12 +454,7 @@ export function ClientsOverview({
                         key: 'none',
                         label: 'Sans pack',
                         value: 0,
-                        valueLabel: (
-                          <span>
-                            <span className="font-semibold text-text">{fmt(data.noPack)}</span>
-                            <span className="text-text-muted"> clients</span>
-                          </span>
-                        ),
+                        metrics: [{ label: 'clients', value: fmt(data.noPack), tone: 'muted' as const }],
                         tone: 'neutral' as const
                       }
                     ]
@@ -470,39 +463,54 @@ export function ClientsOverview({
             />
           </Panel>
         </div>
-        <div className="col-span-12 xl:col-span-6 flex">
+        <div className="col-span-12 xl:col-span-6 flex min-w-0">
           <Panel
-            className="flex w-full flex-col"
+            className="flex w-full min-w-0 flex-col"
             title={isNetwork ? 'Équipements hors ligne par propriétaire' : 'Équipements connectés / non connectés'}
             hint={
               isNetwork
                 ? 'Un propriétaire par ligne — cliquez pour voir ses clients'
                 : 'Clients les plus touchés — cliquez pour ouvrir la fiche'
             }
-            bodyClassName="flex-1 p-0"
-            footer={
-              <Legend
-                items={[
-                  { tone: 'success', label: 'Connectés' },
-                  { tone: 'danger', label: 'Non connectés' }
-                ]}
-              />
-            }
+            bodyClassName="min-w-0 flex-1 overflow-hidden p-0"
+            footer={<Legend items={isNetwork ? [{ tone: 'danger', label: 'Hors ligne' }] : [
+              { tone: 'success', label: 'Connectés' },
+              { tone: 'danger', label: 'Non connectés' }
+            ]} />}
           >
-            <ul>
-              {data.d02.slice(0, isNetwork ? 10 : 8).map((r) => {
+            {isNetwork ? (
+              <div className="min-w-0 px-4">
+                <HorizontalBarList
+                  ariaLabel="Équipements hors ligne par propriétaire"
+                  max={d02OfflineMax}
+                  tone="danger"
+                  onRowClick={onOwnerClick}
+                  rows={data.d02.slice(0, 10).map((r) => ({
+                    key: r.key,
+                    label: r.label,
+                    value: Math.max(0, r.assigned - r.connected),
+                    title: `${r.label} — ${fmt(Math.max(0, r.assigned - r.connected))} hors ligne sur ${fmt(r.assigned)} équipements`,
+                    metrics: [
+                      { label: 'hors ligne', value: fmt(Math.max(0, r.assigned - r.connected)), tone: 'danger' as const },
+                      { label: 'équipements', value: fmt(r.assigned), tone: 'muted' as const }
+                    ]
+                  }))}
+                />
+              </div>
+            ) : (
+            <ul className="w-full min-w-0">
+              {data.d02.slice(0, 8).map((r) => {
                 const offline = r.assigned - r.connected;
                 return (
-                  <li key={r.key} className="border-b border-border-subtle last:border-b-0">
+                  <li key={r.key} className="w-full min-w-0 border-b border-border-subtle last:border-b-0">
                     <button
                       type="button"
-                      onClick={() => (isNetwork ? onOwnerClick(r.key) : onClientOpen(Number(r.key), 'equipements'))}
-                      className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1.5 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                      title={`${r.label} — ${fmt(offline)} hors ligne / ${fmt(r.assigned)}`}
+                      onClick={() => onClientOpen(Number(r.key), 'equipements')}
+                      className="flex w-full min-w-0 flex-col gap-2 px-4 py-3 text-left hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                     >
-                      <span className="basis-full min-w-0 truncate text-small font-medium text-text sm:basis-auto sm:w-36 sm:shrink-0">
-                        {r.label}
-                      </span>
-                      <span className="flex-1 min-w-[80px]">
+                      <span className="min-w-0 truncate text-small font-medium text-text">{r.label}</span>
+                      <span className="block w-full min-w-0">
                         <StackedBar
                           height="md"
                           labelMinShare={1}
@@ -513,16 +521,22 @@ export function ClientsOverview({
                           ]}
                         />
                       </span>
-                      <span className="shrink-0 text-right text-small tabular-nums sm:w-44">
-                        <b className="font-semibold text-danger">{fmt(offline)}</b>
-                        <span className="text-text-muted"> hors ligne / </span>
-                        <span className="text-text">{fmt(r.assigned)}</span>
+                      <span className="flex flex-wrap gap-1.5">
+                        <span className="inline-flex items-baseline gap-1 rounded-[2px] border border-danger-200 bg-danger-50 px-2 py-0.5 text-mention text-danger">
+                          <span className="font-semibold tabular-nums">{fmt(offline)}</span>
+                          <span className="opacity-80">hors ligne</span>
+                        </span>
+                        <span className="inline-flex items-baseline gap-1 rounded-[2px] border border-border bg-surface-muted px-2 py-0.5 text-mention text-text-muted">
+                          <span className="font-semibold tabular-nums text-text">{fmt(r.assigned)}</span>
+                          <span className="opacity-80">total</span>
+                        </span>
                       </span>
                     </button>
                   </li>
                 );
               })}
             </ul>
+            )}
           </Panel>
         </div>
       </section>

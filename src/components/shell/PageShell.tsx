@@ -194,15 +194,20 @@ export function Panel({
 }) {
   const hasHead = title != null || hint != null || actions != null;
   return (
-    <Tag className={`bg-surface border border-border rounded-card shadow-card min-w-0 ${className}`}>
+    <Tag className={`bg-surface border border-border rounded-card shadow-card min-w-0 overflow-hidden ${className}`}>
       {hasHead && (
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 px-[18px] pt-4 pb-1">
-          {title != null && (typeof title === 'string' ? <h3 className="text-sm font-semibold text-text">{title}</h3> : title)}
-          {hint != null && <span className="text-mention text-text-muted">{hint}</span>}
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-2 px-[18px] pt-4 pb-1">
+          {title != null &&
+            (typeof title === 'string' ? (
+              <h3 className="min-w-0 truncate text-sm font-semibold text-text">{title}</h3>
+            ) : (
+              title
+            ))}
+          {hint != null && <span className="min-w-0 text-mention text-text-muted">{hint}</span>}
           {actions != null && <div className="ml-auto flex flex-wrap items-center gap-2">{actions}</div>}
         </div>
       )}
-      <div className={bodyClassName}>{children}</div>
+      <div className={`min-w-0 ${bodyClassName}`}>{children}</div>
       {footer != null && (
         <div className="flex items-center gap-3 px-4 py-2 border-t border-border-subtle text-mention text-text-muted">{footer}</div>
       )}
