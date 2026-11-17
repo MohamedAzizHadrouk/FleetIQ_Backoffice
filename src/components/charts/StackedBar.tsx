@@ -35,15 +35,19 @@ export function StackedBar({
 }: Props) {
   const tot = total ?? segments.reduce((s, x) => s + x.value, 0);
   const visible = segments.filter((s) => s.value > 0);
-  const h = height === 'lg' ? 'h-control' : 'h-6';
+  const h = height === 'lg' ? 'h-control' : 'h-3';
   return (
-    <div role="group" aria-label={ariaLabel} className={`flex w-full gap-0.5 overflow-hidden rounded-control bg-surface ${h}`}>
+    <div
+      role="group"
+      aria-label={ariaLabel}
+      className={`flex w-full gap-0.5 overflow-hidden rounded-control bg-surface-muted border border-border-subtle ${h}`}
+    >
       {visible.length === 0 && <div className="flex-1 bg-border-subtle" aria-hidden="true" />}
       {visible.map((s) => {
         const share = tot ? s.value / tot : 0;
         const pctTxt = `${Math.round(share * 100)} %`;
-        const text = share >= labelMinShare && TONE_ON[s.tone] ? formatValue(s.value) : '';
-        const cls = `flex items-center justify-center text-mention font-semibold tabular-nums ${TONE_BG[s.tone]} ${
+        const text = height === 'lg' && share >= labelMinShare && TONE_ON[s.tone] ? formatValue(s.value) : '';
+        const cls = `flex items-center justify-center text-mention font-semibold tabular-nums first:rounded-l-control last:rounded-r-control ${TONE_BG[s.tone]} ${
           TONE_ON[s.tone] ?? ''
         }`;
         const label = `${s.label} : ${formatValue(s.value)} (${pctTxt})`;
@@ -51,7 +55,7 @@ export function StackedBar({
           <button
             key={s.key}
             type="button"
-            style={{ flex: s.value }}
+            style={{ flex: Math.max(s.value, 0.0001) }}
             className={`${cls} transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-inset`}
             title={label}
             aria-label={label}
@@ -60,7 +64,14 @@ export function StackedBar({
             {text}
           </button>
         ) : (
-          <div key={s.key} style={{ flex: s.value }} className={cls} title={label} aria-label={label} role="img">
+          <div
+            key={s.key}
+            style={{ flex: Math.max(s.value, 0.0001) }}
+            className={cls}
+            title={label}
+            aria-label={label}
+            role="img"
+          >
             {text}
           </div>
         );

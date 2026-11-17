@@ -410,34 +410,76 @@ export function ClientsOverview({
         </section>
       )}
 
-      {/* Répartition */}
-      <section aria-labelledby="cli-rep" className="col-span-12 grid grid-cols-12 gap-4">
+      {/* Répartition – design system TUNAV (séries chart 1–4 + états succès / erreur) */}
+      <section aria-labelledby="cli-rep" className="col-span-12 grid grid-cols-12 gap-4 items-stretch">
         <SectionRule id="cli-rep" title="Répartition" />
-        <div className="col-span-12 xl:col-span-6">
+        <div className="col-span-12 xl:col-span-6 flex">
           <Panel
+            className="flex w-full flex-col"
             title="Clients et équipements par pack"
-            bodyClassName="p-4"
+            hint="Pack actuel de chaque client (dernière affectation)"
+            bodyClassName="flex flex-1 flex-col gap-3 p-4"
+            footer={
+              <Legend
+                items={[
+                  ...data.d01.map((r, i) => ({
+                    tone: (['series1', 'series2', 'series3', 'series4'] as const)[i % 4],
+                    label: r.label
+                  })),
+                  ...(data.noPack ? [{ tone: 'neutral' as const, label: 'Sans pack' }] : [])
+                ]}
+              />
+            }
           >
             <HorizontalBarList
               ariaLabel="Clients et équipements par pack"
               max={d01Max}
               onRowClick={onPackClick}
               rows={[
-                ...data.d01.map((r) => ({
+                ...data.d01.map((r, i) => ({
                   key: r.key,
                   label: r.label,
                   value: r.equipments,
-                  valueLabel: `${fmt(r.clients)} cl. · ${fmt(r.equipments)} éq.`
+                  valueLabel: (
+                    <span>
+                      <span className="font-semibold text-text">{fmt(r.clients)}</span>
+                      <span className="text-text-muted"> clients · </span>
+                      <span className="font-semibold text-text">{fmt(r.equipments)}</span>
+                      <span className="text-text-muted"> équip.</span>
+                    </span>
+                  ),
+                  tone: (['series1', 'series2', 'series3', 'series4'] as const)[i % 4]
                 })),
-                ...(data.noPack ? [{ key: 'none', label: 'Sans pack', value: 0, valueLabel: `${fmt(data.noPack)} cl.`, tone: 'series4' as const }] : [])
+                ...(data.noPack
+                  ? [
+                      {
+                        key: 'none',
+                        label: 'Sans pack',
+                        value: 0,
+                        valueLabel: (
+                          <span>
+                            <span className="font-semibold text-text">{fmt(data.noPack)}</span>
+                            <span className="text-text-muted"> clients</span>
+                          </span>
+                        ),
+                        tone: 'neutral' as const
+                      }
+                    ]
+                  : [])
               ]}
             />
           </Panel>
         </div>
-        <div className="col-span-12 xl:col-span-6">
+        <div className="col-span-12 xl:col-span-6 flex">
           <Panel
-            title="Équipements connectés / non connectés"
-            bodyClassName="p-0"
+            className="flex w-full flex-col"
+            title={isNetwork ? 'Équipements hors ligne par propriétaire' : 'Équipements connectés / non connectés'}
+            hint={
+              isNetwork
+                ? 'Un propriétaire par ligne — cliquez pour voir ses clients'
+                : 'Clients les plus touchés — cliquez pour ouvrir la fiche'
+            }
+            bodyClassName="flex-1 p-0"
             footer={
               <Legend
                 items={[
@@ -455,9 +497,11 @@ export function ClientsOverview({
                     <button
                       type="button"
                       onClick={() => (isNetwork ? onOwnerClick(r.key) : onClientOpen(Number(r.key), 'equipements'))}
-                      className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
+                      className="flex flex-wrap sm:flex-nowrap w-full items-center gap-x-3 gap-y-1.5 px-4 py-2.5 text-left hover:bg-primary-50 transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus"
                     >
-                      <span className="basis-full min-w-0 truncate text-small font-medium text-text sm:basis-auto sm:w-40 sm:shrink-0">{r.label}</span>
+                      <span className="basis-full min-w-0 truncate text-small font-medium text-text sm:basis-auto sm:w-36 sm:shrink-0">
+                        {r.label}
+                      </span>
                       <span className="flex-1 min-w-[80px]">
                         <StackedBar
                           height="md"
@@ -469,8 +513,10 @@ export function ClientsOverview({
                           ]}
                         />
                       </span>
-                      <span className="shrink-0 text-right text-small font-qty sm:w-40">
-                        <b className="text-danger-700">{fmt(offline)}</b> hors ligne / {fmt(r.assigned)}
+                      <span className="shrink-0 text-right text-small tabular-nums sm:w-44">
+                        <b className="font-semibold text-danger">{fmt(offline)}</b>
+                        <span className="text-text-muted"> hors ligne / </span>
+                        <span className="text-text">{fmt(r.assigned)}</span>
                       </span>
                     </button>
                   </li>
