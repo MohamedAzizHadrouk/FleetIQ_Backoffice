@@ -162,7 +162,7 @@ export function SectionRule({
 }) {
   return (
     <div className="col-span-12 flex flex-wrap items-baseline gap-2.5">
-      <h2 id={id} className="text-section text-text">
+      <h2 id={id} className="border-l-[3px] border-primary pl-3 text-section text-primary">
         {title}
       </h2>
       {hint && <span className="text-[12.5px] text-text-muted">{hint}</span>}

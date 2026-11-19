@@ -40,12 +40,12 @@
 
 <!-- À traiter -->
 <section style="display:flex;flex-direction:column;gap:10px">
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="lbl">À traiter</span><span class="hint" style="font-size:12px;color:#475569">Cliquez sur une carte pour voir les équipements</span></div>
+  <div class="section-heading" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h2>À traiter</h2><span class="hint" style="font-size:12px;color:#475569">Cliquez sur une carte pour voir les équipements</span></div>
   <div class="al2" id="todo"></div>
 </section>
 
 <!-- Liste des équipements (tableau inchangé) -->
-<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:-12px"><span class="lbl">Liste des équipements</span><span style="font-size:12px;color:#475569">Cliquez sur une ligne pour la fiche de l'équipement</span></div>
+<div class="section-heading" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:-12px"><h2>Liste des équipements</h2><span style="font-size:12px;color:#475569">Cliquez sur une ligne pour la fiche de l'équipement</span></div>
 <div class="card" id="eq-filters" style="padding: 16px 18px; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end">
 <label style="flex: 1 1 260px">Recherche<input type="search" placeholder="IMEI, client, revendeur, SIM, ICCID…"></label>
 <label>Type<select><option>Tous les types</option><option>FMC130</option><option>FMB120</option><option>FMB920</option><option>ETX</option><option>ET6</option><option>FMC003</option><option>FMB140</option></select></label>
@@ -92,7 +92,7 @@
 </div>
 
 <!-- Graphiques : clic = détail à droite -->
-<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:-12px"><span class="lbl">Répartition</span><span style="font-size:12px;color:#475569">Cliquez sur une barre pour voir le détail à droite</span></div>
+<div class="section-heading" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:-12px"><h2>Répartition</h2><span style="font-size:12px;color:#475569">Cliquez sur une barre pour voir le détail à droite</span></div>
 <div class="card split">
   <div><h3>Par revendeur et client</h3><div class="s">% des équipements vendus · Tunav en premier · cliquez sur un revendeur pour ouvrir ses clients</div><div class="lg" id="gClientLeg" style="margin:-4px 0 10px"></div><div id="gClient"></div></div>
   <div class="det" id="dClient"></div>

@@ -62,7 +62,7 @@ function Block({ id, title, sub, empty, children, kpi }: { id: string; title: st
   return (
     <section id={id} data-kpi={kpi} className="col-span-12 scroll-mt-topbar bg-surface rounded-card border border-border min-w-0">
       <div className="px-4 py-2.5 border-b border-border">
-        <h2 className="text-section text-text">{title}</h2>
+        <h2 className="border-l-[3px] border-primary pl-3 text-section text-primary">{title}</h2>
         {sub ? <p className="text-mention text-text-muted mt-0.5">{sub}</p> : null}
       </div>
       <div className="p-4">

@@ -1082,8 +1082,15 @@ function stRender(){
   const eqCell = c => { if (!c.n) return '<span class="note">Aucun équipement</span>';
     const on = c.n - c.offN, ok = on === c.n;
     return `<span style="color:${ok ? 'var(--green)' : 'var(--red)'}">${fmtN(on)}</span> / ${fmtN(c.n)} équip. conn.<span class="st-bar" style="width:60px;margin:0 0 0 8px"><i style="width:${pct(on,c.n)}%;background:${ok ? 'var(--green)' : 'var(--amber)'}"></i></span>`; };
-  const row = c => `<li><span>${c.id ? cLink(c) : `<span>${c.name}</span>`} ${stHtml(c.off)}${c.rv ? '<span class="tag blue">Revendeur</span>' : ''}${ownTag(c)}${c.packs}</span>
-    <b>${eqCell(c)}<br>${c.off ? `<span style="color:var(--red)">${c.blk}</span>${c.exp ? ` <span class="note">· Échéance ${fmtD(c.exp)}</span>` : ''}` : c.sig ? `<span style="color:var(--amber)">${c.sig}</span>` : '<span style="color:var(--green)">OK</span>'}</b></li>`;
+  const row = c => `<li class="client-result">
+    <div class="client-result-identity">
+      <div class="client-result-name">${c.id ? cLink(c) : `<span>${c.name}</span>`}${stHtml(c.off)}${c.rv ? '<span class="tag blue">Revendeur</span>' : ''}</div>
+      <div class="client-result-meta">${ownTag(c)}${c.packs}</div>
+    </div>
+    <div class="client-result-summary">
+      <div class="client-result-count">${eqCell(c)}</div>
+      <div class="client-result-alert">${c.off ? `<span style="color:var(--red)">${c.blk}</span>${c.exp ? ` <span class="note">· Échéance ${fmtD(c.exp)}</span>` : ''}` : c.sig ? `<span style="color:var(--amber)">${c.sig}</span>` : '<span style="color:var(--green)">OK</span>'}</div>
+    </div></li>`;
   const b = list.filter(c=>c.off).length;
   el.innerHTML = `<h4 class="dh">${q ? 'Résultats' : lbl} (${fmtN(list.length)}) · ${fmtN(b)} bloqué(s)</h4><ul class="dlist">${ttSlice('d',list).map(row).join('') || li2('Aucun client')}</ul>${ttPager('d',list.length)}`;
 }

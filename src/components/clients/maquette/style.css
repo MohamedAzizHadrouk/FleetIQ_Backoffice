@@ -2,7 +2,7 @@
 .mq-clients{
     --bg:#ffffff; --page:#f8fafc; --card:#ffffff; --line:#e2e8f0; --line2:#f1f5f9;
     --ink:#0f172a; --ink2:#334155; --muted:#64748b; --faint:#94a3b8;
-    --blue:#2563eb; --blue-bg:#eff6ff; --green:#059669; --green-bg:#ecfdf5;
+    --blue:#0848FE; --blue-bg:#F2F6FF; --green:#059669; --green-bg:#ecfdf5;
     --red:#dc2626; --red-bg:#fef2f2; --amber:#d97706; --amber-bg:#fffbeb;
     --violet:#7c3aed; --violet-bg:#f5f3ff;
     --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
@@ -478,7 +478,7 @@
 .mq-clients{
   --page:#F1F5F9; --line:#E2E8F0; --line2:#F1F5F9;
   --ink:#0F172A; --ink2:#334155; --muted:#475569; --faint:#94A3B8;
-  --blue:#2563EB; --blue-bg:#EFF6FF;
+  --blue:#0848FE; --blue-bg:#F2F6FF;
   --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
 }
 .mq-clients,.mq-clients{background:#F1F5F9;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#0F172A}
@@ -527,8 +527,33 @@
 .mq-clients .bell{border-radius:8px;border-color:#CBD5E1}
 .mq-clients .bpanel{right:0;top:46px;z-index:40}
 .mq-clients .sec{margin:28px 0 10px}
-.mq-clients .sec h2{font-size:11px;letter-spacing:.06em;color:#475569;font-weight:600}
+.mq-clients .sec h2{font-size:16px;line-height:1.4;letter-spacing:0;text-transform:none;color:#0848FE;font-weight:600;padding-left:12px;border-left:3px solid #0848FE}
 .mq-clients .sec .hint{font-size:12px;color:#475569}
+.mq-clients .rv-panel{padding:0;overflow:hidden}
+.mq-clients .rv-t thead th{background:#F2F6FF;color:#0848FE;font-size:11px;font-weight:600;letter-spacing:.035em;padding:12px 14px;border-bottom:1px solid #DCE6F7}
+.mq-clients .rv-t tbody td{padding:12px 14px;font-size:13px;color:#3F3F3F;border-bottom:1px solid #E8EDF5}
+.mq-clients .rv-t tbody tr:last-child td{border-bottom:0}
+.mq-clients .rv-t tbody tr.warn{background:#FFF8F8}
+.mq-clients .rv-t tbody tr.warn td:first-child{box-shadow:inset 3px 0 0 #C62828}
+.mq-clients .rv-t th:nth-child(2),.mq-clients .rv-t th:nth-child(3),.mq-clients .rv-t th:nth-child(5),.mq-clients .rv-t th:nth-child(6),.mq-clients .rv-t td:nth-child(2),.mq-clients .rv-t td:nth-child(3),.mq-clients .rv-t td:nth-child(5),.mq-clients .rv-t td:nth-child(6){text-align:right}
+.mq-clients .rv-panel .pgr{padding:10px 14px;border-top:1px solid #E8EDF5}
+.mq-clients .rv-t td .note{font-size:12px;color:#6E6E6E}
+.mq-clients #stW .tt-q{display:block;max-width:340px;margin:14px 0 4px}
+.mq-clients #stL .dh{font-size:13px;line-height:1.4;letter-spacing:0;text-transform:none;font-weight:600;color:#3F3F3F;margin:14px 0 10px}
+.mq-clients #stL .dlist{border-color:#DCE6F7}
+.mq-clients #stL .dlist .client-result{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:center;gap:12px 18px;padding:12px 14px;min-width:0}
+.mq-clients #stL .client-result-identity,.mq-clients #stL .client-result-summary{min-width:0}
+.mq-clients #stL .client-result-name,.mq-clients #stL .client-result-meta{display:flex;align-items:center;gap:6px 9px;flex-wrap:wrap}
+.mq-clients #stL .client-result-name{font-size:13px;font-weight:600;color:#3F3F3F}
+.mq-clients #stL .client-result-name .lnk{font-weight:600!important;color:#3F3F3F!important}
+.mq-clients #stL .client-result-name .lnk:hover{color:#0848FE!important;text-decoration:underline}
+.mq-clients #stL .client-result-meta{margin-top:6px;font-size:12px;color:#6E6E6E}
+.mq-clients #stL .client-result-summary{text-align:right;font-size:12px}
+.mq-clients #stL .client-result-count{font-weight:600;color:#3F3F3F}
+.mq-clients #stL .client-result-count .st-bar{width:54px;margin-left:8px;margin-right:0}
+.mq-clients #stL .client-result-alert{margin-top:5px;line-height:1.45}
+.mq-clients #stL .client-result-alert .note{color:#6E6E6E}
+@media(max-width:650px){.mq-clients #stL .dlist .client-result{grid-template-columns:1fr}.mq-clients #stL .client-result-summary{text-align:left}}
 .mq-clients .param{border-radius:10px;padding:6px 12px;color:#475569}
 .mq-clients .param input[type=range]{accent-color:#2563EB}
 .mq-clients .stat,.mq-clients .panel,.mq-clients .box,.mq-clients .cat,.mq-clients .gaps,.mq-clients .kpi,.mq-clients .tbl,.mq-clients .period{border-radius:12px;border-color:#E2E8F0}

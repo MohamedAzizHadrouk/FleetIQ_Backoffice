@@ -72,6 +72,7 @@
 .mq-equipments .mt i{display:block;height:100%}
 .mq-equipments .sec{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:-12px}
 .mq-equipments .sec .hint{font-size:12px;color:#475569}
+.mq-equipments .section-heading h2{margin:0;border-left:3px solid #0848FE;padding-left:12px;color:#0848FE;font-size:16px;line-height:1.4;font-weight:600;letter-spacing:0;text-transform:none}
 .mq-equipments .lg{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:#334155}
 .mq-equipments .al2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,340px));gap:12px}
 .mq-equipments .al{font:inherit;color:inherit;text-align:left;cursor:pointer;padding:14px 16px;display:flex;flex-direction:column;gap:8px}

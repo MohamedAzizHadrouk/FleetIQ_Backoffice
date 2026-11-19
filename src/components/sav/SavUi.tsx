@@ -112,7 +112,7 @@ export function Section({
     <section id={id} data-kpi={kpi} className="col-span-12 bg-surface rounded-card border border-border min-w-0 scroll-mt-topbar">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 border-b border-border">
         <div className="min-w-0">
-          <h2 className="text-section text-text">{title}</h2>
+          <h2 className="border-l-[3px] border-primary pl-3 text-section text-primary">{title}</h2>
           {sub && <p className="text-mention text-text-muted mt-0.5">{sub}</p>}
         </div>
         {right && <div className="ml-auto">{right}</div>}

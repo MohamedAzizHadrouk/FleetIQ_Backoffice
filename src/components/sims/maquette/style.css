@@ -2,7 +2,7 @@
 .mq-sims{
     --page:#F1F5F9; --line:#E2E8F0; --line2:#F1F5F9;
     --ink:#0F172A; --ink2:#334155; --muted:#475569; --faint:#94A3B8;
-    --blue:#2563EB; --blue-bg:#EFF6FF; --green:#059669; --green-bg:#ECFDF5;
+    --blue:#0848FE; --blue-bg:#F2F6FF; --green:#059669; --green-bg:#ECFDF5;
     --red:#DC2626; --red-bg:#FEF2F2; --amber:#D97706; --amber-bg:#FFFBEB;
     --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
   }
@@ -201,7 +201,7 @@
 .mq-sims{
   --page:#F1F5F9; --line:#E2E8F0; --line2:#F1F5F9;
   --ink:#0F172A; --ink2:#334155; --muted:#475569; --faint:#94A3B8;
-  --blue:#2563EB; --blue-bg:#EFF6FF;
+  --blue:#0848FE; --blue-bg:#F2F6FF;
   --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
 }
 .mq-sims,.mq-sims{background:#F1F5F9;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#0F172A}
@@ -246,7 +246,7 @@
 .mq-sims .bell{border-radius:8px;border-color:#CBD5E1}
 .mq-sims .bpanel{right:0;top:46px;z-index:40}
 .mq-sims .sec{margin:28px 0 10px}
-.mq-sims .sec h2{font-size:11px;letter-spacing:.06em;color:#475569;font-weight:600}
+.mq-sims .sec h2{font-size:16px;line-height:1.4;letter-spacing:0;text-transform:none;color:#0848FE;font-weight:600;padding-left:12px;border-left:3px solid #0848FE}
 .mq-sims .sec .hint{font-size:12px;color:#475569}
 .mq-sims .param{border-radius:10px;padding:6px 12px;color:#475569}
 .mq-sims .param input[type=range]{accent-color:#2563EB}
